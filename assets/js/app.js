@@ -43,8 +43,8 @@ async function initApp() {
 function switchPage(pageName) {
     AppState.currentPage = pageName;
 
-    // Update Nav Links
-    document.querySelectorAll('.nav-link').forEach(link => {
+    // Update Nav Links & Bottom Nav Items
+    document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(link => {
         link.classList.toggle('active', link.getAttribute('data-page') === pageName);
     });
 

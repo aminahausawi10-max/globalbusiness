@@ -808,17 +808,33 @@
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="container footer-content">
-            <div>
-                <strong>GLOBAL BIZ</strong> — Global Business Marketplace & Professional Buying Assistance Platform
-            </div>
-            <div>
-                © 2026 Global Business Marketplace. All Rights Reserved.
-            </div>
-        </div>
-    </footer>
+    <!-- Bottom Dock Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-nav-item active" data-page="home" onclick="switchPage('home'); return false;">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-page="marketplace" onclick="switchPage('marketplace'); return false;">
+            <i class="fa-solid fa-store"></i>
+            <span>Market</span>
+        </a>
+        <a href="#" class="bottom-nav-item post-btn" data-page="post" onclick="switchPage('post'); return false;" title="Post Ad or Register Business">
+            <i class="fa-solid fa-plus"></i>
+            <span>Post</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-page="directory" onclick="switchPage('directory'); return false;">
+            <i class="fa-solid fa-building"></i>
+            <span>Directory</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-page="assistance" onclick="switchPage('assistance'); return false;">
+            <i class="fa-solid fa-handshake-angle"></i>
+            <span>Assistance</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-page="admin" onclick="switchPage('admin'); return false;">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Admin</span>
+        </a>
+    </nav>
 
     <!-- JavaScript Layers -->
     <script src="assets/js/api.js"></script>
