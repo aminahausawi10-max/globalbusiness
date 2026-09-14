@@ -1026,6 +1026,202 @@ body {
     color: var(--text-secondary);
 }
 
+.custom-table tr:hover {
+    background: #f8fafc;
+}
+
+/* Admin Sub Navigation Tabs */
+.admin-subnav {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+.admin-nav-tab {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.admin-nav-tab:hover {
+    background: var(--bg-alt);
+    color: var(--primary);
+}
+
+.admin-nav-tab.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.admin-tab-pane {
+    display: none;
+}
+
+.admin-tab-pane.active {
+    display: block;
+    animation: fadeIn 0.2s ease-in;
+}
+
+/* Admin Action Buttons & Badges */
+.btn-sm-action {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: #fff;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-sm-action:hover {
+    background: var(--bg-alt);
+}
+
+.btn-sm-verify {
+    background: var(--success-soft);
+    color: var(--success);
+    border-color: #a7f3d0;
+}
+
+.btn-sm-verify:hover {
+    background: #10b981;
+    color: #fff;
+}
+
+.btn-sm-unverify {
+    background: #fef2f2;
+    color: var(--danger);
+    border-color: #fecaca;
+}
+
+.btn-sm-feature {
+    background: var(--warning-soft);
+    color: #b45309;
+    border-color: #fde68a;
+}
+
+.btn-sm-delete {
+    background: #fff1f2;
+    color: #e11d48;
+    border-color: #fecdd3;
+}
+
+.btn-sm-delete:hover {
+    background: #e11d48;
+    color: #fff;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-new { background: #dbeafe; color: #1e40af; }
+.status-assigned { background: #e0e7ff; color: #4338ca; }
+.status-searching { background: #fef3c7; color: #b45309; }
+.status-found { background: #ede9fe; color: #6d28d9; }
+.status-negotiating { background: #ffedd5; color: #c2410c; }
+.status-approval { background: #ccfbf1; color: #0f766e; }
+.status-coordination { background: #dcfce7; color: #15803d; }
+.status-completed { background: #d1fae5; color: #065f46; }
+
+/* Business Profile Detail Modal */
+.biz-profile-hero {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    height: 180px;
+    background: #1e293b;
+    margin-bottom: 20px;
+}
+
+.biz-profile-banner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.75;
+}
+
+.biz-profile-avatar-row {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+}
+
+.biz-profile-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: #fff;
+    object-fit: cover;
+    box-shadow: var(--shadow-md);
+}
+
+.biz-profile-title {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    bottom: calc(var(--bottom-nav-height) + 16px);
+    right: 20px;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--primary);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideUp 0.3s ease-out;
+    pointer-events: auto;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .assistance-banner {
@@ -1045,4 +1241,8 @@ body {
     .btn-search {
         width: 100%;
     }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
+

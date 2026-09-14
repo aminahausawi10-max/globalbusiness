@@ -272,16 +272,35 @@ function seedInitialData($db) {
     $categories = [
         ['Food & Groceries', 'food-groceries', 'fa-utensils', null],
         ['Clothing & Fashion', 'clothing-fashion', 'fa-shirt', null],
-        ['Electronics & IT', 'electronics-it', 'fa-laptop', null],
-        ['Mobile Phones', 'mobile-phones', 'fa-mobile-screen', null],
-        ['Automotive & Repair', 'automotive-repair', 'fa-car', null],
+        ['Shoes', 'shoes', 'fa-shoe-prints', null],
+        ['Bags & Luggage', 'bags-luggage', 'fa-bag-shopping', null],
         ['Furniture & Decor', 'furniture-decor', 'fa-couch', null],
+        ['Electronics', 'electronics', 'fa-tv', null],
+        ['Mobile Phones', 'mobile-phones', 'fa-mobile-screen', null],
+        ['Computers & IT', 'computers-it', 'fa-laptop-code', null],
+        ['Car Sales', 'car-sales', 'fa-car-side', null],
+        ['Car Wash', 'car-wash', 'fa-soap', null],
+        ['Auto Repair', 'auto-repair', 'fa-wrench', null],
+        ['Construction', 'construction', 'fa-person-digging', null],
+        ['Building Materials', 'building-materials', 'fa-trowel-bricks', null],
         ['Agriculture & Produce', 'agriculture-produce', 'fa-wheat-awn', null],
-        ['Building & Construction', 'building-construction', 'fa-trowel-bricks', null],
+        ['Restaurants & Dining', 'restaurants-dining', 'fa-bowl-food', null],
+        ['Hotels & Hospitality', 'hotels-hospitality', 'fa-hotel', null],
         ['Beauty & Cosmetics', 'beauty-cosmetics', 'fa-spa', null],
-        ['Professional Services', 'professional-services', 'fa-briefcase', null],
+        ['Healthcare Services', 'healthcare-services', 'fa-notes-medical', null],
+        ['Transportation', 'transportation', 'fa-bus', null],
         ['Logistics & Delivery', 'logistics-delivery', 'fa-truck-fast', null],
-        ['Real Estate', 'real-estate', 'fa-building', null]
+        ['Real Estate', 'real-estate', 'fa-building', null],
+        ['Education & Tutoring', 'education-tutoring', 'fa-graduation-cap', null],
+        ['Professional Services', 'professional-services', 'fa-briefcase', null],
+        ['Cleaning Services', 'cleaning-services', 'fa-broom', null],
+        ['Repair Services', 'repair-services', 'fa-screwdriver-wrench', null],
+        ['Photography', 'photography', 'fa-camera', null],
+        ['Printing & Publishing', 'printing-publishing', 'fa-print', null],
+        ['Telecommunications', 'telecommunications', 'fa-tower-cell', null],
+        ['Spare Parts', 'spare-parts', 'fa-gear', null],
+        ['Wholesale Supplies', 'wholesale-supplies', 'fa-boxes-stacked', null],
+        ['Retail & General Store', 'retail-general', 'fa-store', null]
     ];
 
     $stmt = $db->prepare("INSERT INTO categories (name, slug, icon, parent_id) VALUES (?, ?, ?, ?)");
@@ -291,13 +310,13 @@ function seedInitialData($db) {
 
     $businesses = [
         [
-            'Kano Premium Agro & Yam Hub', 7, 'Agriculture & Produce',
+            'Kano Premium Agro & Yam Hub', 14, 'Agriculture & Produce',
             'Wholesale and retail supplier of premium Benue and Niger yams, grains, sesame, and dry agricultural commodities.',
             'Nigeria', 'Kano', 'Kano', 'Dawanau Market', 'Line 4, Dawanau International Grain Market',
             12.0022, 8.5919, '+234 803 111 2233', '+2348031112233', 'agro@kanoyamhub.ng',
             '7:00 AM - 6:00 PM', 1, 1, 4.9, 38,
             'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/food/spices.jpg',
-            'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/landscapes/nature-mountains.jpg', 1
+            'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop&q=80', 1
         ],
         [
             'Al-Malaz Prestige Mens Fashion', 2, 'Clothing & Fashion',
@@ -306,34 +325,34 @@ function seedInitialData($db) {
             24.6711, 46.7329, '+966 50 123 4567', '+966501234567', 'sales@almalazfashion.sa',
             '9:00 AM - 11:00 PM', 1, 1, 4.8, 54,
             'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/people/boy-snow-hoodie.jpg',
-            'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/ecommerce/leather-bag-gray.jpg', 1
+            'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&auto=format&fit=crop&q=80', 1
         ],
         [
-            'Abuja SmartTech & Phone Repairs', 4, 'Mobile Phones',
+            'Abuja SmartTech & Phone Repairs', 7, 'Mobile Phones',
             'Certified micro-soldering, screen replacement, genuine spare parts for Apple, Samsung, and Google Pixel.',
             'Nigeria', 'FCT', 'Abuja', 'Wuse 2', 'Suite 14, Banex Plaza, Wuse 2',
             9.0765, 7.4798, '+234 809 999 8888', '+2348099998888', 'support@abujasmarttech.com',
             '8:30 AM - 7:00 PM', 1, 1, 4.7, 92,
-            'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/ecommerce/accessories-bag.jpg',
-            'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/ecommerce/analog-classic.jpg', 1
+            'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=200&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=800&auto=format&fit=crop&q=80', 1
         ],
         [
-            'Houston Custom Timber & Modern Furniture', 6, 'Furniture & Decor',
+            'Houston Custom Timber & Modern Furniture', 5, 'Furniture & Decor',
             'Handcrafted solid wood dining tables, executive office desks, and luxury living room furniture with nationwide delivery.',
             'United States', 'Texas', 'Houston', 'Galleria Area', '5085 Westheimer Rd, Houston, TX 77056',
             29.7400, -95.4640, '+1 713 555 0199', '+17135550199', 'orders@houstontimber.com',
             '9:00 AM - 6:00 PM', 1, 1, 4.9, 41,
-            'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/ecommerce/chair-wood.jpg',
-            'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/landscapes/beach-boat.jpg', 1
+            'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&auto=format&fit=crop&q=80', 1
         ],
         [
-            'Nassarawa Eco Car Wash & Auto Detailers', 5, 'Automotive & Repair',
+            'Nassarawa Eco Car Wash & Auto Detailers', 10, 'Car Wash',
             'High-pressure steam washing, interior ceramic coating, engine degreasing, and mobile door-to-door car wash services.',
             'Nigeria', 'Kano', 'Kano', 'Nassarawa GRA', '12 Bompai Road, Nassarawa GRA',
             12.0000, 8.5300, '+234 812 345 6789', '+2348123456789', 'wash@nassarawacar.ng',
             '7:00 AM - 8:00 PM', 1, 0, 4.6, 23,
-            'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/ecommerce/car.jpg',
-            'https://res.cloudinary.com/dpghoiocq/image/upload/v1/samples/bike.jpg', 0
+            'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=200&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=800&auto=format&fit=crop&q=80', 0
         ]
     ];
 
@@ -346,7 +365,7 @@ function seedInitialData($db) {
 
     $products = [
         [
-            1, 7, 'Grade-A Fresh Benue Yams (Tubers in Bulk)', 
+            1, 14, 'Grade-A Fresh Benue Yams (Tubers in Bulk)', 
             'Large size export-quality fresh yams directly from farm gate. Ideal for wholesale, restaurants, or household storage.',
             18.50, 'USD', 0, 'In Stock', 'Large (3-5kg each)', 'Natural Tuber', 'Benue Harvest',
             'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80',
@@ -364,7 +383,7 @@ function seedInitialData($db) {
             'Worldwide DHL / Aramex 3-5 business day shipping'
         ],
         [
-            3, 4, 'Express iPhone & Samsung OLED Screen Replacement',
+            3, 7, 'Express iPhone & Samsung OLED Screen Replacement',
             'Original OEM OLED screen fitting with 6 months warranty. Done within 30 minutes by certified micro-engineers.',
             45.00, 'USD', 1, 'Service Available', 'All Models', 'OEM Black/Color', 'Apple / Samsung Genuine',
             'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&auto=format&fit=crop&q=80',
@@ -373,7 +392,7 @@ function seedInitialData($db) {
             'In-shop walk-in & doorstep pickup in Abuja'
         ],
         [
-            4, 6, 'Handcrafted Solid Walnut 8-Seater Dining Table',
+            4, 5, 'Handcrafted Solid Walnut 8-Seater Dining Table',
             'Kiln-dried American black walnut with live edge finish and matte black heavy-duty steel base.',
             1250.00, 'USD', 0, 'Custom Order (5 Days)', '96" x 40" x 30"', 'Natural Walnut', 'Houston Timber Co',
             'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=80',
@@ -382,7 +401,7 @@ function seedInitialData($db) {
             'White-glove home delivery and installation included'
         ],
         [
-            5, 5, 'Executive Ceramic Steam Car Detail & Polish',
+            5, 10, 'Executive Ceramic Steam Car Detail & Polish',
             'Multi-stage paint decontamination, interior leather steam disinfection, and 6-month ceramic sealant.',
             30.00, 'USD', 1, 'Service Available', 'Sedan / SUV', 'Gloss Finish', 'EcoDetail Pro',
             'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=600&auto=format&fit=crop&q=80',
@@ -406,7 +425,7 @@ function seedInitialData($db) {
             'Agriculture & Produce',
             'Must be export standard with moisture below 7%, SGS certified inspection before loading.',
             '200 Bags', 3000.0, 5000.0, 'USD', 'Nigeria', 'Kano', '2026-10-15',
-            'Business Procurement', 150.0, 'Sourcing', 'Senior Sourcing Officer S. Bello',
+            'Business Procurement', 150.0, 'Searching', 'Senior Sourcing Officer S. Bello',
             'Verified 2 top commodity suppliers in Dawanau. Negotiating batch discount.'
         ],
         [
@@ -415,7 +434,7 @@ function seedInitialData($db) {
             'Furniture & Decor',
             'Scandinavian minimalist design, integrated bedside lighting, heavy duty joints.',
             '1 Unit', 600.0, 900.0, 'USD', 'Nigeria', 'Abuja', '2026-10-01',
-            'Full Buying Assistance', 45.0, 'Customer Approval', 'Agent Mary M.',
+            'Full Buying Assistance', 60.0, 'Customer Approval', 'Agent Mary M.',
             'Sourced 2 master carpenters in Industrial Layout. Samples sent to customer.'
         ]
     ];

@@ -138,15 +138,22 @@ const API = {
         return this.fallbackBuyingRequests;
     },
 
-    async getAdminStats() {
+    async getAdminData(action = 'overview') {
         try {
-            const res = await fetch(`${this.baseUrl}/admin.php`);
+            const res = await fetch(`${this.baseUrl}/admin.php?action=${action}`);
             if (res.ok) {
                 return await res.json();
             }
         } catch (e) {
-            console.warn('Backend offline');
+            console.warn('Backend offline, using fallback admin data');
         }
+
+        if (action === 'businesses') return { status: 'success', data: this.fallbackBusinesses };
+        if (action === 'products') return { status: 'success', data: this.fallbackProducts };
+        if (action === 'buying_requests') return { status: 'success', data: this.fallbackBuyingRequests };
+        if (action === 'categories') return { status: 'success', data: this.fallbackCategories };
+        if (action === 'reviews') return { status: 'success', data: [] };
+
         return {
             status: 'success',
             stats: {
@@ -155,27 +162,167 @@ const API = {
                 total_products: this.fallbackProducts.length,
                 total_services: this.fallbackProducts.filter(p => p.is_service).length,
                 total_buying_requests: this.fallbackBuyingRequests.length,
-                active_assistance_cases: this.fallbackBuyingRequests.filter(r => r.status === 'New' || r.status === 'Sourcing').length
+                active_assistance_cases: this.fallbackBuyingRequests.filter(r => !['Completed', 'Cancelled'].includes(r.status)).length,
+                estimated_revenue: this.fallbackBuyingRequests.reduce((sum, r) => sum + (r.service_fee || 60), 0)
             },
             recent_businesses: this.fallbackBusinesses.slice(0, 5),
             recent_requests: this.fallbackBuyingRequests.slice(0, 5)
         };
     },
 
-    // In-memory fallback dataset for smooth instant rendering
+    async verifyBusiness(id, verified) {
+        try {
+            const res = await fetch(`${this.baseUrl}/admin.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'verify_business', id, verified: verified ? 1 : 0 })
+            });
+            return await res.json();
+        } catch (e) {
+            const b = this.fallbackBusinesses.find(x => x.id == id);
+            if (b) b.verified = verified ? 1 : 0;
+            return { status: 'success', message: 'Business verification status updated (Local Mode)' };
+        }
+    },
+
+    async toggleFeaturedBusiness(id, featured) {
+        try {
+            const res = await fetch(`${this.baseUrl}/admin.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'toggle_featured_business', id, featured: featured ? 1 : 0 })
+            });
+            return await res.json();
+        } catch (e) {
+            const b = this.fallbackBusinesses.find(x => x.id == id);
+            if (b) b.featured = featured ? 1 : 0;
+            return { status: 'success', message: 'Featured promotion updated (Local Mode)' };
+        }
+    },
+
+    async deleteBusiness(id) {
+        try {
+            const res = await fetch(`${this.baseUrl}/admin.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete_business', id })
+            });
+            return await res.json();
+        } catch (e) {
+            this.fallbackBusinesses = this.fallbackBusinesses.filter(x => x.id != id);
+            return { status: 'success', message: 'Business removed (Local Mode)' };
+        }
+    },
+
+    async deleteProduct(id) {
+        try {
+            const res = await fetch(`${this.baseUrl}/admin.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete_product', id })
+            });
+            return await res.json();
+        } catch (e) {
+            this.fallbackProducts = this.fallbackProducts.filter(x => x.id != id);
+            return { status: 'success', message: 'Listing removed (Local Mode)' };
+        }
+    },
+
+    async updateBuyingRequest(payload) {
+        try {
+            const res = await fetch(`${this.baseUrl}/admin.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'update_buying_request', ...payload })
+            });
+            return await res.json();
+        } catch (e) {
+            const req = this.fallbackBuyingRequests.find(x => x.id == payload.id);
+            if (req) {
+                req.status = payload.status;
+                if (payload.assigned_agent) req.assigned_agent = payload.assigned_agent;
+                if (payload.notes) req.notes = payload.notes;
+                if (payload.service_fee) req.service_fee = payload.service_fee;
+            }
+            return { status: 'success', message: 'Request status updated (Local Mode)' };
+        }
+    },
+
+    async createCategory(payload) {
+        try {
+            const res = await fetch(`${this.baseUrl}/categories.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return await res.json();
+        } catch (e) {
+            const newCat = { id: Date.now(), ...payload };
+            this.fallbackCategories.push(newCat);
+            return { status: 'success', id: newCat.id, message: 'Category created (Local Mode)' };
+        }
+    },
+
+    async deleteCategory(id) {
+        try {
+            const res = await fetch(`${this.baseUrl}/admin.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete_category', id })
+            });
+            return await res.json();
+        } catch (e) {
+            this.fallbackCategories = this.fallbackCategories.filter(x => x.id != id);
+            return { status: 'success', message: 'Category deleted (Local Mode)' };
+        }
+    },
+
+    async submitReview(payload) {
+        try {
+            const res = await fetch(`${this.baseUrl}/reviews.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return await res.json();
+        } catch (e) {
+            return { status: 'success', message: 'Review submitted (Local Mode)' };
+        }
+    },
+
+    // In-memory fallback dataset for smooth instant rendering (30+ categories)
     fallbackCategories: [
         { id: 1, name: 'Food & Groceries', slug: 'food-groceries', icon: 'fa-utensils' },
         { id: 2, name: 'Clothing & Fashion', slug: 'clothing-fashion', icon: 'fa-shirt' },
-        { id: 3, name: 'Electronics & IT', slug: 'electronics-it', icon: 'fa-laptop' },
-        { id: 4, name: 'Mobile Phones', slug: 'mobile-phones', icon: 'fa-mobile-screen' },
-        { id: 5, name: 'Automotive & Repair', slug: 'automotive-repair', icon: 'fa-car' },
-        { id: 6, name: 'Furniture & Decor', slug: 'furniture-decor', icon: 'fa-couch' },
-        { id: 7, name: 'Agriculture & Produce', slug: 'agriculture-produce', icon: 'fa-wheat-awn' },
-        { id: 8, name: 'Building & Construction', slug: 'building-construction', icon: 'fa-trowel-bricks' },
-        { id: 9, name: 'Beauty & Cosmetics', slug: 'beauty-cosmetics', icon: 'fa-spa' },
-        { id: 10, name: 'Professional Services', slug: 'professional-services', icon: 'fa-briefcase' },
-        { id: 11, name: 'Logistics & Delivery', slug: 'logistics-delivery', icon: 'fa-truck-fast' },
-        { id: 12, name: 'Real Estate', slug: 'real-estate', icon: 'fa-building' }
+        { id: 3, name: 'Shoes', slug: 'shoes', icon: 'fa-shoe-prints' },
+        { id: 4, name: 'Bags & Luggage', slug: 'bags-luggage', icon: 'fa-bag-shopping' },
+        { id: 5, name: 'Furniture & Decor', slug: 'furniture-decor', icon: 'fa-couch' },
+        { id: 6, name: 'Electronics', slug: 'electronics', icon: 'fa-tv' },
+        { id: 7, name: 'Mobile Phones', slug: 'mobile-phones', icon: 'fa-mobile-screen' },
+        { id: 8, name: 'Computers & IT', slug: 'computers-it', icon: 'fa-laptop-code' },
+        { id: 9, name: 'Car Sales', slug: 'car-sales', icon: 'fa-car-side' },
+        { id: 10, name: 'Car Wash', slug: 'car-wash', icon: 'fa-soap' },
+        { id: 11, name: 'Auto Repair', slug: 'auto-repair', icon: 'fa-wrench' },
+        { id: 12, name: 'Construction', slug: 'construction', icon: 'fa-person-digging' },
+        { id: 13, name: 'Building Materials', slug: 'building-materials', icon: 'fa-trowel-bricks' },
+        { id: 14, name: 'Agriculture & Produce', slug: 'agriculture-produce', icon: 'fa-wheat-awn' },
+        { id: 15, name: 'Restaurants & Dining', slug: 'restaurants-dining', icon: 'fa-bowl-food' },
+        { id: 16, name: 'Hotels & Hospitality', slug: 'hotels-hospitality', icon: 'fa-hotel' },
+        { id: 17, name: 'Beauty & Cosmetics', slug: 'beauty-cosmetics', icon: 'fa-spa' },
+        { id: 18, name: 'Healthcare Services', slug: 'healthcare-services', icon: 'fa-notes-medical' },
+        { id: 19, name: 'Transportation', slug: 'transportation', icon: 'fa-bus' },
+        { id: 20, name: 'Logistics & Delivery', slug: 'logistics-delivery', icon: 'fa-truck-fast' },
+        { id: 21, name: 'Real Estate', slug: 'real-estate', icon: 'fa-building' },
+        { id: 22, name: 'Education & Tutoring', slug: 'education-tutoring', icon: 'fa-graduation-cap' },
+        { id: 23, name: 'Professional Services', slug: 'professional-services', icon: 'fa-briefcase' },
+        { id: 24, name: 'Cleaning Services', slug: 'cleaning-services', icon: 'fa-broom' },
+        { id: 25, name: 'Repair Services', slug: 'repair-services', icon: 'fa-screwdriver-wrench' },
+        { id: 26, name: 'Photography', slug: 'photography', icon: 'fa-camera' },
+        { id: 27, name: 'Printing & Publishing', slug: 'printing-publishing', icon: 'fa-print' },
+        { id: 28, name: 'Telecommunications', slug: 'telecommunications', icon: 'fa-tower-cell' },
+        { id: 29, name: 'Spare Parts', slug: 'spare-parts', icon: 'fa-gear' },
+        { id: 30, name: 'Wholesale Supplies', slug: 'wholesale-supplies', icon: 'fa-boxes-stacked' },
+        { id: 31, name: 'Retail & General Store', slug: 'retail-general', icon: 'fa-store' }
     ],
 
     fallbackBusinesses: [

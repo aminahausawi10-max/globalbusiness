@@ -108,7 +108,7 @@
             <section>
                 <div class="section-header">
                     <h2 class="section-title">Explore Categories</h2>
-                    <a href="#" class="section-link" onclick="switchTab('explore'); return false;">View All</a>
+                    <a href="#" class="section-link" onclick="switchTab('explore'); return false;">View All (30+)</a>
                 </div>
                 <div id="categoriesContainer" class="categories-scroll">
                     <!-- Loaded dynamically via JS -->
@@ -316,47 +316,189 @@
             </div>
         </div>
 
-        <!-- 4. DASHBOARD & BUYING AGENT VIEW PANEL -->
-        <div id="view-dashboard" class="view-panel">
+        <!-- 4. DEDICATED ADMIN & STAFF PORTAL -->
+        <div id="view-admin" class="view-panel">
             <div class="section-header">
-                <h2 class="section-title">Operations & Buying Assistance Center</h2>
-                <span style="font-size: 0.82rem; color: var(--text-secondary);"><i class="fa-solid fa-circle" style="color: var(--success); font-size: 0.6rem;"></i> Live System</span>
+                <div>
+                    <h2 class="section-title">Administration & Buying Operations Portal</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">
+                        Manage registered businesses, listing ads, sourcing staff desk, categories, and customer ratings.
+                    </p>
+                </div>
+                <span style="font-size: 0.82rem; color: var(--text-secondary);"><i class="fa-solid fa-circle" style="color: var(--success); font-size: 0.6rem;"></i> Connected</span>
             </div>
 
-            <!-- Stats Grid -->
-            <div id="adminStatsGrid" class="stats-grid">
-                <!-- Injected dynamically -->
+            <!-- Admin Sub-Navigation Tabs -->
+            <div class="admin-subnav">
+                <button class="admin-nav-tab active" data-admin-tab="overview">
+                    <i class="fa-solid fa-chart-pie"></i> Overview
+                </button>
+                <button class="admin-nav-tab" data-admin-tab="businesses">
+                    <i class="fa-solid fa-building"></i> Businesses
+                </button>
+                <button class="admin-nav-tab" data-admin-tab="listings">
+                    <i class="fa-solid fa-box-open"></i> Listings & Ads
+                </button>
+                <button class="admin-nav-tab" data-admin-tab="buying_desk">
+                    <i class="fa-solid fa-handshake-angle"></i> Buying Sourcing Desk
+                </button>
+                <button class="admin-nav-tab" data-admin-tab="categories">
+                    <i class="fa-solid fa-tags"></i> Category Manager
+                </button>
+                <button class="admin-nav-tab" data-admin-tab="reviews">
+                    <i class="fa-solid fa-star"></i> Reviews Moderation
+                </button>
             </div>
 
-            <!-- Buying Assistance Tickets Table -->
-            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); margin-top: 20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary);">
-                        <i class="fa-solid fa-list-check" style="color: var(--accent);"></i> Buying Assistance Assignments
+            <!-- ADMIN TAB 1: OVERVIEW -->
+            <div id="admin-tab-overview" class="admin-tab-pane active">
+                <div id="adminStatsGrid" class="stats-grid">
+                    <!-- Injected dynamically -->
+                </div>
+
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; margin-bottom: 20px;">
+                    <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 12px;">
+                        <i class="fa-solid fa-bolt" style="color: var(--warning);"></i> Live Platform Quick Actions
                     </h3>
-                    <button class="btn-assistance" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openBuyingAssistanceModal()">
-                        + New Sourcing Ticket
-                    </button>
-                </div>
-
-                <div style="overflow-x: auto;">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Tracking Code</th>
-                                <th>Client Details</th>
-                                <th>Requested Item</th>
-                                <th>Service Level</th>
-                                <th>Status</th>
-                                <th>Assigned Agent</th>
-                            </tr>
-                        </thead>
-                        <tbody id="assistanceTicketsBody">
-                            <!-- Injected dynamically -->
-                        </tbody>
-                    </table>
+                    <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                        <button class="btn-sm-action btn-sm-verify" onclick="openBuyingAssistanceModal()">
+                            <i class="fa-solid fa-plus"></i> Create Sourcing Ticket
+                        </button>
+                        <button class="btn-sm-action" onclick="switchAdminSubTab('businesses')">
+                            <i class="fa-solid fa-user-check"></i> Verify New Businesses
+                        </button>
+                        <button class="admin-nav-tab" style="padding:5px 10px; font-size:0.75rem;" onclick="switchAdminSubTab('categories')">
+                            <i class="fa-solid fa-folder-plus"></i> Add Category
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <!-- ADMIN TAB 2: BUSINESSES -->
+            <div id="admin-tab-businesses" class="admin-tab-pane">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size: 1rem; font-weight: 700;">Manage Registered Businesses</h3>
+                        <span id="bizCountBadge" class="status-badge status-new">Loading...</span>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Business</th>
+                                    <th>Category</th>
+                                    <th>Location</th>
+                                    <th>Phone / WhatsApp</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminBusinessesTableBody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 3: LISTINGS & ADS -->
+            <div id="admin-tab-listings" class="admin-tab-pane">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size: 1rem; font-weight: 700;">Marketplace Listings & Multimedia Ads</h3>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Business</th>
+                                    <th>Price</th>
+                                    <th>Media Assets</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminListingsTableBody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 4: BUYING SOURCING DESK -->
+            <div id="admin-tab-buying_desk" class="admin-tab-pane">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size: 1rem; font-weight: 700;">Professional Buying Assistance Desk</h3>
+                        <button class="btn-assistance" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openBuyingAssistanceModal()">
+                            + New Sourcing Ticket
+                        </button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket Code</th>
+                                    <th>Client</th>
+                                    <th>Requested Item</th>
+                                    <th>Budget & Fee</th>
+                                    <th>Status Workflow</th>
+                                    <th>Assigned Agent & Notes</th>
+                                    <th>Update</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminBuyingRequestsTableBody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 5: CATEGORY MANAGER -->
+            <div id="admin-tab-categories" class="admin-tab-pane">
+                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:16px;">
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+                        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px;">Add New Category</h4>
+                        <form id="addCategoryForm">
+                            <div class="form-group">
+                                <label class="form-label">Category Name *</label>
+                                <input type="text" id="newCatName" class="form-input" placeholder="e.g. Solar & Energy" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Slug *</label>
+                                <input type="text" id="newCatSlug" class="form-input" placeholder="solar-energy" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">FontAwesome Icon Class</label>
+                                <input type="text" id="newCatIcon" class="form-input" placeholder="fa-solar-panel" value="fa-folder">
+                            </div>
+                            <button type="submit" class="btn-primary-block" style="padding:9px; font-size:0.85rem;">
+                                Save Category
+                            </button>
+                        </form>
+                    </div>
+
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+                        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px;">Existing Categories</h4>
+                        <div id="adminCategoriesList" style="display:flex; flex-wrap:wrap; gap:8px;">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 6: REVIEWS -->
+            <div id="admin-tab-reviews" class="admin-tab-pane">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">Customer Ratings & Reviews</h3>
+                    <div id="adminReviewsList">
+                        <p style="color:var(--text-secondary); font-size:0.85rem;">No flagged reviews.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </main>
@@ -387,11 +529,58 @@
             <span>Assistance</span>
         </button>
 
-        <button class="bottom-nav-item" data-tab="dashboard">
-            <i class="fa-solid fa-chart-pie"></i>
-            <span>Dashboard</span>
+        <button class="bottom-nav-item" data-tab="admin">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Admin Portal</span>
         </button>
     </nav>
+
+    <!-- ==========================================================================
+       BUSINESS PROFILE DETAIL MODAL
+       ========================================================================== -->
+    <div id="businessProfileModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 680px; padding: 0; overflow: hidden;">
+            <div class="biz-profile-hero">
+                <img id="bizModalBanner" src="" class="biz-profile-banner" alt="Banner">
+                <button class="btn-close-modal" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); color: #fff;" onclick="closeBusinessModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="biz-profile-avatar-row">
+                    <img id="bizModalLogo" src="" class="biz-profile-avatar" alt="Logo">
+                    <div>
+                        <h3 id="bizModalTitle" class="biz-profile-title">Business Name</h3>
+                        <span id="bizModalCategory" style="color: #cbd5e1; font-size: 0.8rem;">Category</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 0 20px 20px 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                    <div id="bizModalVerifiedBadge"></div>
+                    <div style="display:flex; gap:8px;">
+                        <a id="bizModalWhatsappBtn" href="#" target="_blank" class="btn-sm-action" style="background:#22c55e; color:#fff; border:none; padding:7px 12px;">
+                            <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp
+                        </a>
+                        <a id="bizModalCallBtn" href="#" class="btn-sm-action" style="background:var(--primary); color:#fff; border:none; padding:7px 12px;">
+                            <i class="fa-solid fa-phone"></i> Call
+                        </a>
+                    </div>
+                </div>
+
+                <p id="bizModalDescription" style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;"></p>
+
+                <div style="background: var(--bg-alt); padding: 12px; border-radius: var(--radius-md); font-size: 0.82rem; margin-bottom: 16px;">
+                    <div><i class="fa-solid fa-location-dot" style="color:var(--accent);"></i> <strong id="bizModalAddress">Address</strong></div>
+                    <div style="margin-top:4px;"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> <span id="bizModalHours">8:00 AM - 6:00 PM</span></div>
+                </div>
+
+                <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 10px;">Products & Services Catalog</h4>
+                <div id="bizModalProductsContainer" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <!-- Injected dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ==========================================================================
        BUYING ASSISTANCE REQUEST MODAL
@@ -525,6 +714,9 @@
             <video id="videoPlayerElement" controls style="width:100%; border-radius: var(--radius-md); max-height: 420px;" src=""></video>
         </div>
     </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <!-- JavaScript Layers -->
     <script src="assets/js/api.js"></script>
