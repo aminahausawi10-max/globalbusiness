@@ -329,7 +329,7 @@ const API = {
         {
             id: 1,
             name: 'Kano Premium Agro & Yam Hub',
-            category_id: 7,
+            category_id: 14,
             category_name: 'Agriculture & Produce',
             description: 'Wholesale and retail supplier of premium Benue and Niger yams, grains, sesame, and dry agricultural commodities.',
             country: 'Nigeria',
@@ -379,7 +379,7 @@ const API = {
         {
             id: 3,
             name: 'Abuja SmartTech & Phone Repairs',
-            category_id: 4,
+            category_id: 7,
             category_name: 'Mobile Phones',
             description: 'Certified micro-soldering, screen replacement, genuine spare parts for Apple, Samsung, and Google Pixel.',
             country: 'Nigeria',
@@ -404,7 +404,7 @@ const API = {
         {
             id: 4,
             name: 'Houston Custom Timber & Modern Furniture',
-            category_id: 6,
+            category_id: 5,
             category_name: 'Furniture & Decor',
             description: 'Handcrafted solid wood dining tables, executive office desks, and luxury living room furniture with nationwide delivery.',
             country: 'United States',
@@ -429,8 +429,8 @@ const API = {
         {
             id: 5,
             name: 'Nassarawa Eco Car Wash & Auto Detailers',
-            category_id: 5,
-            category_name: 'Automotive & Repair',
+            category_id: 10,
+            category_name: 'Car Wash',
             description: 'High-pressure steam washing, interior ceramic coating, engine degreasing, and mobile door-to-door car wash services.',
             country: 'Nigeria',
             state_province: 'Kano',

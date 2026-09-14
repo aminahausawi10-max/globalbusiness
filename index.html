@@ -2,721 +2,823 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Business Marketplace & Professional Buying Assistance</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Minimalist Stylesheet -->
+    <!-- Modern Stylesheet -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-    <!-- TOP HEADER -->
-    <header class="top-header">
-        <div class="app-container header-content">
-            <a href="#" class="brand-logo" onclick="switchTab('home'); return false;">
-                <div class="brand-icon">
+    <!-- ==========================================================================
+       TOP NAVBAR
+       ========================================================================== -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand" onclick="switchPage('home'); return false;">
+                <div class="brand-logo-circle">
                     <i class="fa-solid fa-earth-americas"></i>
                 </div>
-                <span>GLOBAL BIZ</span>
+                <div class="brand-text">
+                    <span class="brand-main">GLOBAL BIZ</span>
+                    <span class="brand-sub">Marketplace & Directory</span>
+                </div>
             </a>
 
-            <div class="header-actions">
-                <select id="currencySelector" class="currency-select" title="Change Currency">
-                    <option value="USD">USD ($)</option>
-                    <option value="NGN">NGN (₦)</option>
-                    <option value="SAR">SAR (﷼)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="GBP">GBP (£)</option>
-                </select>
+            <!-- Desktop Navigation Links -->
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active" data-page="home" onclick="switchPage('home'); return false;">Home</a>
+                <a href="#" class="nav-link" data-page="marketplace" onclick="switchPage('marketplace'); return false;">Marketplace</a>
+                <a href="#" class="nav-link" data-page="directory" onclick="switchPage('directory'); return false;">Business Directory</a>
+                <a href="#" class="nav-link" data-page="assistance" onclick="switchPage('assistance'); return false;">Buying Assistance</a>
+                <a href="#" class="nav-link" data-page="admin" onclick="switchPage('admin'); return false;">
+                    <i class="fa-solid fa-shield-halved"></i> Admin Portal
+                </a>
+            </nav>
 
-                <button class="btn-assistance" style="padding: 7px 14px; font-size: 0.82rem;" onclick="openBuyingAssistanceModal()">
-                    <i class="fa-solid fa-handshake-angle"></i> Need Help?
+            <!-- Right Header Actions -->
+            <div class="nav-actions">
+                <div class="currency-wrapper">
+                    <i class="fa-solid fa-coins"></i>
+                    <select id="currencySelector" class="currency-select" title="Change Currency">
+                        <option value="USD">USD ($)</option>
+                        <option value="NGN">NGN (₦)</option>
+                        <option value="SAR">SAR (﷼)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="switchPage('post');">
+                    <i class="fa-solid fa-plus"></i> Post Free Ad / Register
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT VIEW PANELS -->
-    <main class="app-container" style="margin-top: 14px;">
+    <!-- ==========================================================================
+       MAIN PAGE VIEWS
+       ========================================================================== -->
+    <main>
 
-        <!-- 1. HOME VIEW PANEL -->
-        <div id="view-home" class="view-panel active">
+        <!-- ======================================================================
+           PAGE 1: HOME
+           ====================================================================== -->
+        <div id="page-home" class="page-view active">
             
-            <!-- Hero & Smart Search -->
+            <!-- Hero Banner -->
             <section class="hero-section">
-                <h1 class="hero-title">Find Products, Services & Sellers Worldwide</h1>
-                <p class="hero-subtitle">Discover verified businesses, local produce, and professional buying assistance across global cities.</p>
-
-                <form id="mainSearchForm" class="search-box-wrapper">
-                    <div class="search-input-group">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="mainSearchInput" placeholder="Try: 'Yam in Kano', 'Men clothes in Riyadh', 'Car wash'...">
+                <div class="container hero-content">
+                    <div class="hero-badge">
+                        <i class="fa-solid fa-globe"></i> Global Business Directory & Sourcing
                     </div>
-
-                    <div class="search-divider"></div>
-
-                    <div class="location-dropdown-group">
-                        <i class="fa-solid fa-location-dot" style="color: var(--text-muted); font-size: 0.85rem;"></i>
-                        <select id="locationSelect">
-                            <option value="">All Locations</option>
-                            <option value="Nigeria">Nigeria</option>
-                            <option value="Saudi Arabia">Saudi Arabia</option>
-                            <option value="United States">United States</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="United Arab Emirates">UAE</option>
-                        </select>
-                    </div>
-
-                    <button type="button" id="btnNearMe" class="btn-near-me" title="Use current location">
-                        <i class="fa-solid fa-location-crosshairs"></i> Near Me
-                    </button>
-
-                    <button type="submit" class="btn-search">
-                        Search
-                    </button>
-                </form>
-
-                <!-- Natural Search Examples / Quick Tags -->
-                <div class="quick-tags">
-                    <span class="quick-tags-label">Popular:</span>
-                    <a href="#" class="tag-chip" data-query="Yam in Kano">🍠 Yam in Kano</a>
-                    <a href="#" class="tag-chip" data-query="Men clothes in Riyadh">👔 Men's Clothes in Riyadh</a>
-                    <a href="#" class="tag-chip" data-query="Phone repair in Kano">📱 Phone Repair Kano</a>
-                    <a href="#" class="tag-chip" data-query="Furniture in Abuja">🛋️ Furniture in Abuja</a>
-                    <a href="#" class="tag-chip" data-query="Car wash near me">🚗 Car Wash Near Me</a>
-                </div>
-            </section>
-
-            <!-- Professional Buying Assistance Banner -->
-            <section class="assistance-banner">
-                <div class="assistance-banner-text">
-                    <h3>
-                        <i class="fa-solid fa-shield-halved" style="color: #60a5fa;"></i>
-                        Professional Buying Assistance
-                    </h3>
-                    <p>
-                        Can't find what you need or buying from another city/country? Let our certified sourcing agents inspect, negotiate, and coordinate your purchase.
+                    <h1 class="hero-title">
+                        Buy, Sell & Sourcing Across <span class="text-highlight">Global Markets</span>
+                    </h1>
+                    <p class="hero-description">
+                        Connect directly with verified local and international suppliers, explore multimedia product ads (Photos, Videos, Voice Pitches), or hire our certified agents for professional buying assistance.
                     </p>
-                </div>
-                <button class="btn-assistance" onclick="openBuyingAssistanceModal()">
-                    <i class="fa-solid fa-paper-plane"></i> Request Assistance
-                </button>
-            </section>
 
-            <!-- Horizontal Categories Bar -->
-            <section>
-                <div class="section-header">
-                    <h2 class="section-title">Explore Categories</h2>
-                    <a href="#" class="section-link" onclick="switchTab('explore'); return false;">View All (30+)</a>
-                </div>
-                <div id="categoriesContainer" class="categories-scroll">
-                    <!-- Loaded dynamically via JS -->
-                </div>
-            </section>
-
-            <!-- Marketplace Products & Services Grid -->
-            <section style="margin-top: 24px;">
-                <div class="section-header">
-                    <h2 class="section-title">Marketplace Listings & Multimedia Ads</h2>
-                    <span style="font-size: 0.82rem; color: var(--text-muted);">Photos • Videos • Voice Pitches</span>
-                </div>
-                <div id="productsGridContainer" class="products-grid">
-                    <!-- Loaded dynamically via JS -->
-                </div>
-            </section>
-
-            <!-- Featured Businesses Directory -->
-            <section style="margin-top: 36px; margin-bottom: 30px;">
-                <div class="section-header">
-                    <h2 class="section-title">Verified Business Directory</h2>
-                    <a href="#" class="section-link" onclick="switchTab('explore'); return false;">Explore Directory</a>
-                </div>
-                <div id="businessesGridContainer" class="businesses-grid">
-                    <!-- Loaded dynamically via JS -->
-                </div>
-            </section>
-
-        </div>
-
-        <!-- 2. EXPLORE VIEW PANEL -->
-        <div id="view-explore" class="view-panel">
-            <div class="section-header">
-                <h2 class="section-title">All Business Categories & Directory</h2>
-            </div>
-            <div id="exploreCategoriesGrid" class="categories-scroll" style="flex-wrap: wrap; margin-bottom: 24px;">
-                <!-- Loaded dynamically via JS -->
-            </div>
-            <div id="exploreBusinessesGrid" class="businesses-grid">
-                <!-- Businesses loaded dynamically -->
-            </div>
-        </div>
-
-        <!-- 3. POST & REGISTER VIEW PANEL -->
-        <div id="view-post" class="view-panel">
-            <div style="max-width: 720px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-md);">
-                
-                <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">
-                    <i class="fa-solid fa-store" style="color: var(--accent);"></i> Register Your Business & Advertise
-                </h2>
-                <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 20px;">
-                    Create your professional business profile with photos, videos, and voice pitch advertising.
-                </p>
-
-                <!-- Business Registration Form -->
-                <form id="businessRegisterForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Business / Company Name *</label>
-                            <input type="text" id="regBizName" class="form-input" placeholder="e.g. Kano Yam Hub" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Business Category *</label>
-                            <select id="bizCategorySelect" class="form-select" required>
-                                <!-- Injected dynamically -->
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Country *</label>
-                            <input type="text" id="regBizCountry" class="form-input" placeholder="e.g. Nigeria / Saudi Arabia / USA" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">City *</label>
-                            <input type="text" id="regBizCity" class="form-input" placeholder="e.g. Kano, Riyadh, Houston" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Area / District</label>
-                            <input type="text" id="regBizArea" class="form-input" placeholder="e.g. Dawanau, Al Malaz, Wuse 2">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Full Street Address</label>
-                            <input type="text" id="regBizAddress" class="form-input" placeholder="e.g. Line 4, Commercial Road">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Phone Number *</label>
-                            <input type="tel" id="regBizPhone" class="form-input" placeholder="+234 800 000 0000" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">WhatsApp Number</label>
-                            <input type="tel" id="regBizWhatsapp" class="form-input" placeholder="+234 800 000 0000">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" id="regBizEmail" class="form-input" placeholder="contact@yourbusiness.com">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Opening Hours</label>
-                            <input type="text" id="regBizHours" class="form-input" placeholder="8:00 AM - 6:00 PM">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Business Description</label>
-                        <textarea id="regBizDesc" class="form-textarea" rows="3" placeholder="Describe your products, specialty, wholesale capacity, etc."></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Delivery Availability</label>
-                            <select id="regBizDelivery" class="form-select">
-                                <option value="1">Yes, We Deliver</option>
-                                <option value="0">Store Pickup Only</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Business Logo URL</label>
-                            <input type="url" id="regBizLogo" class="form-input" placeholder="https://example.com/logo.jpg">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary-block" style="margin-top: 10px;">
-                        Register Business & Create Profile
-                    </button>
-                </form>
-
-                <hr style="margin: 32px 0 24px 0; border: none; border-top: 1px solid var(--border-color);">
-
-                <!-- Add New Product / Service Form -->
-                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 6px;">
-                    <i class="fa-solid fa-bullhorn" style="color: var(--accent);"></i> Publish Product or Service Listing (Ad)
-                </h3>
-                <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 16px;">
-                    Add rich multimedia: Photos, Video showcase, and Audio Voice Pitches.
-                </p>
-
-                <form id="productPublishForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Product / Service Title *</label>
-                            <input type="text" id="postProdTitle" class="form-input" placeholder="e.g. Grade-A Fresh Benue Yams" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Listing Type</label>
-                            <select id="postIsService" class="form-select">
-                                <option value="0">Physical Product</option>
-                                <option value="1">Professional Service</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Price (USD Base) *</label>
-                            <input type="number" step="0.01" id="postProdPrice" class="form-input" placeholder="e.g. 25.00" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Category *</label>
-                            <select id="prodCategorySelect" class="form-select" required></select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea id="postProdDesc" class="form-textarea" rows="2" placeholder="Provide product specifications, sizes, warranty, etc."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label"><i class="fa-solid fa-image"></i> Photo Image URL</label>
-                        <input type="url" id="postPhotoUrl" class="form-input" placeholder="https://example.com/photo.jpg">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label"><i class="fa-solid fa-video"></i> Video URL (MP4 / WebM)</label>
-                            <input type="url" id="postVideoUrl" class="form-input" placeholder="https://example.com/video.mp4">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label"><i class="fa-solid fa-microphone"></i> Audio / Voice Pitch URL (MP3)</label>
-                            <input type="url" id="postAudioUrl" class="form-input" placeholder="https://example.com/voice.mp3">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Delivery / Logistics Information</label>
-                        <input type="text" id="postDeliveryInfo" class="form-input" placeholder="e.g. Same-day delivery available in Kano">
-                    </div>
-
-                    <button type="submit" class="btn-primary-block">
-                        Publish Listing with Multimedia
-                    </button>
-                </form>
-
-            </div>
-        </div>
-
-        <!-- 4. DEDICATED ADMIN & STAFF PORTAL -->
-        <div id="view-admin" class="view-panel">
-            <div class="section-header">
-                <div>
-                    <h2 class="section-title">Administration & Buying Operations Portal</h2>
-                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">
-                        Manage registered businesses, listing ads, sourcing staff desk, categories, and customer ratings.
-                    </p>
-                </div>
-                <span style="font-size: 0.82rem; color: var(--text-secondary);"><i class="fa-solid fa-circle" style="color: var(--success); font-size: 0.6rem;"></i> Connected</span>
-            </div>
-
-            <!-- Admin Sub-Navigation Tabs -->
-            <div class="admin-subnav">
-                <button class="admin-nav-tab active" data-admin-tab="overview">
-                    <i class="fa-solid fa-chart-pie"></i> Overview
-                </button>
-                <button class="admin-nav-tab" data-admin-tab="businesses">
-                    <i class="fa-solid fa-building"></i> Businesses
-                </button>
-                <button class="admin-nav-tab" data-admin-tab="listings">
-                    <i class="fa-solid fa-box-open"></i> Listings & Ads
-                </button>
-                <button class="admin-nav-tab" data-admin-tab="buying_desk">
-                    <i class="fa-solid fa-handshake-angle"></i> Buying Sourcing Desk
-                </button>
-                <button class="admin-nav-tab" data-admin-tab="categories">
-                    <i class="fa-solid fa-tags"></i> Category Manager
-                </button>
-                <button class="admin-nav-tab" data-admin-tab="reviews">
-                    <i class="fa-solid fa-star"></i> Reviews Moderation
-                </button>
-            </div>
-
-            <!-- ADMIN TAB 1: OVERVIEW -->
-            <div id="admin-tab-overview" class="admin-tab-pane active">
-                <div id="adminStatsGrid" class="stats-grid">
-                    <!-- Injected dynamically -->
-                </div>
-
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; margin-bottom: 20px;">
-                    <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 12px;">
-                        <i class="fa-solid fa-bolt" style="color: var(--warning);"></i> Live Platform Quick Actions
-                    </h3>
-                    <div style="display:flex; flex-wrap:wrap; gap:10px;">
-                        <button class="btn-sm-action btn-sm-verify" onclick="openBuyingAssistanceModal()">
-                            <i class="fa-solid fa-plus"></i> Create Sourcing Ticket
-                        </button>
-                        <button class="btn-sm-action" onclick="switchAdminSubTab('businesses')">
-                            <i class="fa-solid fa-user-check"></i> Verify New Businesses
-                        </button>
-                        <button class="admin-nav-tab" style="padding:5px 10px; font-size:0.75rem;" onclick="switchAdminSubTab('categories')">
-                            <i class="fa-solid fa-folder-plus"></i> Add Category
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADMIN TAB 2: BUSINESSES -->
-            <div id="admin-tab-businesses" class="admin-tab-pane">
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h3 style="font-size: 1rem; font-weight: 700;">Manage Registered Businesses</h3>
-                        <span id="bizCountBadge" class="status-badge status-new">Loading...</span>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Business</th>
-                                    <th>Category</th>
-                                    <th>Location</th>
-                                    <th>Phone / WhatsApp</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminBusinessesTableBody">
-                                <!-- Injected dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADMIN TAB 3: LISTINGS & ADS -->
-            <div id="admin-tab-listings" class="admin-tab-pane">
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h3 style="font-size: 1rem; font-weight: 700;">Marketplace Listings & Multimedia Ads</h3>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Business</th>
-                                    <th>Price</th>
-                                    <th>Media Assets</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminListingsTableBody">
-                                <!-- Injected dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADMIN TAB 4: BUYING SOURCING DESK -->
-            <div id="admin-tab-buying_desk" class="admin-tab-pane">
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h3 style="font-size: 1rem; font-weight: 700;">Professional Buying Assistance Desk</h3>
-                        <button class="btn-assistance" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openBuyingAssistanceModal()">
-                            + New Sourcing Ticket
-                        </button>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Ticket Code</th>
-                                    <th>Client</th>
-                                    <th>Requested Item</th>
-                                    <th>Budget & Fee</th>
-                                    <th>Status Workflow</th>
-                                    <th>Assigned Agent & Notes</th>
-                                    <th>Update</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminBuyingRequestsTableBody">
-                                <!-- Injected dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADMIN TAB 5: CATEGORY MANAGER -->
-            <div id="admin-tab-categories" class="admin-tab-pane">
-                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:16px;">
-                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px;">Add New Category</h4>
-                        <form id="addCategoryForm">
-                            <div class="form-group">
-                                <label class="form-label">Category Name *</label>
-                                <input type="text" id="newCatName" class="form-input" placeholder="e.g. Solar & Energy" required>
+                    <!-- Main Search Bar -->
+                    <div class="search-card">
+                        <form id="mainSearchForm" class="search-form">
+                            <div class="search-field search-query">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="mainSearchInput" placeholder="What are you looking for? (e.g. Fresh Honey, Tailored Suits, Car Wash)">
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Slug *</label>
-                                <input type="text" id="newCatSlug" class="form-input" placeholder="solar-energy" required>
+
+                            <div class="search-field search-select-field">
+                                <i class="fa-solid fa-layer-group"></i>
+                                <select id="heroCategorySelect">
+                                    <option value="">All Categories</option>
+                                    <!-- Injected dynamically -->
+                                </select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">FontAwesome Icon Class</label>
-                                <input type="text" id="newCatIcon" class="form-input" placeholder="fa-solar-panel" value="fa-folder">
+
+                            <div class="search-field search-select-field">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <select id="locationSelect">
+                                    <option value="">All Countries</option>
+                                    <option value="Nigeria">Nigeria</option>
+                                    <option value="Saudi Arabia">Saudi Arabia</option>
+                                    <option value="United States">United States</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="United Arab Emirates">UAE</option>
+                                </select>
                             </div>
-                            <button type="submit" class="btn-primary-block" style="padding:9px; font-size:0.85rem;">
-                                Save Category
+
+                            <button type="button" id="btnNearMe" class="btn btn-outline" title="Search near my GPS location">
+                                <i class="fa-solid fa-crosshairs"></i> Near Me
+                            </button>
+
+                            <button type="submit" class="btn btn-primary search-submit-btn">
+                                <i class="fa-solid fa-magnifying-glass"></i> Search
                             </button>
                         </form>
-                    </div>
 
-                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px;">Existing Categories</h4>
-                        <div id="adminCategoriesList" style="display:flex; flex-wrap:wrap; gap:8px;">
-                            <!-- Injected dynamically -->
+                        <!-- Quick Natural Query Examples -->
+                        <div class="quick-tags">
+                            <span class="quick-tags-label">Popular Searches:</span>
+                            <button class="tag-pill" onclick="searchFor('Benue Fresh Yams')">Benue Fresh Yams</button>
+                            <button class="tag-pill" onclick="searchFor('Luxury Arabic Menswear in Riyadh')">Arabic Menswear in Riyadh</button>
+                            <button class="tag-pill" onclick="searchFor('Smartphone Screen Repair in Kano')">Phone Repair in Kano</button>
+                            <button class="tag-pill" onclick="searchFor('Custom Walnut Dining Table')">Walnut Furniture</button>
+                            <button class="tag-pill" onclick="searchFor('Ceramic Car Wash and Detail')">Car Wash Near Me</button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- ADMIN TAB 6: REVIEWS -->
-            <div id="admin-tab-reviews" class="admin-tab-pane">
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
-                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">Customer Ratings & Reviews</h3>
-                    <div id="adminReviewsList">
-                        <p style="color:var(--text-secondary); font-size:0.85rem;">No flagged reviews.</p>
+            <!-- Professional Buying Assistance Concierge Banner -->
+            <section class="assistance-promo-section">
+                <div class="container">
+                    <div class="assistance-promo-card">
+                        <div class="assistance-promo-icon">
+                            <i class="fa-solid fa-handshake-angle"></i>
+                        </div>
+                        <div class="assistance-promo-text">
+                            <h3>Need Professional Buying Assistance?</h3>
+                            <p>Can't find a reliable seller, buying from another city or country, or need someone to negotiate prices? Our certified sourcing desk inspects, negotiates, and coordinates your entire purchase for an agreed fee.</p>
+                        </div>
+                        <button class="btn btn-white" onclick="switchPage('assistance')">
+                            Request Buying Assistance <i class="fa-solid fa-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
+            </section>
 
+            <!-- 30+ Categories Section -->
+            <section class="section">
+                <div class="container">
+                    <div class="section-header">
+                        <div>
+                            <h2 class="section-title">Explore Business Categories</h2>
+                            <p class="section-subtitle">Browse products, verified companies, and services across 30+ international industries.</p>
+                        </div>
+                        <button class="btn btn-outline" onclick="switchPage('directory')">View All Directory</button>
+                    </div>
+
+                    <div id="homeCategoriesGrid" class="categories-grid">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Marketplace Listings (Photo / Video / Voice Pitches) -->
+            <section class="section section-light">
+                <div class="container">
+                    <div class="section-header">
+                        <div>
+                            <h2 class="section-title">Featured Products & Multimedia Ads</h2>
+                            <p class="section-subtitle">Real photos, video demonstrations, and voice notes directly from verified suppliers.</p>
+                        </div>
+                        <button class="btn btn-outline" onclick="switchPage('marketplace')">View All Marketplace</button>
+                    </div>
+
+                    <div id="homeProductsGrid" class="products-grid">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Verified Businesses Directory -->
+            <section class="section">
+                <div class="container">
+                    <div class="section-header">
+                        <div>
+                            <h2 class="section-title">Verified Business Directory</h2>
+                            <p class="section-subtitle">Direct contact with vetted manufacturers, distributors, and licensed local professionals.</p>
+                        </div>
+                        <button class="btn btn-outline" onclick="switchPage('directory')">Explore All Businesses</button>
+                    </div>
+
+                    <div id="homeBusinessesGrid" class="businesses-grid">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ======================================================================
+           PAGE 2: MARKETPLACE
+           ====================================================================== -->
+        <div id="page-marketplace" class="page-view">
+            <div class="container section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Online Marketplace & Listings</h2>
+                        <p class="section-subtitle">Browse physical products and professional services with direct contact details.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="switchPage('post')">
+                        <i class="fa-solid fa-plus"></i> Publish An Ad
+                    </button>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="filter-bar">
+                    <input type="text" id="marketSearchFilter" class="form-input" style="max-width:320px;" placeholder="Filter marketplace..." oninput="filterMarketplace()">
+                    <select id="marketCategoryFilter" class="form-select" style="max-width:240px;" onchange="filterMarketplace()">
+                        <option value="">All Categories</option>
+                    </select>
+                    <select id="marketTypeFilter" class="form-select" style="max-width:180px;" onchange="filterMarketplace()">
+                        <option value="">All Types</option>
+                        <option value="0">Physical Products</option>
+                        <option value="1">Professional Services</option>
+                    </select>
+                </div>
+
+                <div id="marketplaceProductsGrid" class="products-grid" style="margin-top:24px;">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================================
+           PAGE 3: BUSINESS DIRECTORY
+           ====================================================================== -->
+        <div id="page-directory" class="page-view">
+            <div class="container section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Global Business Directory</h2>
+                        <p class="section-subtitle">Search registered companies and service providers by country, city, and category.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="switchPage('post')">
+                        <i class="fa-solid fa-store"></i> Register Your Business
+                    </button>
+                </div>
+
+                <div id="directoryBusinessesGrid" class="businesses-grid">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================================
+           PAGE 4: PROFESSIONAL BUYING ASSISTANCE
+           ====================================================================== -->
+        <div id="page-assistance" class="page-view">
+            <div class="container section">
+                <div class="assistance-hero-box">
+                    <span class="hero-badge"><i class="fa-solid fa-handshake-angle"></i> Professional Sourcing Concierge</span>
+                    <h2 style="font-size:2rem; font-weight:800; margin:12px 0 8px 0;">Let Our Certified Sourcing Agents Handle Your Purchase</h2>
+                    <p style="max-width:650px; margin:0 auto; color:var(--text-secondary); font-size:0.95rem;">
+                        Whether buying commodities in bulk or ordering luxury items from another country, our team visits suppliers, negotiates prices, inspects quality, and coordinates door-to-door delivery.
+                    </p>
+                </div>
+
+                <!-- Service Packages Grid -->
+                <h3 style="text-align:center; font-size:1.3rem; font-weight:800; margin:36px 0 20px 0;">Select Your Assistance Package</h3>
+                <div class="packages-grid">
+                    <div class="package-card" data-package="Basic Search" onclick="selectAssistancePackage('Basic Search', 15.00, this)">
+                        <div class="package-name">Basic Search</div>
+                        <div class="package-price">$15.00</div>
+                        <div class="package-desc">We identify verified suppliers and matching products for your requirements.</div>
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> Supplier identification</li>
+                            <li><i class="fa-solid fa-check"></i> Product availability check</li>
+                            <li><i class="fa-solid fa-check"></i> Direct contact information</li>
+                        </ul>
+                    </div>
+
+                    <div class="package-card" data-package="Consultation" onclick="selectAssistancePackage('Consultation', 25.00, this)">
+                        <div class="package-name">Consultation</div>
+                        <div class="package-price">$25.00</div>
+                        <div class="package-desc">Expert advice on what to buy, market specifications, and pricing standards.</div>
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> Product suitability advice</li>
+                            <li><i class="fa-solid fa-check"></i> Market price benchmarks</li>
+                            <li><i class="fa-solid fa-check"></i> Supplier reliability report</li>
+                        </ul>
+                    </div>
+
+                    <div class="package-card" data-package="Price Negotiation" onclick="selectAssistancePackage('Price Negotiation', 40.00, this)">
+                        <div class="package-name">Price Negotiation</div>
+                        <div class="package-price">$40.00</div>
+                        <div class="package-desc">Our experienced negotiators contact sellers to secure the best wholesale rate.</div>
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> Direct seller negotiation</li>
+                            <li><i class="fa-solid fa-check"></i> Volume discount securing</li>
+                            <li><i class="fa-solid fa-check"></i> Written price quotation</li>
+                        </ul>
+                    </div>
+
+                    <div class="package-card selected" data-package="Full Buying Assistance" onclick="selectAssistancePackage('Full Buying Assistance', 60.00, this)">
+                        <div class="package-badge">Most Popular</div>
+                        <div class="package-name">Full Assistance ⭐</div>
+                        <div class="package-price">$60.00</div>
+                        <div class="package-desc">Search, inspection, negotiation, and complete delivery coordination.</div>
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> Search & comparison</li>
+                            <li><i class="fa-solid fa-check"></i> Seller contact & negotiation</li>
+                            <li><i class="fa-solid fa-check"></i> Quality verification check</li>
+                            <li><i class="fa-solid fa-check"></i> Logistics & delivery coordination</li>
+                        </ul>
+                    </div>
+
+                    <div class="package-card" data-package="Business Procurement" onclick="selectAssistancePackage('Business Procurement', 150.00, this)">
+                        <div class="package-name">Procurement</div>
+                        <div class="package-price">$150.00</div>
+                        <div class="package-desc">Bulk commodity, container haulage, and corporate commercial sourcing.</div>
+                        <ul class="package-features">
+                            <li><i class="fa-solid fa-check"></i> Bulk / container sourcing</li>
+                            <li><i class="fa-solid fa-check"></i> Warehouse / farm gate inspection</li>
+                            <li><i class="fa-solid fa-check"></i> Contract negotiation</li>
+                            <li><i class="fa-solid fa-check"></i> Interstate / Export logistics</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Request Form Card -->
+                <div class="card form-container-card" style="margin-top:36px;">
+                    <h3 style="font-size:1.2rem; font-weight:800; color:var(--primary); margin-bottom:6px;">
+                        <i class="fa-solid fa-paper-plane" style="color:var(--accent);"></i> Submit Sourcing Request
+                    </h3>
+                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:20px;">
+                        Fill in what you need and our sourcing desk will assign a professional agent within 1 hour.
+                    </p>
+
+                    <form id="buyingAssistanceMainForm">
+                        <input type="hidden" id="mainSelectedPackage" value="Full Buying Assistance">
+                        <input type="hidden" id="mainSelectedFee" value="60.00">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">What do you want to buy? *</label>
+                                <input type="text" id="mainPbaItem" class="form-input" placeholder="e.g. 200 bags of Benue Yam, Custom King Size Bed" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select id="mainPbaCategory" class="form-select"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Specifications & Quality Requirements</label>
+                            <textarea id="mainPbaSpecs" class="form-textarea" rows="2" placeholder="Quality grade, size, material preferences, brand requirements..."></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Quantity</label>
+                                <input type="text" id="mainPbaQuantity" class="form-input" placeholder="e.g. 50 Units / 1 Container" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Target Delivery Date</label>
+                                <input type="date" id="mainPbaDate" class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Destination Country *</label>
+                                <input type="text" id="mainPbaCountry" class="form-input" placeholder="e.g. Nigeria / Saudi Arabia / USA" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Destination City *</label>
+                                <input type="text" id="mainPbaCity" class="form-input" placeholder="e.g. Kano, Abuja, Riyadh, Houston" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Min Budget (USD)</label>
+                                <input type="number" id="mainPbaBudgetMin" class="form-input" placeholder="e.g. 300">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Max Budget (USD)</label>
+                                <input type="number" id="mainPbaBudgetMax" class="form-input" placeholder="e.g. 800">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Your Full Name *</label>
+                                <input type="text" id="mainPbaName" class="form-input" placeholder="e.g. Ahmed Yusuf" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">WhatsApp / Phone Number *</label>
+                                <input type="tel" id="mainPbaPhone" class="form-input" placeholder="+234 800 000 0000" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" id="mainPbaEmail" class="form-input" placeholder="your-email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Additional Instructions / Links to Preferred Sellers</label>
+                            <textarea id="mainPbaNotes" class="form-textarea" rows="2" placeholder="Any specific market or vendor details..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:1rem;">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Sourcing Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================================
+           PAGE 5: POST FREE AD & REGISTER BUSINESS
+           ====================================================================== -->
+        <div id="page-post" class="page-view">
+            <div class="container section">
+                <div class="card form-container-card">
+                    
+                    <!-- Section A: Business Registration -->
+                    <h2 style="font-size:1.4rem; font-weight:800; color:var(--primary); margin-bottom:6px;">
+                        <i class="fa-solid fa-store" style="color:var(--accent);"></i> Register Your Business Profile
+                    </h2>
+                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:20px;">
+                        List your company in the Global Business Directory to gain customers and verified supplier status.
+                    </p>
+
+                    <form id="businessRegisterForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Business / Company Name *</label>
+                                <input type="text" id="regBizName" class="form-input" placeholder="e.g. Kano Yam Hub" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category *</label>
+                                <select id="bizCategorySelect" class="form-select" required></select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Country *</label>
+                                <input type="text" id="regBizCountry" class="form-input" placeholder="e.g. Nigeria / Saudi Arabia / USA" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">City *</label>
+                                <input type="text" id="regBizCity" class="form-input" placeholder="e.g. Kano, Riyadh, Abuja" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Area / District</label>
+                                <input type="text" id="regBizArea" class="form-input" placeholder="e.g. Dawanau Market, Al Malaz, Wuse 2">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Street Address</label>
+                                <input type="text" id="regBizAddress" class="form-input" placeholder="e.g. Line 4, Commercial Road">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="tel" id="regBizPhone" class="form-input" placeholder="+234 800 000 0000" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">WhatsApp Number</label>
+                                <input type="tel" id="regBizWhatsapp" class="form-input" placeholder="+234 800 000 0000">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" id="regBizEmail" class="form-input" placeholder="info@business.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Operating Hours</label>
+                                <input type="text" id="regBizHours" class="form-input" placeholder="8:00 AM - 6:00 PM">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Business Description</label>
+                            <textarea id="regBizDesc" class="form-textarea" rows="3" placeholder="Describe your specialty, stock capacity, wholesale pricing, delivery, etc."></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Delivery Availability</label>
+                                <select id="regBizDelivery" class="form-select">
+                                    <option value="1">Yes, We Deliver</option>
+                                    <option value="0">Store Pickup Only</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Logo Image URL</label>
+                                <input type="url" id="regBizLogo" class="form-input" placeholder="https://example.com/logo.jpg">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
+                            Register Business Profile
+                        </button>
+                    </form>
+
+                    <hr class="divider">
+
+                    <!-- Section B: Publish Product / Service Listing (Ad) -->
+                    <h2 style="font-size:1.4rem; font-weight:800; color:var(--primary); margin-bottom:6px;">
+                        <i class="fa-solid fa-bullhorn" style="color:var(--accent);"></i> Publish Product or Service Listing (Ad)
+                    </h2>
+                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:20px;">
+                        Showcase your items with photos, video showcases, and voice pitches.
+                    </p>
+
+                    <form id="productPublishForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Product / Service Title *</label>
+                                <input type="text" id="postProdTitle" class="form-input" placeholder="e.g. Grade-A Fresh Benue Yams" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Listing Type</label>
+                                <select id="postIsService" class="form-select">
+                                    <option value="0">Physical Product</option>
+                                    <option value="1">Professional Service</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Price (USD Base) *</label>
+                                <input type="number" step="0.01" id="postProdPrice" class="form-input" placeholder="e.g. 25.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category *</label>
+                                <select id="prodCategorySelect" class="form-select" required></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea id="postProdDesc" class="form-textarea" rows="2" placeholder="Specifications, warranty, sizing, materials..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-image"></i> Photo URL</label>
+                            <input type="url" id="postPhotoUrl" class="form-input" placeholder="https://example.com/photo.jpg">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fa-solid fa-video"></i> Video URL (MP4)</label>
+                                <input type="url" id="postVideoUrl" class="form-input" placeholder="https://example.com/video.mp4">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label"><i class="fa-solid fa-microphone"></i> Audio Voice Pitch URL (MP3)</label>
+                                <input type="url" id="postAudioUrl" class="form-input" placeholder="https://example.com/audio.mp3">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Delivery / Logistics Information</label>
+                            <input type="text" id="postDeliveryInfo" class="form-input" placeholder="e.g. Nationwide dispatch available">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
+                            Publish Listing with Multimedia
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================================
+           PAGE 6: ADMIN & SOURCING DESK PORTAL
+           ====================================================================== -->
+        <div id="page-admin" class="page-view">
+            <div class="container section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Administration & Buying Operations Portal</h2>
+                        <p class="section-subtitle">Manage businesses, listings, sourcing tickets, categories, and reviews.</p>
+                    </div>
+                    <span class="badge badge-success"><i class="fa-solid fa-circle"></i> Neon DB Connected</span>
+                </div>
+
+                <!-- Admin Sub-Navigation Tabs -->
+                <div class="admin-tab-bar">
+                    <button class="admin-tab-btn active" data-tab="overview" onclick="switchAdminSubTab('overview')">
+                        <i class="fa-solid fa-chart-pie"></i> Overview
+                    </button>
+                    <button class="admin-tab-btn" data-tab="businesses" onclick="switchAdminSubTab('businesses')">
+                        <i class="fa-solid fa-building"></i> Businesses
+                    </button>
+                    <button class="admin-tab-btn" data-tab="listings" onclick="switchAdminSubTab('listings')">
+                        <i class="fa-solid fa-box-open"></i> Listings & Ads
+                    </button>
+                    <button class="admin-tab-btn" data-tab="buying_desk" onclick="switchAdminSubTab('buying_desk')">
+                        <i class="fa-solid fa-handshake-angle"></i> Buying Sourcing Desk
+                    </button>
+                    <button class="admin-tab-btn" data-tab="categories" onclick="switchAdminSubTab('categories')">
+                        <i class="fa-solid fa-tags"></i> Category Manager
+                    </button>
+                    <button class="admin-tab-btn" data-tab="reviews" onclick="switchAdminSubTab('reviews')">
+                        <i class="fa-solid fa-star"></i> Reviews Moderation
+                    </button>
+                </div>
+
+                <!-- Sub-Tab 1: Overview -->
+                <div id="admin-subtab-overview" class="admin-pane active">
+                    <div id="adminStatsGrid" class="stats-grid">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Sub-Tab 2: Businesses -->
+                <div id="admin-subtab-businesses" class="admin-pane">
+                    <div class="card">
+                        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:14px;">Registered Businesses</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Business</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Phone / WhatsApp</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminBusinessesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Tab 3: Listings -->
+                <div id="admin-subtab-listings" class="admin-pane">
+                    <div class="card">
+                        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:14px;">Marketplace Listings & Ads</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Business</th>
+                                        <th>Price</th>
+                                        <th>Media Assets</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminListingsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Tab 4: Buying Desk -->
+                <div id="admin-subtab-buying_desk" class="admin-pane">
+                    <div class="card">
+                        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:14px;">Buying Assistance Sourcing Desk</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket Code</th>
+                                        <th>Client</th>
+                                        <th>Requested Item</th>
+                                        <th>Budget & Fee</th>
+                                        <th>Status Workflow</th>
+                                        <th>Assigned Agent & Notes</th>
+                                        <th>Save</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminBuyingRequestsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Tab 5: Categories -->
+                <div id="admin-subtab-categories" class="admin-pane">
+                    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+                        <div class="card">
+                            <h4 style="font-size:1rem; font-weight:800; margin-bottom:12px;">Add New Category</h4>
+                            <form id="addCategoryForm">
+                                <div class="form-group">
+                                    <label class="form-label">Category Name *</label>
+                                    <input type="text" id="newCatName" class="form-input" placeholder="e.g. Solar & Energy" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Slug *</label>
+                                    <input type="text" id="newCatSlug" class="form-input" placeholder="solar-energy" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">FontAwesome Icon Class</label>
+                                    <input type="text" id="newCatIcon" class="form-input" placeholder="fa-solar-panel" value="fa-folder">
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width:100%;">
+                                    Save Category
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="card">
+                            <h4 style="font-size:1rem; font-weight:800; margin-bottom:12px;">All Active Categories</h4>
+                            <div id="adminCategoriesList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Tab 6: Reviews -->
+                <div id="admin-subtab-reviews" class="admin-pane">
+                    <div class="card">
+                        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:14px;">Customer Reviews & Ratings</h3>
+                        <div id="adminReviewsList">
+                            <p style="color:var(--text-secondary);">No reviews found.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </main>
 
     <!-- ==========================================================================
-       BOTTOM NAVIGATION BAR (MINIMALISTIC DOCKED BAR)
+       MODALS: BUSINESS PROFILE & VIDEO PLAYER
        ========================================================================== -->
-    <nav class="bottom-nav">
-        <button class="bottom-nav-item active" data-tab="home">
-            <i class="fa-solid fa-house"></i>
-            <span>Home</span>
-        </button>
-
-        <button class="bottom-nav-item" data-tab="explore">
-            <i class="fa-solid fa-compass"></i>
-            <span>Explore</span>
-        </button>
-
-        <button class="bottom-nav-item highlight-post" data-tab="post">
-            <div class="nav-highlight-circle">
-                <i class="fa-solid fa-plus"></i>
-            </div>
-            <span style="margin-top: 2px;">Post Ad</span>
-        </button>
-
-        <button class="bottom-nav-item" onclick="openBuyingAssistanceModal()">
-            <i class="fa-solid fa-handshake-angle" style="color: #6366f1;"></i>
-            <span>Assistance</span>
-        </button>
-
-        <button class="bottom-nav-item" data-tab="admin">
-            <i class="fa-solid fa-sliders"></i>
-            <span>Admin Portal</span>
-        </button>
-    </nav>
-
-    <!-- ==========================================================================
-       BUSINESS PROFILE DETAIL MODAL
-       ========================================================================== -->
+    <!-- Business Profile Modal -->
     <div id="businessProfileModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 680px; padding: 0; overflow: hidden;">
+        <div class="modal-dialog">
             <div class="biz-profile-hero">
                 <img id="bizModalBanner" src="" class="biz-profile-banner" alt="Banner">
-                <button class="btn-close-modal" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); color: #fff;" onclick="closeBusinessModal()">
+                <button class="modal-close-btn" onclick="closeBusinessModal()">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
                 <div class="biz-profile-avatar-row">
                     <img id="bizModalLogo" src="" class="biz-profile-avatar" alt="Logo">
                     <div>
                         <h3 id="bizModalTitle" class="biz-profile-title">Business Name</h3>
-                        <span id="bizModalCategory" style="color: #cbd5e1; font-size: 0.8rem;">Category</span>
+                        <span id="bizModalCategory" class="biz-profile-category">Category</span>
                     </div>
                 </div>
             </div>
 
-            <div style="padding: 0 20px 20px 20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+            <div class="biz-profile-body">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                     <div id="bizModalVerifiedBadge"></div>
                     <div style="display:flex; gap:8px;">
-                        <a id="bizModalWhatsappBtn" href="#" target="_blank" class="btn-sm-action" style="background:#22c55e; color:#fff; border:none; padding:7px 12px;">
+                        <a id="bizModalWhatsappBtn" href="#" target="_blank" class="btn btn-whatsapp">
                             <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp
                         </a>
-                        <a id="bizModalCallBtn" href="#" class="btn-sm-action" style="background:var(--primary); color:#fff; border:none; padding:7px 12px;">
+                        <a id="bizModalCallBtn" href="#" class="btn btn-primary">
                             <i class="fa-solid fa-phone"></i> Call
                         </a>
                     </div>
                 </div>
 
-                <p id="bizModalDescription" style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;"></p>
+                <p id="bizModalDescription" class="biz-profile-desc"></p>
 
-                <div style="background: var(--bg-alt); padding: 12px; border-radius: var(--radius-md); font-size: 0.82rem; margin-bottom: 16px;">
-                    <div><i class="fa-solid fa-location-dot" style="color:var(--accent);"></i> <strong id="bizModalAddress">Address</strong></div>
-                    <div style="margin-top:4px;"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> <span id="bizModalHours">8:00 AM - 6:00 PM</span></div>
+                <div class="biz-profile-info-box">
+                    <div><i class="fa-solid fa-location-dot" style="color:var(--accent);"></i> <strong id="bizModalAddress"></strong></div>
+                    <div style="margin-top:4px;"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> <span id="bizModalHours"></span></div>
                 </div>
 
-                <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 10px;">Products & Services Catalog</h4>
-                <div id="bizModalProductsContainer" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <!-- Injected dynamically -->
-                </div>
+                <h4 style="font-size:1rem; font-weight:800; margin:16px 0 10px 0;">Products & Services Catalog</h4>
+                <div id="bizModalProductsContainer" class="biz-catalog-grid"></div>
             </div>
         </div>
     </div>
 
-    <!-- ==========================================================================
-       BUYING ASSISTANCE REQUEST MODAL
-       ========================================================================== -->
-    <div id="buyingAssistanceModal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <div style="width:32px; height:32px; border-radius:50%; background:#eff6ff; display:flex; align-items:center; justify-content:center; color:var(--accent);">
-                        <i class="fa-solid fa-handshake-angle"></i>
-                    </div>
-                    <div>
-                        <h3 class="modal-title">Request Professional Buying Assistance</h3>
-                        <p style="font-size:0.75rem; color:var(--text-secondary);">Our agents inspect, negotiate, and verify purchases on your behalf.</p>
-                    </div>
-                </div>
-                <button class="btn-close-modal" onclick="closeBuyingAssistanceModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form id="buyingAssistanceForm">
-                <!-- Package Selection Grid -->
-                <label class="form-label">Select Assistance Package</label>
-                <div class="package-cards-grid">
-                    <div class="package-card-option" data-package="Basic Search">
-                        <div class="package-card-name">Basic Search</div>
-                        <div class="package-card-price">$15.00</div>
-                        <div class="package-card-desc">Find suitable products & verified sellers.</div>
-                    </div>
-                    <div class="package-card-option" data-package="Price Negotiation">
-                        <div class="package-card-name">Price Negotiation</div>
-                        <div class="package-card-price">$40.00</div>
-                        <div class="package-card-desc">Negotiate the best wholesale/retail price.</div>
-                    </div>
-                    <div class="package-card-option selected" data-package="Full Buying Assistance">
-                        <div class="package-card-name">Full Assistance ⭐</div>
-                        <div class="package-card-price">$60.00</div>
-                        <div class="package-card-desc">Search + inspection + negotiation + delivery coordination.</div>
-                    </div>
-                    <div class="package-card-option" data-package="Business Procurement">
-                        <div class="package-card-name">Procurement</div>
-                        <div class="package-card-price">$150.00</div>
-                        <div class="package-card-desc">Bulk & container commodity sourcing.</div>
-                    </div>
-                </div>
-                <input type="hidden" id="selectedPackageInput" value="Full Buying Assistance">
-
-                <div class="form-group">
-                    <label class="form-label">What do you want to buy? *</label>
-                    <input type="text" id="pbaItem" class="form-input" placeholder="e.g. 100 bags of Benue Yam, Custom King Size Bed, etc." required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Specifications & Requirements</label>
-                    <textarea id="pbaSpecs" class="form-textarea" rows="2" placeholder="Quality grade, size, brand preferences, color, material..."></textarea>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Quantity</label>
-                        <input type="text" id="pbaQuantity" class="form-input" placeholder="e.g. 50 Tubers / 1 Unit" value="1">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Target Delivery Date</label>
-                        <input type="date" id="pbaDate" class="form-input">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Target Country *</label>
-                        <input type="text" id="pbaCountry" class="form-input" placeholder="e.g. Nigeria" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Target City *</label>
-                        <input type="text" id="pbaCity" class="form-input" placeholder="e.g. Kano / Abuja" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Min Budget (USD)</label>
-                        <input type="number" id="pbaBudgetMin" class="form-input" placeholder="e.g. 200">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Max Budget (USD)</label>
-                        <input type="number" id="pbaBudgetMax" class="form-input" placeholder="e.g. 500">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Your Full Name *</label>
-                        <input type="text" id="pbaName" class="form-input" placeholder="e.g. Ahmed Yusuf" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">WhatsApp / Phone *</label>
-                        <input type="tel" id="pbaPhone" class="form-input" placeholder="+234 800 000 0000" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <input type="email" id="pbaEmail" class="form-input" placeholder="client@example.com">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Additional Instructions / Seller Links</label>
-                    <textarea id="pbaNotes" class="form-textarea" rows="2" placeholder="Any specific store you want us to visit or additional criteria?"></textarea>
-                </div>
-
-                <button type="submit" class="btn-primary-block" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
-                    <i class="fa-solid fa-paper-plane"></i> Submit Buying Request
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ==========================================================================
-       VIDEO PLAYER MODAL
-       ========================================================================== -->
+    <!-- Video Modal -->
     <div id="videoModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 680px; padding: 16px; background: #000;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-                <h4 id="videoModalTitle" style="color:#fff; font-size: 0.95rem; font-weight:600;">Product Video</h4>
-                <button class="btn-close-modal" style="background: rgba(255,255,255,0.2); color:#fff;" onclick="closeVideoModal()">
+        <div class="modal-dialog" style="max-width:700px; background:#000; padding:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h4 id="videoModalTitle" style="color:#fff; font-size:1rem; font-weight:700;">Product Video Showcase</h4>
+                <button class="modal-close-btn" style="background:rgba(255,255,255,0.2); color:#fff;" onclick="closeVideoModal()">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <video id="videoPlayerElement" controls style="width:100%; border-radius: var(--radius-md); max-height: 420px;" src=""></video>
+            <video id="videoPlayerElement" controls style="width:100%; border-radius:8px; max-height:450px;" src=""></video>
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
+    <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div>
+                <strong>GLOBAL BIZ</strong> — Global Business Marketplace & Professional Buying Assistance Platform
+            </div>
+            <div>
+                © 2026 Global Business Marketplace. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
 
     <!-- JavaScript Layers -->
     <script src="assets/js/api.js"></script>
