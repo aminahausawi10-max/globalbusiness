@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Global Business Marketplace & Professional Buying Assistance</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Minimalist Stylesheet -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header class="top-header">
+        <div class="app-container header-content">
+            <a href="#" class="brand-logo" onclick="switchTab('home'); return false;">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-earth-americas"></i>
+                </div>
+                <span>GLOBAL BIZ</span>
+            </a>
+
+            <div class="header-actions">
+                <select id="currencySelector" class="currency-select" title="Change Currency">
+                    <option value="USD">USD ($)</option>
+                    <option value="NGN">NGN (₦)</option>
+                    <option value="SAR">SAR (﷼)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                </select>
+
+                <button class="btn-assistance" style="padding: 7px 14px; font-size: 0.82rem;" onclick="openBuyingAssistanceModal()">
+                    <i class="fa-solid fa-handshake-angle"></i> Need Help?
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT VIEW PANELS -->
+    <main class="app-container" style="margin-top: 14px;">
+
+        <!-- 1. HOME VIEW PANEL -->
+        <div id="view-home" class="view-panel active">
+            
+            <!-- Hero & Smart Search -->
+            <section class="hero-section">
+                <h1 class="hero-title">Find Products, Services & Sellers Worldwide</h1>
+                <p class="hero-subtitle">Discover verified businesses, local produce, and professional buying assistance across global cities.</p>
+
+                <form id="mainSearchForm" class="search-box-wrapper">
+                    <div class="search-input-group">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="mainSearchInput" placeholder="Try: 'Yam in Kano', 'Men clothes in Riyadh', 'Car wash'...">
+                    </div>
+
+                    <div class="search-divider"></div>
+
+                    <div class="location-dropdown-group">
+                        <i class="fa-solid fa-location-dot" style="color: var(--text-muted); font-size: 0.85rem;"></i>
+                        <select id="locationSelect">
+                            <option value="">All Locations</option>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="United Arab Emirates">UAE</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="btnNearMe" class="btn-near-me" title="Use current location">
+                        <i class="fa-solid fa-location-crosshairs"></i> Near Me
+                    </button>
+
+                    <button type="submit" class="btn-search">
+                        Search
+                    </button>
+                </form>
+
+                <!-- Natural Search Examples / Quick Tags -->
+                <div class="quick-tags">
+                    <span class="quick-tags-label">Popular:</span>
+                    <a href="#" class="tag-chip" data-query="Yam in Kano">🍠 Yam in Kano</a>
+                    <a href="#" class="tag-chip" data-query="Men clothes in Riyadh">👔 Men's Clothes in Riyadh</a>
+                    <a href="#" class="tag-chip" data-query="Phone repair in Kano">📱 Phone Repair Kano</a>
+                    <a href="#" class="tag-chip" data-query="Furniture in Abuja">🛋️ Furniture in Abuja</a>
+                    <a href="#" class="tag-chip" data-query="Car wash near me">🚗 Car Wash Near Me</a>
+                </div>
+            </section>
+
+            <!-- Professional Buying Assistance Banner -->
+            <section class="assistance-banner">
+                <div class="assistance-banner-text">
+                    <h3>
+                        <i class="fa-solid fa-shield-halved" style="color: #60a5fa;"></i>
+                        Professional Buying Assistance
+                    </h3>
+                    <p>
+                        Can't find what you need or buying from another city/country? Let our certified sourcing agents inspect, negotiate, and coordinate your purchase.
+                    </p>
+                </div>
+                <button class="btn-assistance" onclick="openBuyingAssistanceModal()">
+                    <i class="fa-solid fa-paper-plane"></i> Request Assistance
+                </button>
+            </section>
+
+            <!-- Horizontal Categories Bar -->
+            <section>
+                <div class="section-header">
+                    <h2 class="section-title">Explore Categories</h2>
+                    <a href="#" class="section-link" onclick="switchTab('explore'); return false;">View All</a>
+                </div>
+                <div id="categoriesContainer" class="categories-scroll">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </section>
+
+            <!-- Marketplace Products & Services Grid -->
+            <section style="margin-top: 24px;">
+                <div class="section-header">
+                    <h2 class="section-title">Marketplace Listings & Multimedia Ads</h2>
+                    <span style="font-size: 0.82rem; color: var(--text-muted);">Photos • Videos • Voice Pitches</span>
+                </div>
+                <div id="productsGridContainer" class="products-grid">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </section>
+
+            <!-- Featured Businesses Directory -->
+            <section style="margin-top: 36px; margin-bottom: 30px;">
+                <div class="section-header">
+                    <h2 class="section-title">Verified Business Directory</h2>
+                    <a href="#" class="section-link" onclick="switchTab('explore'); return false;">Explore Directory</a>
+                </div>
+                <div id="businessesGridContainer" class="businesses-grid">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </section>
+
+        </div>
+
+        <!-- 2. EXPLORE VIEW PANEL -->
+        <div id="view-explore" class="view-panel">
+            <div class="section-header">
+                <h2 class="section-title">All Business Categories & Directory</h2>
+            </div>
+            <div id="exploreCategoriesGrid" class="categories-scroll" style="flex-wrap: wrap; margin-bottom: 24px;">
+                <!-- Loaded dynamically via JS -->
+            </div>
+            <div id="exploreBusinessesGrid" class="businesses-grid">
+                <!-- Businesses loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- 3. POST & REGISTER VIEW PANEL -->
+        <div id="view-post" class="view-panel">
+            <div style="max-width: 720px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-md);">
+                
+                <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">
+                    <i class="fa-solid fa-store" style="color: var(--accent);"></i> Register Your Business & Advertise
+                </h2>
+                <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 20px;">
+                    Create your professional business profile with photos, videos, and voice pitch advertising.
+                </p>
+
+                <!-- Business Registration Form -->
+                <form id="businessRegisterForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Business / Company Name *</label>
+                            <input type="text" id="regBizName" class="form-input" placeholder="e.g. Kano Yam Hub" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Business Category *</label>
+                            <select id="bizCategorySelect" class="form-select" required>
+                                <!-- Injected dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Country *</label>
+                            <input type="text" id="regBizCountry" class="form-input" placeholder="e.g. Nigeria / Saudi Arabia / USA" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City *</label>
+                            <input type="text" id="regBizCity" class="form-input" placeholder="e.g. Kano, Riyadh, Houston" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Area / District</label>
+                            <input type="text" id="regBizArea" class="form-input" placeholder="e.g. Dawanau, Al Malaz, Wuse 2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Full Street Address</label>
+                            <input type="text" id="regBizAddress" class="form-input" placeholder="e.g. Line 4, Commercial Road">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number *</label>
+                            <input type="tel" id="regBizPhone" class="form-input" placeholder="+234 800 000 0000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">WhatsApp Number</label>
+                            <input type="tel" id="regBizWhatsapp" class="form-input" placeholder="+234 800 000 0000">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" id="regBizEmail" class="form-input" placeholder="contact@yourbusiness.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Opening Hours</label>
+                            <input type="text" id="regBizHours" class="form-input" placeholder="8:00 AM - 6:00 PM">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Business Description</label>
+                        <textarea id="regBizDesc" class="form-textarea" rows="3" placeholder="Describe your products, specialty, wholesale capacity, etc."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Delivery Availability</label>
+                            <select id="regBizDelivery" class="form-select">
+                                <option value="1">Yes, We Deliver</option>
+                                <option value="0">Store Pickup Only</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Business Logo URL</label>
+                            <input type="url" id="regBizLogo" class="form-input" placeholder="https://example.com/logo.jpg">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary-block" style="margin-top: 10px;">
+                        Register Business & Create Profile
+                    </button>
+                </form>
+
+                <hr style="margin: 32px 0 24px 0; border: none; border-top: 1px solid var(--border-color);">
+
+                <!-- Add New Product / Service Form -->
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 6px;">
+                    <i class="fa-solid fa-bullhorn" style="color: var(--accent);"></i> Publish Product or Service Listing (Ad)
+                </h3>
+                <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 16px;">
+                    Add rich multimedia: Photos, Video showcase, and Audio Voice Pitches.
+                </p>
+
+                <form id="productPublishForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Product / Service Title *</label>
+                            <input type="text" id="postProdTitle" class="form-input" placeholder="e.g. Grade-A Fresh Benue Yams" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Listing Type</label>
+                            <select id="postIsService" class="form-select">
+                                <option value="0">Physical Product</option>
+                                <option value="1">Professional Service</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Price (USD Base) *</label>
+                            <input type="number" step="0.01" id="postProdPrice" class="form-input" placeholder="e.g. 25.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <select id="prodCategorySelect" class="form-select" required></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="postProdDesc" class="form-textarea" rows="2" placeholder="Provide product specifications, sizes, warranty, etc."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-image"></i> Photo Image URL</label>
+                        <input type="url" id="postPhotoUrl" class="form-input" placeholder="https://example.com/photo.jpg">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-video"></i> Video URL (MP4 / WebM)</label>
+                            <input type="url" id="postVideoUrl" class="form-input" placeholder="https://example.com/video.mp4">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-microphone"></i> Audio / Voice Pitch URL (MP3)</label>
+                            <input type="url" id="postAudioUrl" class="form-input" placeholder="https://example.com/voice.mp3">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Delivery / Logistics Information</label>
+                        <input type="text" id="postDeliveryInfo" class="form-input" placeholder="e.g. Same-day delivery available in Kano">
+                    </div>
+
+                    <button type="submit" class="btn-primary-block">
+                        Publish Listing with Multimedia
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- 4. DASHBOARD & BUYING AGENT VIEW PANEL -->
+        <div id="view-dashboard" class="view-panel">
+            <div class="section-header">
+                <h2 class="section-title">Operations & Buying Assistance Center</h2>
+                <span style="font-size: 0.82rem; color: var(--text-secondary);"><i class="fa-solid fa-circle" style="color: var(--success); font-size: 0.6rem;"></i> Live System</span>
+            </div>
+
+            <!-- Stats Grid -->
+            <div id="adminStatsGrid" class="stats-grid">
+                <!-- Injected dynamically -->
+            </div>
+
+            <!-- Buying Assistance Tickets Table -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); margin-top: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary);">
+                        <i class="fa-solid fa-list-check" style="color: var(--accent);"></i> Buying Assistance Assignments
+                    </h3>
+                    <button class="btn-assistance" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openBuyingAssistanceModal()">
+                        + New Sourcing Ticket
+                    </button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Tracking Code</th>
+                                <th>Client Details</th>
+                                <th>Requested Item</th>
+                                <th>Service Level</th>
+                                <th>Status</th>
+                                <th>Assigned Agent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assistanceTicketsBody">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ==========================================================================
+       BOTTOM NAVIGATION BAR (MINIMALISTIC DOCKED BAR)
+       ========================================================================== -->
+    <nav class="bottom-nav">
+        <button class="bottom-nav-item active" data-tab="home">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </button>
+
+        <button class="bottom-nav-item" data-tab="explore">
+            <i class="fa-solid fa-compass"></i>
+            <span>Explore</span>
+        </button>
+
+        <button class="bottom-nav-item highlight-post" data-tab="post">
+            <div class="nav-highlight-circle">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <span style="margin-top: 2px;">Post Ad</span>
+        </button>
+
+        <button class="bottom-nav-item" onclick="openBuyingAssistanceModal()">
+            <i class="fa-solid fa-handshake-angle" style="color: #6366f1;"></i>
+            <span>Assistance</span>
+        </button>
+
+        <button class="bottom-nav-item" data-tab="dashboard">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </button>
+    </nav>
+
+    <!-- ==========================================================================
+       BUYING ASSISTANCE REQUEST MODAL
+       ========================================================================== -->
+    <div id="buyingAssistanceModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:#eff6ff; display:flex; align-items:center; justify-content:center; color:var(--accent);">
+                        <i class="fa-solid fa-handshake-angle"></i>
+                    </div>
+                    <div>
+                        <h3 class="modal-title">Request Professional Buying Assistance</h3>
+                        <p style="font-size:0.75rem; color:var(--text-secondary);">Our agents inspect, negotiate, and verify purchases on your behalf.</p>
+                    </div>
+                </div>
+                <button class="btn-close-modal" onclick="closeBuyingAssistanceModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="buyingAssistanceForm">
+                <!-- Package Selection Grid -->
+                <label class="form-label">Select Assistance Package</label>
+                <div class="package-cards-grid">
+                    <div class="package-card-option" data-package="Basic Search">
+                        <div class="package-card-name">Basic Search</div>
+                        <div class="package-card-price">$15.00</div>
+                        <div class="package-card-desc">Find suitable products & verified sellers.</div>
+                    </div>
+                    <div class="package-card-option" data-package="Price Negotiation">
+                        <div class="package-card-name">Price Negotiation</div>
+                        <div class="package-card-price">$40.00</div>
+                        <div class="package-card-desc">Negotiate the best wholesale/retail price.</div>
+                    </div>
+                    <div class="package-card-option selected" data-package="Full Buying Assistance">
+                        <div class="package-card-name">Full Assistance ⭐</div>
+                        <div class="package-card-price">$60.00</div>
+                        <div class="package-card-desc">Search + inspection + negotiation + delivery coordination.</div>
+                    </div>
+                    <div class="package-card-option" data-package="Business Procurement">
+                        <div class="package-card-name">Procurement</div>
+                        <div class="package-card-price">$150.00</div>
+                        <div class="package-card-desc">Bulk & container commodity sourcing.</div>
+                    </div>
+                </div>
+                <input type="hidden" id="selectedPackageInput" value="Full Buying Assistance">
+
+                <div class="form-group">
+                    <label class="form-label">What do you want to buy? *</label>
+                    <input type="text" id="pbaItem" class="form-input" placeholder="e.g. 100 bags of Benue Yam, Custom King Size Bed, etc." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Specifications & Requirements</label>
+                    <textarea id="pbaSpecs" class="form-textarea" rows="2" placeholder="Quality grade, size, brand preferences, color, material..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <input type="text" id="pbaQuantity" class="form-input" placeholder="e.g. 50 Tubers / 1 Unit" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Delivery Date</label>
+                        <input type="date" id="pbaDate" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Target Country *</label>
+                        <input type="text" id="pbaCountry" class="form-input" placeholder="e.g. Nigeria" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target City *</label>
+                        <input type="text" id="pbaCity" class="form-input" placeholder="e.g. Kano / Abuja" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Min Budget (USD)</label>
+                        <input type="number" id="pbaBudgetMin" class="form-input" placeholder="e.g. 200">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Budget (USD)</label>
+                        <input type="number" id="pbaBudgetMax" class="form-input" placeholder="e.g. 500">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Your Full Name *</label>
+                        <input type="text" id="pbaName" class="form-input" placeholder="e.g. Ahmed Yusuf" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">WhatsApp / Phone *</label>
+                        <input type="tel" id="pbaPhone" class="form-input" placeholder="+234 800 000 0000" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="pbaEmail" class="form-input" placeholder="client@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Additional Instructions / Seller Links</label>
+                    <textarea id="pbaNotes" class="form-textarea" rows="2" placeholder="Any specific store you want us to visit or additional criteria?"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary-block" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Buying Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       VIDEO PLAYER MODAL
+       ========================================================================== -->
+    <div id="videoModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 680px; padding: 16px; background: #000;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                <h4 id="videoModalTitle" style="color:#fff; font-size: 0.95rem; font-weight:600;">Product Video</h4>
+                <button class="btn-close-modal" style="background: rgba(255,255,255,0.2); color:#fff;" onclick="closeVideoModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <video id="videoPlayerElement" controls style="width:100%; border-radius: var(--radius-md); max-height: 420px;" src=""></video>
+        </div>
+    </div>
+
+    <!-- JavaScript Layers -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Environment & Local Storage
+data/*.sqlite
+.DS_Store
+Thumbs.db
+*.log
