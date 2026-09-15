@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Decent & Professional Stylesheet (v2.3 Cache Bust) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=2.3">
+    <!-- Decent & Professional Stylesheet (v2.4 Cache Bust) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.4">
 </head>
 <body>
 
@@ -38,9 +38,6 @@
                     <i class="fa-solid fa-user-check" style="color:var(--brand-green);"></i> Seller Portal
                 </a>
                 <a href="#" class="nav-link" data-page="assistance" onclick="switchPage('assistance'); return false;">Buying Assistance</a>
-                <a href="#" class="nav-link" data-page="admin" onclick="switchPage('admin'); return false;">
-                    <i class="fa-solid fa-shield-halved"></i> Admin Desk
-                </a>
             </nav>
 
             <!-- Right Header Actions -->
@@ -950,7 +947,7 @@
             <i class="fa-solid fa-store"></i>
             <span>Market</span>
         </a>
-        <a class="bottom-nav-item post-btn" data-page="seller" onclick="openAddProductModal()" title="Sell a Product">
+        <a class="bottom-nav-item post-btn" data-page="seller" onclick="handlePostAdClick()" title="Sell a Product">
             <i class="fa-solid fa-plus"></i>
             <span>Sell</span>
         </a>
@@ -959,17 +956,13 @@
             <span>Sourcing</span>
         </a>
         <a class="bottom-nav-item" data-page="seller" onclick="switchPage('seller')">
-            <i class="fa-solid fa-user-check"></i>
+            <i class="fa-solid fa-user"></i>
             <span>Seller Hub</span>
-        </a>
-        <a class="bottom-nav-item" data-page="admin" onclick="switchPage('admin')">
-            <i class="fa-solid fa-shield-halved"></i>
-            <span>Admin</span>
         </a>
     </nav>
 
-    <!-- Scripts with cache busting v=2.3 -->
-    <script src="assets/js/api.js?v=2.3"></script>
-    <script src="assets/js/app.js?v=2.3"></script>
+    <!-- Scripts with cache busting v=2.4 -->
+    <script src="assets/js/api.js?v=2.4"></script>
+    <script src="assets/js/app.js?v=2.4"></script>
 </body>
 </html>
