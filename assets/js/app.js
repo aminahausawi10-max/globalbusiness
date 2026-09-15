@@ -631,16 +631,73 @@ async function loadSellerDashboard() {
     }
 }
 
+function setProductImagePreview(imageUrl) {
+    const previewCard = document.getElementById('sellerProdPhotoPreviewCard');
+    const previewImg = document.getElementById('sellerProdPhotoPreviewImg');
+    const dropzone = document.getElementById('sellerProdPhotoDropzone');
+    const photoInput = document.getElementById('sellerProdPhoto');
+
+    if (photoInput) photoInput.value = imageUrl || '';
+
+    if (imageUrl) {
+        if (previewImg) previewImg.src = imageUrl;
+        if (previewCard) previewCard.style.display = 'flex';
+        if (dropzone) dropzone.style.display = 'none';
+    } else {
+        if (previewCard) previewCard.style.display = 'none';
+        if (dropzone) dropzone.style.display = 'flex';
+    }
+}
+
+function handleProductImageImport(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file (JPG, PNG, WEBP)', 'error');
+        return;
+    }
+
+    // Limit client file size if larger than 10MB
+    if (file.size > 10 * 1024 * 1024) {
+        showToast('Image size exceeds 10MB. Please choose a smaller photo.', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Url = e.target.result;
+        setProductImagePreview(base64Url);
+        showToast('Photo imported successfully!', 'success');
+    };
+    reader.onerror = function() {
+        showToast('Failed to read photo file', 'error');
+    };
+    reader.readAsDataURL(file);
+}
+
+function setProductSamplePhoto(url) {
+    setProductImagePreview(url);
+    showToast('Sample photo selected!', 'info');
+}
+
 function openAddProductModal() {
     document.getElementById('addProductModalTitle').innerText = 'Add New Product';
     document.getElementById('editProductId').value = '';
     document.getElementById('sellerProdTitle').value = '';
     document.getElementById('sellerProdPrice').value = '';
     document.getElementById('sellerProdDesc').value = '';
-    document.getElementById('sellerProdSellerName').value = 'Amina';
+    document.getElementById('sellerProdSellerName').value = (AppState.currentUser && AppState.currentUser.name) || 'Amina';
     document.getElementById('sellerProdLocation').value = 'Abuja';
-    document.getElementById('sellerProdPhone').value = '+234 803 456 7890';
-    document.getElementById('sellerProdPhoto').value = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
+    document.getElementById('sellerProdPhone').value = (AppState.currentUser && AppState.currentUser.phone) || '+234 803 456 7890';
+    
+    // Default preset image preview
+    const defaultPhoto = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
+    setProductImagePreview(defaultPhoto);
+    
+    // Reset file input
+    const fileInput = document.getElementById('sellerProdPhotoFileInput');
+    if (fileInput) fileInput.value = '';
     
     document.getElementById('addProductModal').classList.add('active');
 }
@@ -661,7 +718,13 @@ async function openEditProductModal(productId) {
     document.getElementById('sellerProdLocation').value = p.city || 'Abuja';
     document.getElementById('sellerProdPhone').value = p.phone || '+234 803 456 7890';
     document.getElementById('sellerProdDesc').value = p.description || '';
-    document.getElementById('sellerProdPhoto').value = p.photo_url || '';
+    
+    const photoUrl = p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
+    setProductImagePreview(photoUrl);
+
+    // Reset file input
+    const fileInput = document.getElementById('sellerProdPhotoFileInput');
+    if (fileInput) fileInput.value = '';
 
     document.getElementById('addProductModal').classList.add('active');
 }
