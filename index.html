@@ -154,45 +154,106 @@
                         Connect with verified local sellers, browse genuine products (Ankara, Wigs, Phones, Agricultural Produce), or request our certified agents for purchase inspection & delivery.
                     </p>
 
-                    <!-- Fast Search Card -->
-                    <div class="search-card">
-                        <form id="mainSearchForm" class="search-form">
-                            <div class="search-field search-query">
-                                <i class="fa-solid fa-magnifying-glass" style="color:var(--brand-green);"></i>
-                                <input type="text" id="mainSearchInput" placeholder="What are you looking for? (e.g. Wig, Ankara, Yam, iPhone)">
+                    <!-- Modern Unified Search Bar -->
+                    <form id="mainSearchForm" class="hero-unified-search">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="mainSearchInput" placeholder="Search Ankara, Wigs, Phones, Benue Yam, Abuja..." autocomplete="off">
+                        <button type="submit" class="btn btn-primary search-action-btn">
+                            <i class="fa-solid fa-magnifying-glass"></i> <span>Search</span>
+                        </button>
+                    </form>
+
+                    <!-- Quick Location Filter Pills -->
+                    <div class="hero-location-pills">
+                        <button type="button" class="hero-loc-pill active" onclick="filterByCity('', this)">
+                            <i class="fa-solid fa-globe" style="color:var(--brand-green);"></i> All Nigeria
+                        </button>
+                        <button type="button" class="hero-loc-pill" onclick="filterByCity('Abuja', this)">
+                            <i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> Abuja
+                        </button>
+                        <button type="button" class="hero-loc-pill" onclick="filterByCity('Kano', this)">
+                            <i class="fa-solid fa-location-dot" style="color:#D97706;"></i> Kano
+                        </button>
+                        <button type="button" class="hero-loc-pill" onclick="filterByCity('Kaduna', this)">
+                            <i class="fa-solid fa-location-dot" style="color:#3B82F6;"></i> Kaduna
+                        </button>
+                        <button type="button" class="hero-loc-pill" onclick="filterByCity('Lagos', this)">
+                            <i class="fa-solid fa-location-dot" style="color:#10B981;"></i> Lagos
+                        </button>
+                    </div>
+
+                    <!-- Meaningful Interactive Category Tiles Grid -->
+                    <div class="hero-categories-grid">
+                        <div class="hero-cat-tile" onclick="searchFor('Ankara')">
+                            <div class="hero-cat-icon" style="background:#ECFDF5; color:#059669;">
+                                <i class="fa-solid fa-shirt"></i>
                             </div>
+                            <span class="hero-cat-label">Ankara & Fashion</span>
+                        </div>
 
-                            <div class="search-field search-select-field">
-                                <i class="fa-solid fa-location-dot" style="color:#EF4444;"></i>
-                                <select id="locationSelect">
-                                    <option value="">All Locations</option>
-                                    <option value="Abuja">Abuja</option>
-                                    <option value="Kano">Kano</option>
-                                    <option value="Kaduna">Kaduna</option>
-                                    <option value="Lagos">Lagos</option>
-                                    <option value="Nigeria">All Nigeria</option>
-                                </select>
+                        <div class="hero-cat-tile" onclick="searchFor('Wig')">
+                            <div class="hero-cat-icon" style="background:#FDF2F8; color:#DB2777;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
                             </div>
+                            <span class="hero-cat-label">Wigs & Hair</span>
+                        </div>
 
-                            <div class="search-field search-select-field">
-                                <i class="fa-solid fa-layer-group" style="color:var(--brand-green);"></i>
-                                <select id="heroCategorySelect">
-                                    <option value="">All Categories</option>
-                                </select>
+                        <div class="hero-cat-tile" onclick="searchFor('Yam')">
+                            <div class="hero-cat-icon" style="background:#FEF3C7; color:#D97706;">
+                                <i class="fa-solid fa-wheat-awn"></i>
                             </div>
+                            <span class="hero-cat-label">Yam & Produce</span>
+                        </div>
 
-                            <button type="submit" class="btn btn-primary search-submit-btn">
-                                <i class="fa-solid fa-magnifying-glass"></i> Search
-                            </button>
-                        </form>
+                        <div class="hero-cat-tile" onclick="searchFor('Samsung')">
+                            <div class="hero-cat-icon" style="background:#EFF6FF; color:#2563EB;">
+                                <i class="fa-solid fa-mobile-screen"></i>
+                            </div>
+                            <span class="hero-cat-label">Phones & Tech</span>
+                        </div>
 
-                        <!-- Quick Popular Tags -->
-                        <div class="quick-tags">
-                            <span class="quick-tags-label">Trending Searches:</span>
-                            <button class="tag-pill" onclick="searchFor('Wig')">💇 Wigs (Bone Straight & Human Hair)</button>
-                            <button class="tag-pill" onclick="searchFor('Ankara')">👗 Ankara Material</button>
-                            <button class="tag-pill" onclick="searchFor('Benue Yam')">🌾 Benue Yam (Kano)</button>
-                            <button class="tag-pill" onclick="searchFor('Samsung')">📱 Mobile Phones</button>
+                        <div class="hero-cat-tile" onclick="filterByCategory(5, 'Furniture')">
+                            <div class="hero-cat-icon" style="background:#F5F3FF; color:#7C3AED;">
+                                <i class="fa-solid fa-couch"></i>
+                            </div>
+                            <span class="hero-cat-label">Furniture</span>
+                        </div>
+
+                        <div class="hero-cat-tile" onclick="filterByCategory(4, 'Shoes & Bags')">
+                            <div class="hero-cat-icon" style="background:#FFF1F2; color:#E11D48;">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                            </div>
+                            <span class="hero-cat-label">Shoes & Bags</span>
+                        </div>
+
+                        <div class="hero-cat-tile" onclick="filterByCategory(1, 'Food & Groceries')">
+                            <div class="hero-cat-icon" style="background:#F0FDF4; color:#16A34A;">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
+                            <span class="hero-cat-label">Food & Market</span>
+                        </div>
+
+                        <div class="hero-cat-tile" onclick="handleRequestAssistanceClick()">
+                            <div class="hero-cat-icon" style="background:#ECFEFF; color:#0891B2;">
+                                <i class="fa-solid fa-handshake-angle"></i>
+                            </div>
+                            <span class="hero-cat-label">Sourcing Desk</span>
+                        </div>
+                    </div>
+
+                    <!-- Trust Guarantee Strip -->
+                    <div class="hero-trust-strip">
+                        <div class="hero-trust-item">
+                            <i class="fa-solid fa-id-card" style="color:var(--brand-green);"></i>
+                            <span>NIN & Guarantor Verified</span>
+                        </div>
+                        <div class="hero-trust-item">
+                            <i class="fa-brands fa-whatsapp" style="color:#25D366;"></i>
+                            <span>Direct Seller Chat</span>
+                        </div>
+                        <div class="hero-trust-item">
+                            <i class="fa-solid fa-truck-fast" style="color:#3B82F6;"></i>
+                            <span>Nationwide Delivery</span>
                         </div>
                     </div>
                 </div>

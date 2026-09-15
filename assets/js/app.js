@@ -965,16 +965,29 @@ function setupSearchEngine() {
     if (mainForm) {
         mainForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const q = document.getElementById('mainSearchInput').value.trim();
-            const loc = document.getElementById('locationSelect').value;
-            const cat = document.getElementById('heroCategorySelect').value;
+            const q = (document.getElementById('mainSearchInput')?.value || '').trim();
 
             switchPage('marketplace');
-            document.getElementById('marketSearchFilter').value = q;
-            document.getElementById('marketCityFilter').value = loc;
-            document.getElementById('marketCategoryFilter').value = cat;
+            const marketSearchInput = document.getElementById('marketSearchFilter');
+            if (marketSearchInput) marketSearchInput.value = q;
             filterMarketplace();
         });
+    }
+}
+
+function filterByCity(cityName, el) {
+    document.querySelectorAll('.hero-loc-pill').forEach(p => p.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    switchPage('marketplace');
+    const cityInput = document.getElementById('marketCityFilter');
+    if (cityInput) cityInput.value = cityName;
+    filterMarketplace();
+
+    if (cityName) {
+        showToast(`Filtered listings in ${cityName}`, 'info');
+    } else {
+        showToast('Showing all verified listings across Nigeria', 'info');
     }
 }
 
