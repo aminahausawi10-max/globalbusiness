@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Decent & Professional Stylesheet (v2.8 Cache Bust) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=2.8">
+    <!-- Decent & Professional Stylesheet (v2.9 Cache Bust) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.9">
 </head>
 <body>
 
@@ -244,8 +244,8 @@
                     <!-- Trust Guarantee Strip -->
                     <div class="hero-trust-strip">
                         <div class="hero-trust-item">
-                            <i class="fa-solid fa-id-card" style="color:var(--brand-green);"></i>
-                            <span>NIN & Guarantor Verified</span>
+                            <i class="fa-solid fa-circle-check" style="color:var(--brand-green);"></i>
+                            <span>Verified Local Sellers</span>
                         </div>
                         <div class="hero-trust-item">
                             <i class="fa-brands fa-whatsapp" style="color:#25D366;"></i>
@@ -317,7 +317,7 @@
                     <div class="section-header">
                         <div>
                             <h2 class="section-title">🏬 Verified Sellers & Stores</h2>
-                            <p class="section-subtitle">Vetted vendors with confirmed ID numbers and Next-of-Kin guarantors.</p>
+                            <p class="section-subtitle">Browse authentic products from verified local suppliers and merchants.</p>
                         </div>
                         <button class="btn btn-outline btn-sm" onclick="switchPage('seller')">Join as Seller</button>
                     </div>
@@ -378,24 +378,14 @@
                 <div class="section-header">
                     <div>
                         <h2 class="section-title">🏪 Seller Portal & Dashboard</h2>
-                        <p class="section-subtitle">Manage your listed products, add new items, or complete your KYC verification.</p>
+                        <p class="section-subtitle">Manage your listed products and publish new items with direct photo upload.</p>
                     </div>
                     <button class="btn btn-primary btn-sm" onclick="openAddProductModal()">
                         <i class="fa-solid fa-circle-plus"></i> Add New Product
                     </button>
                 </div>
 
-                <!-- Seller Navigation Sub-Tabs -->
-                <div class="admin-nav-tabs">
-                    <button class="admin-tab-btn active" id="sellerTabDashboardBtn" onclick="switchSellerSubTab('dashboard')">
-                        <i class="fa-solid fa-gauge"></i> My Dashboard & Products
-                    </button>
-                    <button class="admin-tab-btn" id="sellerTabKycBtn" onclick="switchSellerSubTab('kyc')">
-                        <i class="fa-solid fa-id-card"></i> Seller KYC & Guarantor Info
-                    </button>
-                </div>
-
-                <!-- Sub-View 1: Seller Dashboard & My Products -->
+                <!-- Seller Dashboard & My Products -->
                 <div id="seller-sub-dashboard">
                     <!-- KPI Metrics -->
                     <div class="seller-stats-grid">
@@ -409,8 +399,8 @@
                         <div class="stat-card">
                             <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
                             <div>
-                                <div class="stat-value" id="sellerVerificationBadge">Verified</div>
-                                <div class="stat-label">KYC Seller Status</div>
+                                <div class="stat-value" id="sellerVerificationBadge">Active</div>
+                                <div class="stat-label">Store Status</div>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -436,82 +426,6 @@
                         <div id="myProductsContainer" class="products-grid">
                             <!-- Injected dynamically via JS -->
                         </div>
-                    </div>
-                </div>
-
-                <!-- Sub-View 2: Seller KYC Registration & Guarantor Form -->
-                <div id="seller-sub-kyc" style="display:none;">
-                    <div class="card form-container-card">
-                        <div style="text-align:center; margin-bottom:18px;">
-                            <div style="width:50px; height:50px; background:var(--brand-green-soft); color:var(--brand-green); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:8px;">
-                                <i class="fa-solid fa-shield-halved"></i>
-                            </div>
-                            <h3 style="font-size:1.2rem; font-weight:800; color:var(--primary);">Seller Verification & KYC Registration</h3>
-                            <p style="font-size:0.82rem; color:var(--text-secondary); max-width:520px; margin:0 auto;">
-                                To protect buyers and build trust, sellers provide their National ID and Next-of-Kin (brother/sister) details for verification.
-                            </p>
-                        </div>
-
-                        <form id="sellerKycForm">
-                            <!-- Personal & Store Info -->
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label"><i class="fa-solid fa-user"></i> Full Legal Name *</label>
-                                    <input type="text" id="kycFullName" class="form-input" placeholder="e.g. Amina Bello Lawal" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label"><i class="fa-solid fa-id-card"></i> National ID Number (NIN / Voter ID) *</label>
-                                    <input type="text" id="kycIdNumber" class="form-input" placeholder="e.g. NIN-78492019482" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label"><i class="fa-solid fa-phone"></i> Phone / WhatsApp Number *</label>
-                                    <input type="tel" id="kycPhone" class="form-input" placeholder="+234 803 000 0000" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label"><i class="fa-solid fa-location-dot"></i> Seller Location (State & City) *</label>
-                                    <input type="text" id="kycLocation" class="form-input" placeholder="e.g. Abuja (Wuse 2) / Kano / Kaduna" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label"><i class="fa-solid fa-store"></i> Store / Business Name *</label>
-                                    <input type="text" id="kycStoreName" class="form-input" placeholder="e.g. Amina Luxury Ankara & Fabrics" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label"><i class="fa-solid fa-layer-group"></i> Primary Category *</label>
-                                    <select id="kycCategorySelect" class="form-select" required></select>
-                                </div>
-                            </div>
-
-                            <!-- Next of Kin / Guarantor Info -->
-                            <div style="background:var(--brand-green-soft); padding:12px; border-radius:var(--radius-md); border:1px solid rgba(5,150,105,0.2); margin:14px 0;">
-                                <h4 style="font-size:0.88rem; font-weight:800; color:var(--brand-green); margin-bottom:4px;">
-                                    <i class="fa-solid fa-people-arrows"></i> Brother's / Sister's (Guarantor) Verification
-                                </h4>
-                                <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px;">
-                                    Required for marketplace safety, dispute resolution, and verified seller badge.
-                                </p>
-
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label class="form-label">Brother's / Sister's Full Name *</label>
-                                        <input type="text" id="kycKinName" class="form-input" placeholder="e.g. Usman Bello Lawal (Brother)" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Brother's / Sister's Phone Number *</label>
-                                        <input type="tel" id="kycKinPhone" class="form-input" placeholder="+234 802 000 0000" required>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; font-size:0.92rem;">
-                                <i class="fa-solid fa-circle-check"></i> Save & Submit Seller Profile
-                            </button>
-                        </form>
                     </div>
                 </div>
 
@@ -743,7 +657,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                             <div>
                                 <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Registered Sellers & Stores</h3>
-                                <p style="font-size:0.75rem; color:var(--text-secondary);">Verify KYC identities, review Next-of-Kin guarantors, or add/remove sellers.</p>
+                                <p style="font-size:0.75rem; color:var(--text-secondary);">Review registered merchants, verify badges, or add/remove seller accounts.</p>
                             </div>
                             <div style="display:flex; gap:8px;">
                                 <input type="text" id="adminSellerSearchInput" oninput="handleAdminSellerSearch(this.value)" placeholder="Search sellers..." class="form-input" style="padding:6px 12px; font-size:0.8rem; width:180px;">
@@ -758,9 +672,9 @@
                                 <thead>
                                     <tr>
                                         <th>Seller Name & Store</th>
-                                        <th>National ID (NIN)</th>
-                                        <th>Phone & Location</th>
-                                        <th>Guarantor (Kin) Info</th>
+                                        <th>Category</th>
+                                        <th>Phone & WhatsApp</th>
+                                        <th>Location</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -879,7 +793,7 @@
                 <div class="footer-brand">
                     <h4><i class="fa-solid fa-store" style="color:var(--brand-green-light);"></i> GLOBAL BIZ</h4>
                     <p>
-                        A verified public online marketplace connecting buyers directly with authenticated sellers across Abuja, Kano, Kaduna, and nationwide. Every seller is backed by ID & guarantor verification.
+                        A verified public online marketplace connecting buyers directly with authenticated local sellers and merchants across Abuja, Kano, Kaduna, and nationwide.
                     </p>
                     <div class="footer-socials">
                         <a href="https://wa.me/2349090809080" target="_blank" class="footer-social-link" title="WhatsApp Developer / Support"><i class="fa-brands fa-whatsapp"></i></a>
@@ -919,10 +833,10 @@
                 <div class="footer-col">
                     <h5>For Sellers</h5>
                     <ul class="footer-links">
-                        <li><a href="#" onclick="switchPage('seller'); switchSellerSubTab('kyc'); return false;">Seller Registration</a></li>
-                        <li><a href="#" onclick="switchPage('seller'); switchSellerSubTab('dashboard'); return false;">Seller Dashboard</a></li>
-                        <li><a href="#" onclick="openAddProductModal(); return false;">Post Free Product</a></li>
-                        <li><a href="#" onclick="switchPage('seller'); return false;">KYC & Guarantor Policy</a></li>
+                        <li><a href="#" onclick="openUserAuthModal('register', 'seller'); return false;">Seller Sign Up</a></li>
+                        <li><a href="#" onclick="switchPage('seller'); return false;">Seller Dashboard</a></li>
+                        <li><a href="#" onclick="openAddProductModal(); return false;">Post New Product</a></li>
+                        <li><a href="#" onclick="switchPage('marketplace'); return false;">Marketplace Guidelines</a></li>
                     </ul>
                 </div>
 
@@ -1163,36 +1077,7 @@
                             </div>
                         </div>
 
-                        <!-- Extra Seller Specific KYC fields -->
-                        <div id="authSellerExtraFields" style="display:none; background:var(--brand-green-soft); padding:12px; border-radius:var(--radius-md); border:1px solid rgba(5,150,105,0.2); margin:10px 0;">
-                            <h4 style="font-size:0.82rem; font-weight:800; color:var(--brand-green); margin-bottom:8px;">
-                                <i class="fa-solid fa-id-card"></i> Seller KYC & Guarantor Information
-                            </h4>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">National ID Number (NIN) *</label>
-                                    <input type="text" id="regIdNumber" class="form-input" placeholder="NIN-78492019482">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Store Name *</label>
-                                    <input type="text" id="regStoreName" class="form-input" placeholder="e.g. Amina Fabrics">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Brother's / Sister's Name *</label>
-                                    <input type="text" id="regKinName" class="form-input" placeholder="e.g. Usman Bello (Brother)">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Brother's / Sister's Phone *</label>
-                                    <input type="tel" id="regKinPhone" class="form-input" placeholder="+234 802 000 0000">
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:6px;">
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:10px;">
                             <i class="fa-solid fa-user-check"></i> Complete Registration
                         </button>
                     </form>
@@ -1244,8 +1129,8 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">National ID Number (NIN) *</label>
-                            <input type="text" id="adminSellerNIN" class="form-input" placeholder="NIN-99281726354" required>
+                            <label class="form-label">Phone / WhatsApp *</label>
+                            <input type="tel" id="adminSellerPhone" class="form-input" placeholder="+234 803 000 0000" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Store Category *</label>
@@ -1256,22 +1141,6 @@
                                 <option value="Mobile Phones">Mobile Phones & Tech</option>
                                 <option value="General Marketplace">General Marketplace</option>
                             </select>
-                        </div>
-                    </div>
-
-                    <div style="background:var(--brand-green-soft); border:1px solid rgba(5,150,105,0.2); padding:10px 12px; border-radius:var(--radius-md); margin-bottom:12px;">
-                        <span style="font-size:0.75rem; font-weight:800; color:var(--brand-green); display:block; margin-bottom:6px;">
-                            <i class="fa-solid fa-shield-halved"></i> Brother's / Sister's Guarantor Details
-                        </span>
-                        <div class="form-row" style="margin-bottom:0;">
-                            <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label" style="font-size:0.72rem;">Brother / Sister Full Name</label>
-                                <input type="text" id="adminSellerKinName" class="form-input" placeholder="e.g. Ahmad Bello (Brother)" required>
-                            </div>
-                            <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label" style="font-size:0.72rem;">Guarantor Phone Number</label>
-                                <input type="tel" id="adminSellerKinPhone" class="form-input" placeholder="+234 802 000 0000" required>
-                            </div>
                         </div>
                     </div>
 
@@ -1359,8 +1228,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with cache busting v=2.8 -->
-    <script src="assets/js/api.js?v=2.8"></script>
-    <script src="assets/js/app.js?v=2.8"></script>
+    <!-- Scripts with cache busting v=2.9 -->
+    <script src="assets/js/api.js?v=2.9"></script>
+    <script src="assets/js/app.js?v=2.9"></script>
 </body>
 </html>

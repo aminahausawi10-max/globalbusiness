@@ -235,12 +235,10 @@ function switchAuthTab(tab) {
 }
 
 function toggleAuthRole(role) {
-    const extraFields = document.getElementById('authSellerExtraFields');
     const buyerLabel = document.getElementById('roleBuyerLabel');
     const sellerLabel = document.getElementById('roleSellerLabel');
 
     if (role === 'seller') {
-        if (extraFields) extraFields.style.display = 'block';
         if (sellerLabel) {
             sellerLabel.style.borderColor = 'var(--brand-green)';
             sellerLabel.style.background = 'var(--brand-green-soft)';
@@ -250,7 +248,6 @@ function toggleAuthRole(role) {
             buyerLabel.style.background = 'var(--bg-alt)';
         }
     } else {
-        if (extraFields) extraFields.style.display = 'none';
         if (buyerLabel) {
             buyerLabel.style.borderColor = 'var(--brand-green)';
             buyerLabel.style.background = 'var(--brand-green-soft)';
@@ -572,27 +569,8 @@ function closeModal(modalId) {
 }
 
 /* ==========================================================================
-   SELLER DASHBOARD & KYC
+   SELLER DASHBOARD & PRODUCTS
    ========================================================================== */
-function switchSellerSubTab(tabName) {
-    const dashView = document.getElementById('seller-sub-dashboard');
-    const kycView = document.getElementById('seller-sub-kyc');
-    const dashBtn = document.getElementById('sellerTabDashboardBtn');
-    const kycBtn = document.getElementById('sellerTabKycBtn');
-
-    if (tabName === 'dashboard') {
-        dashView.style.display = 'block';
-        kycView.style.display = 'none';
-        dashBtn.classList.add('active');
-        kycBtn.classList.remove('active');
-        loadSellerDashboard();
-    } else {
-        dashView.style.display = 'none';
-        kycView.style.display = 'block';
-        dashBtn.classList.remove('active');
-        kycBtn.classList.add('active');
-    }
-}
 
 async function loadSellerDashboard() {
     const products = await API.getProducts();
@@ -819,8 +797,8 @@ async function loadAdminPortal() {
                         <i class="fa-solid fa-user-plus"></i>
                     </div>
                     <div>
-                        <strong>Seller Registration:</strong> Amina Bello Lawal submitted KYC from <em>Abuja (Wuse 2)</em>.
-                        <div style="font-size:0.72rem; color:var(--text-muted);">Guarantor: Usman Bello Lawal (+234 802 111 2233) &bull; ID: NIN-78492019482</div>
+                        <strong>Seller Registration:</strong> Amina Bello Lawal created store in <em>Abuja (Wuse 2)</em>.
+                        <div style="font-size:0.72rem; color:var(--text-muted);">Store: Amina Luxury Ankara & Fabrics &bull; Phone: +234 803 456 7890</div>
                     </div>
                 </div>
                 <span class="badge badge-verified">Verified</span>
@@ -925,18 +903,16 @@ function renderAdminSellersTable(sellers) {
                 <strong>${s.full_name}</strong><br>
                 <span style="font-size:0.75rem; color:var(--text-muted);">${s.store_name}</span>
             </td>
-            <td><code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${s.id_number}</code></td>
+            <td><span class="badge" style="background:var(--bg-alt); color:var(--primary); font-size:0.72rem;">${s.category_name || 'General'}</span></td>
             <td>
-                <strong>${s.phone}</strong><br>
-                <span style="font-size:0.75rem; color:var(--text-muted);">${s.location}</span>
+                <strong>${s.phone}</strong>
             </td>
             <td>
-                <strong>${s.kin_name}</strong><br>
-                <span style="font-size:0.75rem; color:var(--text-muted);">${s.kin_phone}</span>
+                ${s.location || 'Nigeria'}
             </td>
             <td>
                 <span class="badge ${s.verified ? 'badge-verified' : 'badge-warning'}">
-                    ${s.verified ? '<i class="fa-solid fa-check"></i> Verified' : '<i class="fa-solid fa-clock"></i> Pending'}
+                    ${s.verified ? '<i class="fa-solid fa-check"></i> Verified' : '<i class="fa-solid fa-clock"></i> Active'}
                 </span>
             </td>
             <td>
@@ -1124,24 +1100,14 @@ function setupForms() {
             };
 
             if (role === 'seller') {
-                const idNumber = document.getElementById('regIdNumber').value.trim();
-                const storeName = document.getElementById('regStoreName').value.trim() || `${fullName}'s Store`;
-                const kinName = document.getElementById('regKinName').value.trim();
-                const kinPhone = document.getElementById('regKinPhone').value.trim();
-
-                userSession.id_number = idNumber;
+                const storeName = `${fullName}'s Store`;
                 userSession.store_name = storeName;
-                userSession.kin_name = kinName;
-                userSession.kin_phone = kinPhone;
 
                 // Register seller in API/state
                 await API.registerSeller({
                     full_name: fullName,
-                    id_number: idNumber,
                     phone: phone,
                     location: location,
-                    kin_name: kinName,
-                    kin_phone: kinPhone,
                     store_name: storeName
                 });
             }
@@ -1152,7 +1118,7 @@ function setupForms() {
             userRegForm.reset();
 
             if (role === 'seller') {
-                showToast(`Welcome Seller ${fullName}! Your store is ready.`, 'success');
+                showToast(`Welcome Seller ${fullName}! Your seller dashboard is ready.`, 'success');
                 switchPage('seller');
             } else {
                 showToast(`Welcome Buyer ${fullName}! You can now browse & order.`, 'success');
@@ -1177,32 +1143,6 @@ function setupForms() {
             } else {
                 showToast('Invalid administrator username or password!', 'error');
             }
-        });
-    }
-
-    // Seller KYC Form
-    const kycForm = document.getElementById('sellerKycForm');
-    if (kycForm) {
-        kycForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!requireAuth('submit Seller KYC verification')) {
-                return;
-            }
-            const payload = {
-                full_name: document.getElementById('kycFullName').value.trim(),
-                id_number: document.getElementById('kycIdNumber').value.trim(),
-                phone: document.getElementById('kycPhone').value.trim(),
-                location: document.getElementById('kycLocation').value.trim(),
-                kin_name: document.getElementById('kycKinName').value.trim(),
-                kin_phone: document.getElementById('kycKinPhone').value.trim(),
-                store_name: document.getElementById('kycStoreName').value.trim(),
-                category_name: document.getElementById('kycCategorySelect').value
-            };
-
-            await API.registerSeller(payload);
-            showToast('Seller profile & KYC submitted for verification!', 'success');
-            switchSellerSubTab('dashboard');
-            loadAdminPortal();
         });
     }
 
@@ -1281,21 +1221,15 @@ function setupForms() {
             const phone = document.getElementById('adminSellerPhone').value.trim();
             const storeName = document.getElementById('adminSellerStoreName').value.trim();
             const location = document.getElementById('adminSellerLocation').value.trim();
-            const nin = document.getElementById('adminSellerNIN').value.trim();
             const category = document.getElementById('adminSellerCategory').value;
-            const kinName = document.getElementById('adminSellerKinName').value.trim();
-            const kinPhone = document.getElementById('adminSellerKinPhone').value.trim();
             const isVerified = document.getElementById('adminSellerVerifiedCheck').checked ? 1 : 0;
 
-            const res = await API.registerSeller({
+            await API.registerSeller({
                 full_name: fullName,
                 phone: phone,
                 store_name: storeName,
                 location: location,
-                id_number: nin,
                 category_name: category,
-                kin_name: kinName,
-                kin_phone: kinPhone,
                 verified: isVerified
             });
 
