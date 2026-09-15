@@ -494,89 +494,129 @@
         </div>
 
         <!-- ======================================================================
-           PAGE 5: ADMIN & MODERATION PORTAL
+           PAGE 5: ADMIN & MODERATION PORTAL (RESTRICTED & PASSWORD PROTECTED)
            ====================================================================== -->
         <div id="page-admin" class="page-view">
             <div class="container section">
-                <div class="section-header">
-                    <div>
-                        <h2 class="section-title">🛡️ Admin & Moderation Portal</h2>
-                        <p class="section-subtitle">Verify seller identity & guarantors, moderate listings, and manage requests.</p>
+
+                <!-- 1. Admin Login Gate (Shown when not logged in) -->
+                <div id="admin-login-gate" class="card form-container-card" style="text-align:center; padding:32px 24px; max-width:440px; margin:20px auto;">
+                    <div style="width:58px; height:58px; background:var(--brand-green-soft); color:var(--brand-green); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:12px; border:1px solid rgba(5,150,105,0.2);">
+                        <i class="fa-solid fa-lock"></i>
                     </div>
+                    <h2 style="font-size:1.35rem; font-weight:900; color:var(--primary); margin-bottom:4px;">
+                        Administrator Sign In
+                    </h2>
+                    <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:20px;">
+                        Restricted portal. Please enter your administrator credentials to access moderation and verification controls.
+                    </p>
+
+                    <form id="adminLoginForm" style="text-align:left;">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-user-shield"></i> Admin Username or Email *</label>
+                            <input type="text" id="adminUsernameInput" class="form-input" placeholder="e.g. admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-key"></i> Password *</label>
+                            <input type="password" id="adminPasswordInput" class="form-input" placeholder="Enter password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Admin Portal
+                        </button>
+
+                        <div style="margin-top:14px; text-align:center; background:var(--bg-alt); padding:8px 12px; border-radius:var(--radius-sm); font-size:0.75rem; color:var(--text-secondary);">
+                            <i class="fa-solid fa-circle-info" style="color:var(--brand-green);"></i> 
+                            Demo credentials: <strong>admin</strong> / <strong>admin123</strong>
+                        </div>
+                    </form>
                 </div>
 
-                <!-- Admin Tabs -->
-                <div class="admin-nav-tabs">
-                    <button class="admin-tab-btn active" onclick="switchAdminTab('sellers', this)">
-                        <i class="fa-solid fa-user-check"></i> Verify Sellers & Guarantors
-                    </button>
-                    <button class="admin-tab-btn" onclick="switchAdminTab('products', this)">
-                        <i class="fa-solid fa-boxes-stacked"></i> Moderate Products
-                    </button>
-                    <button class="admin-tab-btn" onclick="switchAdminTab('requests', this)">
-                        <i class="fa-solid fa-handshake"></i> Sourcing Desk
-                    </button>
-                </div>
-
-                <!-- Admin Tab 1: Verify Sellers -->
-                <div id="admin-sellers-view">
-                    <div class="admin-table-container">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Seller & Store</th>
-                                    <th>National ID (NIN)</th>
-                                    <th>Location</th>
-                                    <th>Brother's/Sister's Info</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminSellersTableBody">
-                                <!-- Loaded via JS -->
-                            </tbody>
-                        </table>
+                <!-- 2. Protected Admin Dashboard View (Shown after authentication) -->
+                <div id="admin-dashboard-view" style="display:none;">
+                    <div class="section-header">
+                        <div>
+                            <h2 class="section-title">🛡️ Admin & Moderation Portal</h2>
+                            <p class="section-subtitle">Logged in as Administrator &bull; Verify seller identity, moderate listings, and manage requests.</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="handleAdminLogout()" style="color:#EF4444; border-color:#EF4444;">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+                        </button>
                     </div>
-                </div>
 
-                <!-- Admin Tab 2: Moderate Products -->
-                <div id="admin-products-view" style="display:none;">
-                    <div class="admin-table-container">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Seller</th>
-                                    <th>Price</th>
-                                    <th>Location</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminProductsTableBody">
-                                <!-- Loaded via JS -->
-                            </tbody>
-                        </table>
+                    <!-- Admin Tabs -->
+                    <div class="admin-nav-tabs">
+                        <button class="admin-tab-btn active" onclick="switchAdminTab('sellers', this)">
+                            <i class="fa-solid fa-user-check"></i> Verify Sellers & Guarantors
+                        </button>
+                        <button class="admin-tab-btn" onclick="switchAdminTab('products', this)">
+                            <i class="fa-solid fa-boxes-stacked"></i> Moderate Products
+                        </button>
+                        <button class="admin-tab-btn" onclick="switchAdminTab('requests', this)">
+                            <i class="fa-solid fa-handshake"></i> Sourcing Desk
+                        </button>
                     </div>
-                </div>
 
-                <!-- Admin Tab 3: Sourcing Requests -->
-                <div id="admin-requests-view" style="display:none;">
-                    <div class="admin-table-container">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Code</th>
-                                    <th>Customer</th>
-                                    <th>Item</th>
-                                    <th>Location</th>
-                                    <th>Package</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminRequestsTableBody">
-                                <!-- Loaded via JS -->
-                            </tbody>
-                        </table>
+                    <!-- Admin Tab 1: Verify Sellers -->
+                    <div id="admin-sellers-view">
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Seller & Store</th>
+                                        <th>National ID (NIN)</th>
+                                        <th>Location</th>
+                                        <th>Brother's/Sister's Info</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminSellersTableBody">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Admin Tab 2: Moderate Products -->
+                    <div id="admin-products-view" style="display:none;">
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Seller</th>
+                                        <th>Price</th>
+                                        <th>Location</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminProductsTableBody">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Admin Tab 3: Sourcing Requests -->
+                    <div id="admin-requests-view" style="display:none;">
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Customer</th>
+                                        <th>Item</th>
+                                        <th>Location</th>
+                                        <th>Package</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminRequestsTableBody">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 

@@ -443,8 +443,18 @@ async function handleDeleteProduct(productId) {
 }
 
 /* ==========================================================================
-   ADMIN PORTAL
+   ADMIN PORTAL (AUTHENTICATION & ACCESS CONTROL)
    ========================================================================== */
+function isAdminAuthenticated() {
+    return localStorage.getItem('globalbiz_admin_session') === 'active';
+}
+
+function handleAdminLogout() {
+    localStorage.removeItem('globalbiz_admin_session');
+    showToast('Signed out of Administrator Portal', 'info');
+    loadAdminPortal();
+}
+
 function switchAdminTab(tabName, btnEl) {
     document.querySelectorAll('#page-admin .admin-tab-btn').forEach(b => b.classList.remove('active'));
     if (btnEl) btnEl.classList.add('active');
@@ -455,6 +465,19 @@ function switchAdminTab(tabName, btnEl) {
 }
 
 async function loadAdminPortal() {
+    const loginGate = document.getElementById('admin-login-gate');
+    const dashboardView = document.getElementById('admin-dashboard-view');
+
+    if (!isAdminAuthenticated()) {
+        if (loginGate) loginGate.style.display = 'block';
+        if (dashboardView) dashboardView.style.display = 'none';
+        return;
+    }
+
+    // Authenticated
+    if (loginGate) loginGate.style.display = 'none';
+    if (dashboardView) dashboardView.style.display = 'block';
+
     const sellers = await API.getSellers();
     const products = await API.getProducts();
     const requests = await API.getBuyingRequests();
@@ -500,7 +523,7 @@ async function loadAdminPortal() {
                     </div>
                 </td>
                 <td>${p.seller_name || p.business_name}</td>
-                <td><strong style="color:var(--naira-green);">${formatPrice(p.price)}</strong></td>
+                <td><strong style="color:var(--brand-green);">${formatPrice(p.price)}</strong></td>
                 <td>${p.city}</td>
                 <td>
                     <button class="btn btn-sm btn-outline" style="color:#FA5252; border-color:#FA5252;" onclick="handleDeleteProduct(${p.id})">
@@ -521,7 +544,7 @@ async function loadAdminPortal() {
                 <td>${r.item_title}</td>
                 <td>${r.target_city}</td>
                 <td>${r.package_type}</td>
-                <td><span class="badge badge-success">${r.status}</span></td>
+                <td><span class="badge badge-verified">${r.status}</span></td>
             </tr>
         `).join('');
     }
@@ -576,6 +599,25 @@ function filterMarketplace() {
 }
 
 function setupForms() {
+    // Admin Login Form
+    const adminForm = document.getElementById('adminLoginForm');
+    if (adminForm) {
+        adminForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const u = (document.getElementById('adminUsernameInput')?.value || '').trim();
+            const p = (document.getElementById('adminPasswordInput')?.value || '').trim();
+
+            if ((u === 'admin' || u === 'admin@globalbiz.ng' || u === 'Amina') && (p === 'admin123' || p === '09090809080')) {
+                localStorage.setItem('globalbiz_admin_session', 'active');
+                showToast('Welcome to Administrator Desk, Amina!', 'success');
+                adminForm.reset();
+                loadAdminPortal();
+            } else {
+                showToast('Invalid administrator username or password!', 'error');
+            }
+        });
+    }
+
     // Seller KYC Form
     const kycForm = document.getElementById('sellerKycForm');
     if (kycForm) {
