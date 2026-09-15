@@ -589,6 +589,9 @@
                         <button class="admin-tab-btn active" onclick="switchAdminTab('overview', this)">
                             <i class="fa-solid fa-chart-pie"></i> Overview
                         </button>
+                        <button class="admin-tab-btn" onclick="switchAdminTab('members', this)">
+                            <i class="fa-solid fa-address-card"></i> All Members (<span id="adminTabMemberCount">7</span>)
+                        </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('sellers', this)">
                             <i class="fa-solid fa-user-check"></i> Manage Sellers (<span id="adminTabSellerCount">3</span>)
                         </button>
@@ -606,29 +609,36 @@
                     <!-- Admin Tab 0: Overview & Live Activities Feed -->
                     <div id="admin-overview-view">
                         <!-- KPI Metric Counters -->
-                        <div class="seller-stats-grid">
-                            <div class="stat-card">
+                        <div class="seller-stats-grid" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));">
+                            <div class="stat-card" onclick="switchAdminTab('members', document.querySelectorAll('.admin-tab-btn')[1])" style="cursor:pointer;" title="Click to view all members">
+                                <div class="stat-icon green"><i class="fa-solid fa-users-viewfinder"></i></div>
+                                <div>
+                                    <div class="stat-value" id="adminTotalMembers">7</div>
+                                    <div class="stat-label">Total Members</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" onclick="switchAdminTab('sellers', document.querySelectorAll('.admin-tab-btn')[2])" style="cursor:pointer;">
                                 <div class="stat-icon green"><i class="fa-solid fa-store"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalSellers">3</div>
                                     <div class="stat-label">Registered Sellers</div>
                                 </div>
                             </div>
-                            <div class="stat-card">
+                            <div class="stat-card" onclick="switchAdminTab('buyers', document.querySelectorAll('.admin-tab-btn')[3])" style="cursor:pointer;">
                                 <div class="stat-icon indigo"><i class="fa-solid fa-users"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalBuyers">4</div>
                                     <div class="stat-label">Registered Buyers</div>
                                 </div>
                             </div>
-                            <div class="stat-card">
+                            <div class="stat-card" onclick="switchAdminTab('products', document.querySelectorAll('.admin-tab-btn')[4])" style="cursor:pointer;">
                                 <div class="stat-icon green"><i class="fa-solid fa-boxes-stacked"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalProducts">6</div>
                                     <div class="stat-label">Active Listings</div>
                                 </div>
                             </div>
-                            <div class="stat-card">
+                            <div class="stat-card" onclick="switchAdminTab('requests', document.querySelectorAll('.admin-tab-btn')[5])" style="cursor:pointer;">
                                 <div class="stat-icon amber"><i class="fa-solid fa-handshake-angle"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalRequests">1</div>
@@ -649,6 +659,50 @@
                             <div id="adminActivityLogList" style="display:flex; flex-direction:column; gap:10px;">
                                 <!-- Loaded dynamically via JS -->
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Tab 0b: All Registered Members Directory -->
+                    <div id="admin-members-view" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+                            <div>
+                                <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-id-card-clip" style="color:var(--brand-green);"></i> Registered Members & User Directory
+                                </h3>
+                                <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
+                                    Complete overview of all verified diaspora and local members, sellers, and buyers.
+                                </p>
+                            </div>
+                            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+                                <div class="input-with-icon" style="width:220px;">
+                                    <i class="fa-solid fa-magnifying-glass input-icon" style="font-size:0.85rem;"></i>
+                                    <input type="text" id="adminMemberSearchInput" oninput="handleAdminMemberSearch(this.value)" placeholder="Search name, phone, ID, city..." class="form-input form-input-icon" style="padding:7px 10px 7px 34px !important; font-size:0.8rem;">
+                                </div>
+                                <div style="display:flex; gap:4px;">
+                                    <button class="hero-loc-pill active" id="memberFilterAll" onclick="handleFilterMembers('all', this)" style="padding:4px 10px; font-size:0.72rem;">All</button>
+                                    <button class="hero-loc-pill" id="memberFilterSellers" onclick="handleFilterMembers('seller', this)" style="padding:4px 10px; font-size:0.72rem;">Sellers</button>
+                                    <button class="hero-loc-pill" id="memberFilterBuyers" onclick="handleFilterMembers('buyer', this)" style="padding:4px 10px; font-size:0.72rem;">Buyers</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Member ID & Full Name</th>
+                                        <th>Role / Account Type</th>
+                                        <th>Phone / WhatsApp</th>
+                                        <th>Location (City & State)</th>
+                                        <th>Registration Date</th>
+                                        <th>Status & Verification</th>
+                                        <th>Admin Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminMembersTableBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 

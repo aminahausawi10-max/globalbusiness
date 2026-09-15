@@ -823,6 +823,8 @@ function switchAdminTab(tabName, btnEl) {
     if (btnEl) btnEl.classList.add('active');
 
     document.getElementById('admin-overview-view').style.display = tabName === 'overview' ? 'block' : 'none';
+    const memView = document.getElementById('admin-members-view');
+    if (memView) memView.style.display = tabName === 'members' ? 'block' : 'none';
     document.getElementById('admin-sellers-view').style.display = tabName === 'sellers' ? 'block' : 'none';
     document.getElementById('admin-buyers-view').style.display = tabName === 'buyers' ? 'block' : 'none';
     document.getElementById('admin-products-view').style.display = tabName === 'products' ? 'block' : 'none';
@@ -848,28 +850,33 @@ async function loadAdminPortal() {
     if (quickBar) quickBar.style.display = 'block';
     updateNavAuthUI();
 
+    const members = await API.getMembers();
     const sellers = await API.getSellers();
     const buyers = await API.getBuyers();
     const products = await API.getProducts();
     const requests = await API.getBuyingRequests();
 
     // 0. Update KPI Counters
+    const totalMembersEl = document.getElementById('adminTotalMembers');
     const totalSellersEl = document.getElementById('adminTotalSellers');
     const totalBuyersEl = document.getElementById('adminTotalBuyers');
     const totalProductsEl = document.getElementById('adminTotalProducts');
     const totalRequestsEl = document.getElementById('adminTotalRequests');
 
+    if (totalMembersEl) totalMembersEl.innerText = members.length;
     if (totalSellersEl) totalSellersEl.innerText = sellers.length;
     if (totalBuyersEl) totalBuyersEl.innerText = buyers.length;
     if (totalProductsEl) totalProductsEl.innerText = products.length;
     if (totalRequestsEl) totalRequestsEl.innerText = requests.length;
 
     // Tab badges
+    const tabMemberCount = document.getElementById('adminTabMemberCount');
     const tabSellerCount = document.getElementById('adminTabSellerCount');
     const tabBuyerCount = document.getElementById('adminTabBuyerCount');
     const tabProductCount = document.getElementById('adminTabProductCount');
     const tabRequestCount = document.getElementById('adminTabRequestCount');
 
+    if (tabMemberCount) tabMemberCount.innerText = members.length;
     if (tabSellerCount) tabSellerCount.innerText = sellers.length;
     if (tabBuyerCount) tabBuyerCount.innerText = buyers.length;
     if (tabProductCount) tabProductCount.innerText = products.length;
@@ -933,6 +940,9 @@ async function loadAdminPortal() {
         `;
     }
 
+    // 0c. Render All Members Directory Table
+    renderAdminMembersTable(members);
+
     // 1. Render Sellers Table
     renderAdminSellersTable(sellers);
 
@@ -976,6 +986,104 @@ async function loadAdminPortal() {
             </tr>
         `).join('');
     }
+}
+
+// ==========================================
+// ALL MEMBERS DIRECTORY HANDLERS (ADMIN)
+// ==========================================
+function renderAdminMembersTable(members) {
+    const tbody = document.getElementById('adminMembersTableBody');
+    if (!tbody) return;
+    if (!members || members.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--text-muted); font-size:0.84rem;"><i class="fa-solid fa-user-slash" style="font-size:1.5rem; margin-bottom:8px; display:block;"></i>No registered members found matching your search.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = members.map(m => {
+        const isSeller = (m.role || '').toLowerCase() === 'seller';
+        const roleBadge = isSeller 
+            ? `<span class="badge" style="background:#ECFDF5; color:#059669; font-weight:800; border:1px solid #A7F3D0;"><i class="fa-solid fa-store"></i> Seller Store</span>`
+            : `<span class="badge" style="background:#EFF6FF; color:#2563EB; font-weight:800; border:1px solid #BFDBFE;"><i class="fa-solid fa-bag-shopping"></i> Verified Buyer</span>`;
+        
+        const cleanPhone = (m.phone || '').replace(/[^0-9]/g, '');
+        const waLink = `https://wa.me/${cleanPhone}`;
+
+        return `
+            <tr>
+                <td>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="width:36px; height:36px; border-radius:50%; background:${isSeller ? 'var(--brand-green-soft)' : '#EFF6FF'}; color:${isSeller ? 'var(--brand-green)' : '#2563EB'}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.9rem; flex-shrink:0;">
+                            ${(m.full_name || 'U').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <strong style="color:var(--primary); font-size:0.85rem;">${m.full_name}</strong>
+                            <div style="font-size:0.72rem; color:var(--text-muted); font-family:monospace; font-weight:700;">ID: ${m.member_id}</div>
+                            ${m.store_name && m.store_name !== 'Direct Customer' ? `<div style="font-size:0.72rem; color:var(--brand-green); font-weight:700;"><i class="fa-solid fa-shop"></i> ${m.store_name}</div>` : ''}
+                        </div>
+                    </div>
+                </td>
+                <td>${roleBadge}</td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <strong style="font-size:0.82rem;">${m.phone}</strong>
+                        ${cleanPhone ? `<a href="${waLink}" target="_blank" style="color:#22C55E; font-size:0.95rem;" title="Chat Member on WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>` : ''}
+                    </div>
+                </td>
+                <td>
+                    <div style="font-size:0.82rem; font-weight:700;">
+                        <i class="fa-solid fa-location-dot" style="color:#EF4444; font-size:0.75rem;"></i> ${m.location || m.city || 'Abuja'}
+                    </div>
+                    <span style="font-size:0.7rem; color:var(--text-muted);">${m.country || 'Nigeria'}</span>
+                </td>
+                <td>
+                    <span style="font-size:0.78rem; color:var(--text-secondary);">${m.registered_at || '2026-08-15'}</span>
+                </td>
+                <td>
+                    <span class="badge ${m.verified ? 'badge-verified' : 'badge-warning'}" style="font-size:0.72rem;">
+                        ${m.verified ? '<i class="fa-solid fa-circle-check"></i> Verified' : '<i class="fa-solid fa-clock"></i> Active'}
+                    </span>
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <button class="btn btn-sm ${m.verified ? 'btn-outline' : 'btn-success'}" onclick="handleToggleMemberVerify(${m.id}, '${m.source_type || 'seller'}', ${m.verified ? 0 : 1})" title="${m.verified ? 'Revoke verification badge' : 'Verify member'}">
+                            ${m.verified ? 'Revoke' : 'Verify'}
+                        </button>
+                        <button class="btn btn-sm btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="handleDeleteMember(${m.id}, '${m.source_type || 'seller'}')" title="Delete Member">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+let currentAdminMemberFilter = 'all';
+
+async function handleFilterMembers(role, btnEl) {
+    currentAdminMemberFilter = role;
+    document.querySelectorAll('#admin-members-view .hero-loc-pill').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    const searchVal = document.getElementById('adminMemberSearchInput')?.value || '';
+    const members = await API.getMembers({ role, q: searchVal });
+    renderAdminMembersTable(members);
+}
+
+async function handleAdminMemberSearch(query) {
+    const members = await API.getMembers({ role: currentAdminMemberFilter, q: query });
+    renderAdminMembersTable(members);
+}
+
+async function handleToggleMemberVerify(id, sourceType, newStatus) {
+    await API.toggleMemberVerification(id, sourceType, newStatus);
+    showToast(newStatus ? 'Member verified with verified badge!' : 'Member verification revoked.', 'info');
+    loadAdminPortal();
+}
+
+async function handleDeleteMember(id, sourceType) {
+    if (!confirm('Are you sure you want to remove this member from the directory?')) return;
+    await API.deleteMember(id, sourceType);
+    showToast('Member removed successfully.', 'success');
+    loadAdminPortal();
 }
 
 function renderAdminSellersTable(sellers) {
@@ -1198,12 +1306,21 @@ function setupForms() {
                     location: location,
                     store_name: storeName
                 });
+            } else {
+                // Register buyer in API/state
+                await API.createBuyer({
+                    full_name: fullName,
+                    phone: phone,
+                    location: location,
+                    city: location
+                });
             }
 
             localStorage.setItem('globalbiz_user_session', JSON.stringify(userSession));
             updateNavAuthUI();
             closeModal('userAuthModal');
             userRegForm.reset();
+            loadAdminPortal();
 
             if (role === 'seller') {
                 showToast(`Welcome Seller ${fullName}! Your seller dashboard is ready.`, 'success');

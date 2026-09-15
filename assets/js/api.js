@@ -171,6 +171,86 @@ const API = {
         return { status: 'success', message: 'Buyer removed successfully from system' };
     },
 
+    // Unified Members Directory (Sellers, Buyers & Platform Members)
+    async getMembers(params = {}) {
+        this.initLocalData();
+        const sellersList = this.fallbackSellers.map(s => ({
+            id: s.id,
+            member_id: s.id_number || `NIG-SELLER-${s.id}`,
+            full_name: s.full_name,
+            phone: s.phone,
+            role: 'Seller',
+            store_name: s.store_name,
+            location: s.location || s.city || 'Nigeria',
+            city: s.city || s.location || 'Abuja',
+            country: s.country || 'Nigeria',
+            verified: s.verified !== undefined ? s.verified : 1,
+            registered_at: s.registered_at || '2026-08-10',
+            source_type: 'seller'
+        }));
+
+        const buyersList = this.fallbackBuyers.map(b => ({
+            id: b.id,
+            member_id: `NIG-BUYER-${b.id}`,
+            full_name: b.full_name,
+            phone: b.phone,
+            role: 'Buyer',
+            store_name: 'Direct Customer',
+            location: b.location || b.city || 'Nigeria',
+            city: b.city || b.location || 'Abuja',
+            country: b.country || 'Nigeria',
+            verified: 1,
+            registered_at: b.registered_at || '2026-08-12',
+            source_type: 'buyer',
+            orders_count: b.orders_count || 0
+        }));
+
+        let combined = [...sellersList, ...buyersList];
+
+        if (params.role && params.role !== 'all') {
+            combined = combined.filter(m => m.role.toLowerCase() === params.role.toLowerCase());
+        }
+
+        if (params.verified !== undefined) {
+            combined = combined.filter(m => m.verified == params.verified);
+        }
+
+        if (params.q) {
+            const q = params.q.toLowerCase().trim();
+            combined = combined.filter(m => 
+                (m.full_name && m.full_name.toLowerCase().includes(q)) ||
+                (m.member_id && m.member_id.toLowerCase().includes(q)) ||
+                (m.phone && m.phone.includes(q)) ||
+                (m.location && m.location.toLowerCase().includes(q)) ||
+                (m.store_name && m.store_name.toLowerCase().includes(q)) ||
+                (m.role && m.role.toLowerCase().includes(q))
+            );
+        }
+
+        return combined;
+    },
+
+    async deleteMember(id, sourceType = 'seller') {
+        if (sourceType === 'seller') {
+            return await this.deleteSeller(id);
+        } else {
+            return await this.deleteBuyer(id);
+        }
+    },
+
+    async toggleMemberVerification(id, sourceType = 'seller', isVerified = 1) {
+        if (sourceType === 'seller') {
+            return await this.verifySeller(id, isVerified);
+        } else {
+            const buyer = this.fallbackBuyers.find(b => b.id == id);
+            if (buyer) {
+                buyer.verified = isVerified;
+                this.saveLocalData('buyers', this.fallbackBuyers);
+            }
+            return { status: 'success', message: 'Buyer verification status updated' };
+        }
+    },
+
     async getProducts(params = {}) {
         this.initLocalData();
         const query = new URLSearchParams(params).toString();
