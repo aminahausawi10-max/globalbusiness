@@ -400,9 +400,17 @@ async function loadMarketplaceProducts(filterParams = {}) {
     if (marketGrid) {
         marketGrid.innerHTML = products.length > 0 
             ? renderProductsHtml(products) 
-            : `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-secondary);">
-                <i class="fa-solid fa-box-open" style="font-size:2.5rem; color:var(--text-muted); margin-bottom:10px;"></i>
-                <p>No products found matching your search.</p>
+            : `<div style="grid-column: 1/-1; text-align:center; padding:50px 20px; background:var(--bg-alt); border-radius:var(--radius-lg); border:1.5px dashed var(--border);">
+                <div style="width:56px; height:56px; background:var(--brand-green-soft); color:var(--brand-green); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:12px;">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                </div>
+                <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin-bottom:6px;">No Goods Listed Yet</h3>
+                <p style="font-size:0.85rem; color:var(--text-secondary); max-width:440px; margin:0 auto 16px auto;">
+                    Marketplace goods are posted directly by verified merchants. Are you a seller? Add and publish your products now so buyers can discover and buy them!
+                </p>
+                <button class="btn btn-primary" onclick="handlePostAdClick()">
+                    <i class="fa-solid fa-plus"></i> Post & Publish a Good
+                </button>
                </div>`;
     }
 }

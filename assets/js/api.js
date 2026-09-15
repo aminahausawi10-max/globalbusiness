@@ -529,8 +529,15 @@ const API = {
                 else localStorage.setItem('globalbiz_buyers_store', JSON.stringify(this.fallbackBuyers));
 
                 const p = localStorage.getItem('globalbiz_products_store');
-                if (p) this.fallbackProducts = JSON.parse(p);
-                else localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                if (p) {
+                    const parsed = JSON.parse(p);
+                    // Filter out unposted mock seed items (IDs 1 to 6) so ONLY products posted by actual sellers are displayed
+                    this.fallbackProducts = parsed.filter(item => (item.id > 1000) || (item.user_id && item.id > 6));
+                    localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                } else {
+                    this.fallbackProducts = [];
+                    localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
+                }
             } catch (e) {
                 console.warn('Local storage sync notice', e);
             }
@@ -617,165 +624,8 @@ const API = {
         }
     ],
 
-    // Seed Marketplace Products Directly Matching User Prompt
-    fallbackProducts: [
-        {
-            id: 1,
-            business_id: 1,
-            business_name: 'Amina Luxury Ankara & Fabrics',
-            seller_name: 'Amina',
-            country: 'Nigeria',
-            city: 'Abuja',
-            area: 'Wuse 2',
-            phone: '+234 803 456 7890',
-            whatsapp: '+2348034567890',
-            business_verified: 1,
-            category_id: 2,
-            title: 'Authentic 6-Yards Premium Ankara Material',
-            description: '100% pure cotton, non-fade vibrant colors. Suitable for men and women traditional wear, weddings, and events.',
-            price: 9.68, // Exactly ₦15,000 at 1550 rate
-            currency: 'USD',
-            is_service: 0,
-            stock_status: 'In Stock',
-            size: '6 Yards (Full Piece)',
-            color: 'Vibrant Multi-Color Print',
-            brand: 'Original Holland Vlisco Print',
-            photo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
-            video_url: '',
-            audio_url: '',
-            delivery_info: 'Same-day delivery in Abuja, 24h interstate dispatch nationwide.'
-        },
-        {
-            id: 2,
-            business_id: 2,
-            business_name: 'Hajiya Wigs & Beauty Palace',
-            seller_name: 'Hajiya Fatima',
-            country: 'Nigeria',
-            city: 'Abuja',
-            area: 'Garki 2',
-            phone: '+234 814 999 4455',
-            whatsapp: '+2348149994455',
-            business_verified: 1,
-            category_id: 3,
-            title: 'Luxury Human Hair Wig (HD Lace Frontal)',
-            description: '100% natural human hair, pre-plucked hairline with bleached knots. Can be bleached, dyed, and heat styled.',
-            price: 51.61, // Exactly ₦80,000 at 1550 rate
-            currency: 'USD',
-            is_service: 0,
-            stock_status: 'In Stock',
-            size: '22 Inches / 250g Density',
-            color: 'Natural Black #1B',
-            brand: 'Virgin Glam Hair',
-            photo_url: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&auto=format&fit=crop&q=80',
-            video_url: '',
-            audio_url: '',
-            delivery_info: 'Free delivery within Abuja metropolis.'
-        },
-        {
-            id: 3,
-            business_id: 2,
-            business_name: 'Hajiya Wigs & Beauty Palace',
-            seller_name: 'Hajiya Fatima',
-            country: 'Nigeria',
-            city: 'Kano',
-            area: 'Zoo Road',
-            phone: '+234 814 999 4455',
-            whatsapp: '+2348149994455',
-            business_verified: 1,
-            category_id: 3,
-            title: 'Double Drawn Bone Straight Wig (Super Silky)',
-            description: 'Super double drawn Vietnamese bone straight hair. 100% tangle free, flows naturally in the wind, long-lasting shine.',
-            price: 77.42, // Exactly ₦120,000 at 1550 rate
-            currency: 'USD',
-            is_service: 0,
-            stock_status: 'In Stock',
-            size: '28 Inches (Super Long)',
-            color: 'Jet Black / Piano Color',
-            brand: 'Hajiya Royal Bone Straight',
-            photo_url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=80',
-            video_url: '',
-            audio_url: '',
-            delivery_info: 'Same-day pickup in Kano or express air/road cargo nationwide.'
-        },
-        {
-            id: 4,
-            business_id: 3,
-            business_name: 'Kaduna Premium Hair & Styles',
-            seller_name: 'Blessing',
-            country: 'Nigeria',
-            city: 'Kaduna',
-            area: 'Barnawa',
-            phone: '+234 805 123 9876',
-            whatsapp: '+2348051239876',
-            business_verified: 1,
-            category_id: 3,
-            title: 'Chic Short Bob Wig (Ready to Wear)',
-            description: 'Classic blunt-cut bob wig, comfortable breathable cap, glueless wear with adjustable straps.',
-            price: 22.58, // Exactly ₦35,000 at 1550 rate
-            currency: 'USD',
-            is_service: 0,
-            stock_status: 'In Stock',
-            size: '10 Inches Bob Cut',
-            color: 'Dark Brown & Auburn Highlights',
-            brand: 'Kaduna Chic Collection',
-            photo_url: 'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=600&auto=format&fit=crop&q=80',
-            video_url: '',
-            audio_url: '',
-            delivery_info: 'Available for immediate pickup in Kaduna or courier shipping.'
-        },
-        {
-            id: 5,
-            business_id: 3,
-            business_name: 'Kano Premium Agro & Yam Hub',
-            seller_name: 'Alhaji Bello',
-            country: 'Nigeria',
-            city: 'Kano',
-            area: 'Dawanau Market',
-            phone: '+234 803 111 2233',
-            whatsapp: '+2348031112233',
-            business_verified: 1,
-            category_id: 10,
-            title: 'Grade-A Fresh Benue Yams (Tubers in Bulk)',
-            description: 'Large size export-quality fresh yams directly from farm gate. Ideal for wholesale, restaurants, or household storage.',
-            price: 16.13, // ₦25,000
-            currency: 'USD',
-            is_service: 0,
-            stock_status: 'In Stock',
-            size: 'Large (3-5kg each)',
-            color: 'Natural Tuber',
-            brand: 'Benue Harvest',
-            photo_url: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80',
-            video_url: '',
-            audio_url: '',
-            delivery_info: 'Interstate truck haulage & express same-day dispatch'
-        },
-        {
-            id: 6,
-            business_id: 1,
-            business_name: 'Abuja SmartTech Banex Hub',
-            seller_name: 'Emeka Banex',
-            country: 'Nigeria',
-            city: 'Abuja',
-            area: 'Wuse 2 Banex',
-            phone: '+234 809 999 8888',
-            whatsapp: '+2348099998888',
-            business_verified: 1,
-            category_id: 7,
-            title: 'Samsung Galaxy S23 Ultra (512GB 5G Phantom Black)',
-            description: 'Original brand new factory unlocked with 1-year warranty and original Samsung 45W supercharger.',
-            price: 548.38, // ₦850,000
-            currency: 'USD',
-            is_service: 0,
-            stock_status: 'In Stock',
-            size: '512GB Storage / 12GB RAM',
-            color: 'Phantom Black',
-            brand: 'Samsung Original',
-            photo_url: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop&q=80',
-            video_url: '',
-            audio_url: '',
-            delivery_info: 'Banex walk-in pickup or secured doorstep delivery in Abuja.'
-        }
-    ],
+    // Marketplace Products (Only items actually posted & published by sellers)
+    fallbackProducts: [],
 
     fallbackBuyingRequests: [
         {
