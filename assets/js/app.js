@@ -1498,3 +1498,76 @@ function selectAssistancePackage(pkgName, fee, el) {
     if (pkgInput) pkgInput.value = pkgName;
     if (feeInput) feeInput.value = fee;
 }
+
+/* ==========================================================================
+   PWA (PROGRESSIVE WEB APP) SERVICE WORKER & APP LIFECYCLE
+   ========================================================================== */
+let deferredPwaInstallPrompt = null;
+
+// 1. Register Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+                console.log('✅ [GlobalBiz PWA] Service Worker registered successfully:', registration.scope);
+            })
+            .catch(error => {
+                console.warn('⚠️ [GlobalBiz PWA] Service Worker registration failed:', error);
+            });
+    });
+}
+
+// 2. Catch native beforeinstallprompt event (Android, Chrome, Edge)
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPwaInstallPrompt = e;
+    const installBtn = document.getElementById('pwaInstallBtn');
+    if (installBtn) {
+        installBtn.style.display = 'inline-flex';
+    }
+});
+
+// 3. User trigger to install PWA app
+async function installPwaApp() {
+    if (deferredPwaInstallPrompt) {
+        deferredPwaInstallPrompt.prompt();
+        const { outcome } = await deferredPwaInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+            showToast('🎉 Thank you for installing GlobalBiz!', 'success');
+        }
+        deferredPwaInstallPrompt = null;
+        const installBtn = document.getElementById('pwaInstallBtn');
+        if (installBtn) installBtn.style.display = 'none';
+    } else {
+        // Fallback instructions for iOS Safari or already installed browsers
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            showToast('To install on iPhone/iPad: Tap Share (⎋) then "Add to Home Screen"', 'info');
+        } else {
+            showToast('To install: Tap your browser menu (⋮) and select "Install app" or "Add to Home Screen"', 'info');
+        }
+    }
+}
+
+// 4. Listen for successful PWA installation
+window.addEventListener('appinstalled', () => {
+    console.log('✅ [GlobalBiz PWA] App installed to user device');
+    showToast('🎉 GlobalBiz is now installed on your home screen!', 'success');
+    const installBtn = document.getElementById('pwaInstallBtn');
+    if (installBtn) installBtn.style.display = 'none';
+    deferredPwaInstallPrompt = null;
+});
+
+// 5. Network Connectivity Listeners (Online / Offline state handling)
+window.addEventListener('online', () => {
+    const offlineIndicator = document.getElementById('pwaOfflineIndicator');
+    if (offlineIndicator) offlineIndicator.style.display = 'none';
+    showToast('🟢 Connection restored! Live marketplace synchronized.', 'success');
+});
+
+window.addEventListener('offline', () => {
+    const offlineIndicator = document.getElementById('pwaOfflineIndicator');
+    if (offlineIndicator) offlineIndicator.style.display = 'block';
+    showToast('🟠 You are currently offline. Viewing cached products & catalog.', 'warning');
+});
+
