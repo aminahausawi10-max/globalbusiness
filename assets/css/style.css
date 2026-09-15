@@ -1656,11 +1656,74 @@ main {
 
 @media (max-width: 640px) {
     .container {
-        padding: 0 12px;
+        padding: 0 10px;
+    }
+
+    .navbar {
+        padding: 7px 0;
+    }
+
+    .nav-container {
+        gap: 6px;
+    }
+
+    .nav-brand {
+        gap: 6px;
+        min-width: 0;
+    }
+
+    .brand-logo-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+
+    .brand-main {
+        font-size: 0.88rem;
+        white-space: nowrap;
+    }
+
+    .brand-sub {
+        display: none;
+    }
+
+    .nav-actions {
+        gap: 5px;
+        flex-shrink: 0;
+    }
+
+    .currency-wrapper {
+        padding: 3px 6px;
+    }
+
+    .currency-select {
+        font-size: 0.72rem;
+    }
+
+    .pwa-install-pill {
+        padding: 5px 8px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .pwa-install-pill .nav-install-text {
+        display: none;
+    }
+
+    .nav-signin-btn {
+        padding: 5px 10px !important;
+        font-size: 0.76rem !important;
+        font-weight: 800 !important;
+        white-space: nowrap !important;
+        border-radius: var(--radius-full) !important;
+    }
+
+    .profile-trigger-pill {
+        padding: 4px 8px;
+        font-size: 0.76rem;
     }
 
     .hero-section {
-        padding: 20px 0 16px 0;
+        padding: 16px 0 14px 0;
     }
 
     .hero-title {
