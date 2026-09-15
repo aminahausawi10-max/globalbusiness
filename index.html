@@ -2,31 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Business Marketplace & Professional Buying Assistance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GlobalBiz — Public Online Marketplace & Verified Seller Portal</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Modern Stylesheet -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Decent & Professional Stylesheet (v2.2 Cache Bust) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.2">
 </head>
 <body>
 
     <!-- ==========================================================================
-       TOP NAVBAR
+       TOP APP NAVBAR (RESPONSIVE & CLEAN)
        ========================================================================== -->
     <header class="navbar">
-        <div class="nav-container">
+        <div class="container nav-container">
             <a href="#" class="nav-brand" onclick="switchPage('home'); return false;">
                 <div class="brand-logo-circle">
-                    <i class="fa-solid fa-earth-americas"></i>
+                    <i class="fa-solid fa-store"></i>
                 </div>
                 <div class="brand-text">
                     <span class="brand-main">GLOBAL BIZ</span>
-                    <span class="brand-sub">Marketplace & Directory</span>
+                    <span class="brand-sub">Verified Marketplace</span>
                 </div>
             </a>
 
@@ -34,32 +34,42 @@
             <nav class="nav-menu">
                 <a href="#" class="nav-link active" data-page="home" onclick="switchPage('home'); return false;">Home</a>
                 <a href="#" class="nav-link" data-page="marketplace" onclick="switchPage('marketplace'); return false;">Marketplace</a>
-                <a href="#" class="nav-link" data-page="directory" onclick="switchPage('directory'); return false;">Business Directory</a>
+                <a href="#" class="nav-link" data-page="seller" onclick="switchPage('seller'); return false;">
+                    <i class="fa-solid fa-user-check" style="color:var(--brand-green);"></i> Seller Portal
+                </a>
                 <a href="#" class="nav-link" data-page="assistance" onclick="switchPage('assistance'); return false;">Buying Assistance</a>
                 <a href="#" class="nav-link" data-page="admin" onclick="switchPage('admin'); return false;">
-                    <i class="fa-solid fa-shield-halved"></i> Admin Portal
+                    <i class="fa-solid fa-shield-halved"></i> Admin Desk
                 </a>
             </nav>
 
             <!-- Right Header Actions -->
             <div class="nav-actions">
                 <div class="currency-wrapper">
-                    <i class="fa-solid fa-coins"></i>
                     <select id="currencySelector" class="currency-select" title="Change Currency">
-                        <option value="USD">USD ($)</option>
-                        <option value="NGN">NGN (₦)</option>
-                        <option value="SAR">SAR (﷼)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
+                        <option value="NGN" selected>₦ NGN</option>
+                        <option value="USD">$ USD</option>
+                        <option value="SAR">﷼ SAR</option>
+                        <option value="EUR">€ EUR</option>
+                        <option value="GBP">£ GBP</option>
                     </select>
                 </div>
 
-                <button class="btn btn-primary" onclick="switchPage('post');">
-                    <i class="fa-solid fa-plus"></i> Post Free Ad / Register
+                <button class="btn-post-header" onclick="switchPage('seller')">
+                    <i class="fa-solid fa-plus"></i> <span>Post Ad</span>
                 </button>
             </div>
         </div>
     </header>
+
+    <!-- ==========================================================================
+       MOBILE STORIES CATEGORIES BAR
+       ========================================================================== -->
+    <div class="mobile-stories-bar">
+        <div class="stories-track" id="storiesTrack">
+            <!-- Dynamically populated via JS -->
+        </div>
+    </div>
 
     <!-- ==========================================================================
        MAIN PAGE VIEWS
@@ -67,74 +77,68 @@
     <main>
 
         <!-- ======================================================================
-           PAGE 1: HOME
+           PAGE 1: PUBLIC HOME & DISCOVERY
            ====================================================================== -->
         <div id="page-home" class="page-view active">
             
-            <!-- Hero Banner -->
+            <!-- Hero Search Banner -->
             <section class="hero-section">
                 <div class="container hero-content">
                     <div class="hero-badge">
-                        <i class="fa-solid fa-globe"></i> Global Business Directory & Sourcing
+                        <i class="fa-solid fa-shield-halved"></i> 100% Verified Sellers & Sourcing Platform
                     </div>
                     <h1 class="hero-title">
-                        Buy, Sell & Sourcing Across <span class="text-highlight">Global Markets</span>
+                        Buy & Sell Directly Across <span class="text-highlight">Abuja, Kano, Kaduna & Nigeria</span>
                     </h1>
                     <p class="hero-description">
-                        Connect directly with verified local and international suppliers, explore multimedia product ads (Photos, Videos, Voice Pitches), or hire our certified agents for professional buying assistance.
+                        Connect with verified local sellers, browse genuine products (Ankara, Wigs, Phones, Agricultural Produce), or request our certified agents for purchase inspection & delivery.
                     </p>
 
-                    <!-- Main Search Bar -->
+                    <!-- Fast Search Card -->
                     <div class="search-card">
                         <form id="mainSearchForm" class="search-form">
                             <div class="search-field search-query">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" id="mainSearchInput" placeholder="What are you looking for? (e.g. Fresh Honey, Tailored Suits, Car Wash)">
+                                <i class="fa-solid fa-magnifying-glass" style="color:var(--brand-green);"></i>
+                                <input type="text" id="mainSearchInput" placeholder="What are you looking for? (e.g. Wig, Ankara, Yam, iPhone)">
                             </div>
 
                             <div class="search-field search-select-field">
-                                <i class="fa-solid fa-layer-group"></i>
+                                <i class="fa-solid fa-location-dot" style="color:#EF4444;"></i>
+                                <select id="locationSelect">
+                                    <option value="">All Locations</option>
+                                    <option value="Abuja">Abuja</option>
+                                    <option value="Kano">Kano</option>
+                                    <option value="Kaduna">Kaduna</option>
+                                    <option value="Lagos">Lagos</option>
+                                    <option value="Nigeria">All Nigeria</option>
+                                </select>
+                            </div>
+
+                            <div class="search-field search-select-field">
+                                <i class="fa-solid fa-layer-group" style="color:var(--brand-green);"></i>
                                 <select id="heroCategorySelect">
                                     <option value="">All Categories</option>
-                                    <!-- Injected dynamically -->
                                 </select>
                             </div>
-
-                            <div class="search-field search-select-field">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <select id="locationSelect">
-                                    <option value="">All Countries</option>
-                                    <option value="Nigeria">Nigeria</option>
-                                    <option value="Saudi Arabia">Saudi Arabia</option>
-                                    <option value="United States">United States</option>
-                                    <option value="United Kingdom">United Kingdom</option>
-                                    <option value="United Arab Emirates">UAE</option>
-                                </select>
-                            </div>
-
-                            <button type="button" id="btnNearMe" class="btn btn-outline" title="Search near my GPS location">
-                                <i class="fa-solid fa-crosshairs"></i> Near Me
-                            </button>
 
                             <button type="submit" class="btn btn-primary search-submit-btn">
                                 <i class="fa-solid fa-magnifying-glass"></i> Search
                             </button>
                         </form>
 
-                        <!-- Quick Natural Query Examples -->
+                        <!-- Quick Popular Tags -->
                         <div class="quick-tags">
-                            <span class="quick-tags-label">Popular Searches:</span>
-                            <button class="tag-pill" onclick="searchFor('Benue Fresh Yams')">Benue Fresh Yams</button>
-                            <button class="tag-pill" onclick="searchFor('Luxury Arabic Menswear in Riyadh')">Arabic Menswear in Riyadh</button>
-                            <button class="tag-pill" onclick="searchFor('Smartphone Screen Repair in Kano')">Phone Repair in Kano</button>
-                            <button class="tag-pill" onclick="searchFor('Custom Walnut Dining Table')">Walnut Furniture</button>
-                            <button class="tag-pill" onclick="searchFor('Ceramic Car Wash and Detail')">Car Wash Near Me</button>
+                            <span class="quick-tags-label">Trending Searches:</span>
+                            <button class="tag-pill" onclick="searchFor('Wig')">💇 Wigs (Bone Straight & Human Hair)</button>
+                            <button class="tag-pill" onclick="searchFor('Ankara')">👗 Ankara Material</button>
+                            <button class="tag-pill" onclick="searchFor('Benue Yam')">🌾 Benue Yam (Kano)</button>
+                            <button class="tag-pill" onclick="searchFor('Samsung')">📱 Mobile Phones</button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Professional Buying Assistance Concierge Banner -->
+            <!-- Buying Assistance Concierge Promo -->
             <section class="assistance-promo-section">
                 <div class="container">
                     <div class="assistance-promo-card">
@@ -143,41 +147,24 @@
                         </div>
                         <div class="assistance-promo-text">
                             <h3>Need Professional Buying Assistance?</h3>
-                            <p>Can't find a reliable seller, buying from another city or country, or need someone to negotiate prices? Our certified sourcing desk inspects, negotiates, and coordinates your entire purchase for an agreed fee.</p>
+                            <p>Ordering from another city like Kano, Kaduna or Abuja? Our certified sourcing desk visits the seller, inspects the item, negotiates the wholesale price, and secures your delivery.</p>
                         </div>
                         <button class="btn btn-white" onclick="switchPage('assistance')">
-                            Request Buying Assistance <i class="fa-solid fa-arrow-right"></i>
+                            Request Assistance <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
             </section>
 
-            <!-- 30+ Categories Section -->
+            <!-- Featured Marketplace Products (2 columns on mobile) -->
             <section class="section">
                 <div class="container">
                     <div class="section-header">
                         <div>
-                            <h2 class="section-title">Explore Business Categories</h2>
-                            <p class="section-subtitle">Browse products, verified companies, and services across 30+ international industries.</p>
+                            <h2 class="section-title">🔥 Featured Products & Offers</h2>
+                            <p class="section-subtitle">Real photos, live prices, and direct seller WhatsApp contacts.</p>
                         </div>
-                        <button class="btn btn-outline" onclick="switchPage('directory')">View All Directory</button>
-                    </div>
-
-                    <div id="homeCategoriesGrid" class="categories-grid">
-                        <!-- Loaded dynamically via JS -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- Featured Marketplace Listings (Photo / Video / Voice Pitches) -->
-            <section class="section section-light">
-                <div class="container">
-                    <div class="section-header">
-                        <div>
-                            <h2 class="section-title">Featured Products & Multimedia Ads</h2>
-                            <p class="section-subtitle">Real photos, video demonstrations, and voice notes directly from verified suppliers.</p>
-                        </div>
-                        <button class="btn btn-outline" onclick="switchPage('marketplace')">View All Marketplace</button>
+                        <button class="btn btn-outline btn-sm" onclick="switchPage('marketplace')">View All</button>
                     </div>
 
                     <div id="homeProductsGrid" class="products-grid">
@@ -186,15 +173,32 @@
                 </div>
             </section>
 
-            <!-- Verified Businesses Directory -->
+            <!-- Categories Grid -->
+            <section class="section section-light">
+                <div class="container">
+                    <div class="section-header">
+                        <div>
+                            <h2 class="section-title">📂 Explore Popular Categories</h2>
+                            <p class="section-subtitle">Browse products from top verified categories.</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="switchPage('marketplace')">Browse All</button>
+                    </div>
+
+                    <div id="homeCategoriesGrid" class="categories-grid">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Verified Sellers / Stores Section -->
             <section class="section">
                 <div class="container">
                     <div class="section-header">
                         <div>
-                            <h2 class="section-title">Verified Business Directory</h2>
-                            <p class="section-subtitle">Direct contact with vetted manufacturers, distributors, and licensed local professionals.</p>
+                            <h2 class="section-title">🏬 Verified Sellers & Stores</h2>
+                            <p class="section-subtitle">Vetted vendors with confirmed ID numbers and Next-of-Kin guarantors.</p>
                         </div>
-                        <button class="btn btn-outline" onclick="switchPage('directory')">Explore All Businesses</button>
+                        <button class="btn btn-outline btn-sm" onclick="switchPage('seller')">Join as Seller</button>
                     </div>
 
                     <div id="homeBusinessesGrid" class="businesses-grid">
@@ -206,75 +210,207 @@
         </div>
 
         <!-- ======================================================================
-           PAGE 2: MARKETPLACE
+           PAGE 2: MARKETPLACE & BUYER SEARCH
            ====================================================================== -->
         <div id="page-marketplace" class="page-view">
             <div class="container section">
                 <div class="section-header">
                     <div>
-                        <h2 class="section-title">Online Marketplace & Listings</h2>
-                        <p class="section-subtitle">Browse physical products and professional services with direct contact details.</p>
+                        <h2 class="section-title">🛍️ Explore Products & Listings</h2>
+                        <p class="section-subtitle">Search products, compare prices in ₦, and chat directly with sellers.</p>
                     </div>
-                    <button class="btn btn-primary" onclick="switchPage('post')">
-                        <i class="fa-solid fa-plus"></i> Publish An Ad
+                    <button class="btn btn-primary btn-sm" onclick="openAddProductModal()">
+                        <i class="fa-solid fa-plus"></i> Post An Item
                     </button>
                 </div>
 
                 <!-- Filter Controls -->
-                <div class="filter-bar">
-                    <input type="text" id="marketSearchFilter" class="form-input" style="max-width:320px;" placeholder="Filter marketplace..." oninput="filterMarketplace()">
-                    <select id="marketCategoryFilter" class="form-select" style="max-width:240px;" onchange="filterMarketplace()">
-                        <option value="">All Categories</option>
-                    </select>
-                    <select id="marketTypeFilter" class="form-select" style="max-width:180px;" onchange="filterMarketplace()">
-                        <option value="">All Types</option>
-                        <option value="0">Physical Products</option>
-                        <option value="1">Professional Services</option>
-                    </select>
+                <div class="card" style="margin-bottom:16px; padding:12px;">
+                    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                        <input type="text" id="marketSearchFilter" class="form-input" style="flex:2; min-width:160px;" placeholder="Search (e.g. Wig, Ankara, Shoes)..." oninput="filterMarketplace()">
+                        <select id="marketCategoryFilter" class="form-select" style="flex:1; min-width:130px;" onchange="filterMarketplace()">
+                            <option value="">All Categories</option>
+                        </select>
+                        <select id="marketCityFilter" class="form-select" style="flex:1; min-width:110px;" onchange="filterMarketplace()">
+                            <option value="">All Cities</option>
+                            <option value="Abuja">Abuja</option>
+                            <option value="Kano">Kano</option>
+                            <option value="Kaduna">Kaduna</option>
+                            <option value="Lagos">Lagos</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div id="marketplaceProductsGrid" class="products-grid" style="margin-top:24px;">
+                <div id="marketplaceProductsGrid" class="products-grid">
                     <!-- Loaded dynamically via JS -->
                 </div>
             </div>
         </div>
 
         <!-- ======================================================================
-           PAGE 3: BUSINESS DIRECTORY
+           PAGE 3: SELLER PORTAL & DASHBOARD
            ====================================================================== -->
-        <div id="page-directory" class="page-view">
+        <div id="page-seller" class="page-view">
             <div class="container section">
+                
+                <!-- Seller Portal Header -->
                 <div class="section-header">
                     <div>
-                        <h2 class="section-title">Global Business Directory</h2>
-                        <p class="section-subtitle">Search registered companies and service providers by country, city, and category.</p>
+                        <h2 class="section-title">🏪 Seller Portal & Dashboard</h2>
+                        <p class="section-subtitle">Manage your listed products, add new items, or complete your KYC verification.</p>
                     </div>
-                    <button class="btn btn-primary" onclick="switchPage('post')">
-                        <i class="fa-solid fa-store"></i> Register Your Business
+                    <button class="btn btn-primary btn-sm" onclick="openAddProductModal()">
+                        <i class="fa-solid fa-circle-plus"></i> Add New Product
                     </button>
                 </div>
 
-                <div id="directoryBusinessesGrid" class="businesses-grid">
-                    <!-- Loaded dynamically via JS -->
+                <!-- Seller Navigation Sub-Tabs -->
+                <div class="admin-nav-tabs">
+                    <button class="admin-tab-btn active" id="sellerTabDashboardBtn" onclick="switchSellerSubTab('dashboard')">
+                        <i class="fa-solid fa-gauge"></i> My Dashboard & Products
+                    </button>
+                    <button class="admin-tab-btn" id="sellerTabKycBtn" onclick="switchSellerSubTab('kyc')">
+                        <i class="fa-solid fa-id-card"></i> Seller KYC & Guarantor Info
+                    </button>
                 </div>
+
+                <!-- Sub-View 1: Seller Dashboard & My Products -->
+                <div id="seller-sub-dashboard">
+                    <!-- KPI Metrics -->
+                    <div class="seller-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon indigo"><i class="fa-solid fa-boxes-stacked"></i></div>
+                            <div>
+                                <div class="stat-value" id="sellerTotalListings">0</div>
+                                <div class="stat-label">My Listed Products</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                            <div>
+                                <div class="stat-value" id="sellerVerificationBadge">Verified</div>
+                                <div class="stat-label">KYC Seller Status</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon amber"><i class="fa-solid fa-eye"></i></div>
+                            <div>
+                                <div class="stat-value" id="sellerTotalViews">148</div>
+                                <div class="stat-label">Total Product Views</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My Products Section -->
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                            <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);">
+                                📦 My Listed Products
+                            </h3>
+                            <button class="btn btn-success btn-sm" onclick="openAddProductModal()">
+                                <i class="fa-solid fa-plus"></i> Add Product
+                            </button>
+                        </div>
+
+                        <div id="myProductsContainer" class="products-grid">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-View 2: Seller KYC Registration & Guarantor Form -->
+                <div id="seller-sub-kyc" style="display:none;">
+                    <div class="card form-container-card">
+                        <div style="text-align:center; margin-bottom:18px;">
+                            <div style="width:50px; height:50px; background:var(--brand-green-soft); color:var(--brand-green); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:8px;">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <h3 style="font-size:1.2rem; font-weight:800; color:var(--primary);">Seller Verification & KYC Registration</h3>
+                            <p style="font-size:0.82rem; color:var(--text-secondary); max-width:520px; margin:0 auto;">
+                                To protect buyers and build trust, sellers provide their National ID and Next-of-Kin (brother/sister) details for verification.
+                            </p>
+                        </div>
+
+                        <form id="sellerKycForm">
+                            <!-- Personal & Store Info -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fa-solid fa-user"></i> Full Legal Name *</label>
+                                    <input type="text" id="kycFullName" class="form-input" placeholder="e.g. Amina Bello Lawal" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fa-solid fa-id-card"></i> National ID Number (NIN / Voter ID) *</label>
+                                    <input type="text" id="kycIdNumber" class="form-input" placeholder="e.g. NIN-78492019482" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fa-solid fa-phone"></i> Phone / WhatsApp Number *</label>
+                                    <input type="tel" id="kycPhone" class="form-input" placeholder="+234 803 000 0000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fa-solid fa-location-dot"></i> Seller Location (State & City) *</label>
+                                    <input type="text" id="kycLocation" class="form-input" placeholder="e.g. Abuja (Wuse 2) / Kano / Kaduna" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fa-solid fa-store"></i> Store / Business Name *</label>
+                                    <input type="text" id="kycStoreName" class="form-input" placeholder="e.g. Amina Luxury Ankara & Fabrics" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fa-solid fa-layer-group"></i> Primary Category *</label>
+                                    <select id="kycCategorySelect" class="form-select" required></select>
+                                </div>
+                            </div>
+
+                            <!-- Next of Kin / Guarantor Info -->
+                            <div style="background:var(--brand-green-soft); padding:12px; border-radius:var(--radius-md); border:1px solid rgba(5,150,105,0.2); margin:14px 0;">
+                                <h4 style="font-size:0.88rem; font-weight:800; color:var(--brand-green); margin-bottom:4px;">
+                                    <i class="fa-solid fa-people-arrows"></i> Brother's / Sister's (Guarantor) Verification
+                                </h4>
+                                <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px;">
+                                    Required for marketplace safety, dispute resolution, and verified seller badge.
+                                </p>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Brother's / Sister's Full Name *</label>
+                                        <input type="text" id="kycKinName" class="form-input" placeholder="e.g. Usman Bello Lawal (Brother)" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Brother's / Sister's Phone Number *</label>
+                                        <input type="tel" id="kycKinPhone" class="form-input" placeholder="+234 802 000 0000" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; font-size:0.92rem;">
+                                <i class="fa-solid fa-circle-check"></i> Save & Submit Seller Profile
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
             </div>
         </div>
 
         <!-- ======================================================================
-           PAGE 4: PROFESSIONAL BUYING ASSISTANCE
+           PAGE 4: PROFESSIONAL BUYING ASSISTANCE CONCIERGE
            ====================================================================== -->
         <div id="page-assistance" class="page-view">
             <div class="container section">
-                <div class="assistance-hero-box">
+                <div style="text-align:center; max-width:680px; margin:0 auto 24px auto;">
                     <span class="hero-badge"><i class="fa-solid fa-handshake-angle"></i> Professional Sourcing Concierge</span>
-                    <h2 style="font-size:2rem; font-weight:800; margin:12px 0 8px 0;">Let Our Certified Sourcing Agents Handle Your Purchase</h2>
-                    <p style="max-width:650px; margin:0 auto; color:var(--text-secondary); font-size:0.95rem;">
-                        Whether buying commodities in bulk or ordering luxury items from another country, our team visits suppliers, negotiates prices, inspects quality, and coordinates door-to-door delivery.
+                    <h2 style="font-size:1.6rem; font-weight:800; color:var(--primary); margin:6px 0;">Let Our Certified Agents Handle Your Purchase</h2>
+                    <p style="font-size:0.85rem; color:var(--text-secondary);">
+                        Whether buying goods in bulk from Kano, fashion from Abuja, or produce across states, we inspect, negotiate, and deliver directly to your doorstep.
                     </p>
                 </div>
 
                 <!-- Service Packages Grid -->
-                <h3 style="text-align:center; font-size:1.3rem; font-weight:800; margin:36px 0 20px 0;">Select Your Assistance Package</h3>
                 <div class="packages-grid">
                     <div class="package-card" data-package="Basic Search" onclick="selectAssistancePackage('Basic Search', 15.00, this)">
                         <div class="package-name">Basic Search</div>
@@ -283,18 +419,7 @@
                         <ul class="package-features">
                             <li><i class="fa-solid fa-check"></i> Supplier identification</li>
                             <li><i class="fa-solid fa-check"></i> Product availability check</li>
-                            <li><i class="fa-solid fa-check"></i> Direct contact information</li>
-                        </ul>
-                    </div>
-
-                    <div class="package-card" data-package="Consultation" onclick="selectAssistancePackage('Consultation', 25.00, this)">
-                        <div class="package-name">Consultation</div>
-                        <div class="package-price">$25.00</div>
-                        <div class="package-desc">Expert advice on what to buy, market specifications, and pricing standards.</div>
-                        <ul class="package-features">
-                            <li><i class="fa-solid fa-check"></i> Product suitability advice</li>
-                            <li><i class="fa-solid fa-check"></i> Market price benchmarks</li>
-                            <li><i class="fa-solid fa-check"></i> Supplier reliability report</li>
+                            <li><i class="fa-solid fa-check"></i> Direct contact info</li>
                         </ul>
                     </div>
 
@@ -304,8 +429,8 @@
                         <div class="package-desc">Our experienced negotiators contact sellers to secure the best wholesale rate.</div>
                         <ul class="package-features">
                             <li><i class="fa-solid fa-check"></i> Direct seller negotiation</li>
-                            <li><i class="fa-solid fa-check"></i> Volume discount securing</li>
-                            <li><i class="fa-solid fa-check"></i> Written price quotation</li>
+                            <li><i class="fa-solid fa-check"></i> Bulk discount securing</li>
+                            <li><i class="fa-solid fa-check"></i> Official price quote</li>
                         </ul>
                     </div>
 
@@ -313,36 +438,20 @@
                         <div class="package-badge">Most Popular</div>
                         <div class="package-name">Full Assistance ⭐</div>
                         <div class="package-price">$60.00</div>
-                        <div class="package-desc">Search, inspection, negotiation, and complete delivery coordination.</div>
+                        <div class="package-desc">Physical inspection, negotiation, and complete delivery coordination.</div>
                         <ul class="package-features">
-                            <li><i class="fa-solid fa-check"></i> Search & comparison</li>
-                            <li><i class="fa-solid fa-check"></i> Seller contact & negotiation</li>
-                            <li><i class="fa-solid fa-check"></i> Quality verification check</li>
-                            <li><i class="fa-solid fa-check"></i> Logistics & delivery coordination</li>
-                        </ul>
-                    </div>
-
-                    <div class="package-card" data-package="Business Procurement" onclick="selectAssistancePackage('Business Procurement', 150.00, this)">
-                        <div class="package-name">Procurement</div>
-                        <div class="package-price">$150.00</div>
-                        <div class="package-desc">Bulk commodity, container haulage, and corporate commercial sourcing.</div>
-                        <ul class="package-features">
-                            <li><i class="fa-solid fa-check"></i> Bulk / container sourcing</li>
-                            <li><i class="fa-solid fa-check"></i> Warehouse / farm gate inspection</li>
-                            <li><i class="fa-solid fa-check"></i> Contract negotiation</li>
-                            <li><i class="fa-solid fa-check"></i> Interstate / Export logistics</li>
+                            <li><i class="fa-solid fa-check"></i> Physical inspection</li>
+                            <li><i class="fa-solid fa-check"></i> Seller negotiation</li>
+                            <li><i class="fa-solid fa-check"></i> Logistics coordination</li>
                         </ul>
                     </div>
                 </div>
 
                 <!-- Request Form Card -->
-                <div class="card form-container-card" style="margin-top:36px;">
-                    <h3 style="font-size:1.2rem; font-weight:800; color:var(--primary); margin-bottom:6px;">
-                        <i class="fa-solid fa-paper-plane" style="color:var(--accent);"></i> Submit Sourcing Request
+                <div class="card form-container-card">
+                    <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin-bottom:12px;">
+                        <i class="fa-solid fa-paper-plane" style="color:var(--brand-green);"></i> Submit Sourcing Request
                     </h3>
-                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:20px;">
-                        Fill in what you need and our sourcing desk will assign a professional agent within 1 hour.
-                    </p>
 
                     <form id="buyingAssistanceMainForm">
                         <input type="hidden" id="mainSelectedPackage" value="Full Buying Assistance">
@@ -350,50 +459,12 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">What do you want to buy? *</label>
-                                <input type="text" id="mainPbaItem" class="form-input" placeholder="e.g. 200 bags of Benue Yam, Custom King Size Bed" required>
+                                <label class="form-label">What item do you want to buy? *</label>
+                                <input type="text" id="mainPbaItem" class="form-input" placeholder="e.g. 50 bags of Benue Yam, Bone Straight Wig" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Category</label>
-                                <select id="mainPbaCategory" class="form-select"></select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Specifications & Quality Requirements</label>
-                            <textarea id="mainPbaSpecs" class="form-textarea" rows="2" placeholder="Quality grade, size, material preferences, brand requirements..."></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Quantity</label>
-                                <input type="text" id="mainPbaQuantity" class="form-input" placeholder="e.g. 50 Units / 1 Container" value="1">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Target Delivery Date</label>
-                                <input type="date" id="mainPbaDate" class="form-input">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Destination Country *</label>
-                                <input type="text" id="mainPbaCountry" class="form-input" placeholder="e.g. Nigeria / Saudi Arabia / USA" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Destination City *</label>
-                                <input type="text" id="mainPbaCity" class="form-input" placeholder="e.g. Kano, Abuja, Riyadh, Houston" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Min Budget (USD)</label>
-                                <input type="number" id="mainPbaBudgetMin" class="form-input" placeholder="e.g. 300">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Max Budget (USD)</label>
-                                <input type="number" id="mainPbaBudgetMax" class="form-input" placeholder="e.g. 800">
+                                <label class="form-label">Target City / State *</label>
+                                <input type="text" id="mainPbaCity" class="form-input" placeholder="e.g. Abuja, Kano, Kaduna" required>
                             </div>
                         </div>
 
@@ -409,335 +480,103 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" id="mainPbaEmail" class="form-input" placeholder="your-email@example.com">
+                            <label class="form-label">Item Specifications & Notes</label>
+                            <textarea id="mainPbaSpecs" class="form-textarea" rows="2" placeholder="Quality grade, size, preferred brand, or links to sellers..."></textarea>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Additional Instructions / Links to Preferred Sellers</label>
-                            <textarea id="mainPbaNotes" class="form-textarea" rows="2" placeholder="Any specific market or vendor details..."></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:1rem;">
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
                             <i class="fa-solid fa-paper-plane"></i> Submit Sourcing Request
                         </button>
                     </form>
                 </div>
+
             </div>
         </div>
 
         <!-- ======================================================================
-           PAGE 5: POST FREE AD & REGISTER BUSINESS
-           ====================================================================== -->
-        <div id="page-post" class="page-view">
-            <div class="container section">
-                <div class="card form-container-card">
-                    
-                    <!-- Section A: Business Registration -->
-                    <h2 style="font-size:1.4rem; font-weight:800; color:var(--primary); margin-bottom:6px;">
-                        <i class="fa-solid fa-store" style="color:var(--accent);"></i> Register Your Business Profile
-                    </h2>
-                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:20px;">
-                        List your company in the Global Business Directory to gain customers and verified supplier status.
-                    </p>
-
-                    <form id="businessRegisterForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Business / Company Name *</label>
-                                <input type="text" id="regBizName" class="form-input" placeholder="e.g. Kano Yam Hub" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Category *</label>
-                                <select id="bizCategorySelect" class="form-select" required></select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Country *</label>
-                                <input type="text" id="regBizCountry" class="form-input" placeholder="e.g. Nigeria / Saudi Arabia / USA" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">City *</label>
-                                <input type="text" id="regBizCity" class="form-input" placeholder="e.g. Kano, Riyadh, Abuja" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Area / District</label>
-                                <input type="text" id="regBizArea" class="form-input" placeholder="e.g. Dawanau Market, Al Malaz, Wuse 2">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Street Address</label>
-                                <input type="text" id="regBizAddress" class="form-input" placeholder="e.g. Line 4, Commercial Road">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Phone Number *</label>
-                                <input type="tel" id="regBizPhone" class="form-input" placeholder="+234 800 000 0000" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">WhatsApp Number</label>
-                                <input type="tel" id="regBizWhatsapp" class="form-input" placeholder="+234 800 000 0000">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" id="regBizEmail" class="form-input" placeholder="info@business.com">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Operating Hours</label>
-                                <input type="text" id="regBizHours" class="form-input" placeholder="8:00 AM - 6:00 PM">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Business Description</label>
-                            <textarea id="regBizDesc" class="form-textarea" rows="3" placeholder="Describe your specialty, stock capacity, wholesale pricing, delivery, etc."></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Delivery Availability</label>
-                                <select id="regBizDelivery" class="form-select">
-                                    <option value="1">Yes, We Deliver</option>
-                                    <option value="0">Store Pickup Only</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Logo Image URL</label>
-                                <input type="url" id="regBizLogo" class="form-input" placeholder="https://example.com/logo.jpg">
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                            Register Business Profile
-                        </button>
-                    </form>
-
-                    <hr class="divider">
-
-                    <!-- Section B: Publish Product / Service Listing (Ad) -->
-                    <h2 style="font-size:1.4rem; font-weight:800; color:var(--primary); margin-bottom:6px;">
-                        <i class="fa-solid fa-bullhorn" style="color:var(--accent);"></i> Publish Product or Service Listing (Ad)
-                    </h2>
-                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:20px;">
-                        Showcase your items with photos, video showcases, and voice pitches.
-                    </p>
-
-                    <form id="productPublishForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Product / Service Title *</label>
-                                <input type="text" id="postProdTitle" class="form-input" placeholder="e.g. Grade-A Fresh Benue Yams" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Listing Type</label>
-                                <select id="postIsService" class="form-select">
-                                    <option value="0">Physical Product</option>
-                                    <option value="1">Professional Service</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Price (USD Base) *</label>
-                                <input type="number" step="0.01" id="postProdPrice" class="form-input" placeholder="e.g. 25.00" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Category *</label>
-                                <select id="prodCategorySelect" class="form-select" required></select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Description</label>
-                            <textarea id="postProdDesc" class="form-textarea" rows="2" placeholder="Specifications, warranty, sizing, materials..."></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label"><i class="fa-solid fa-image"></i> Photo URL</label>
-                            <input type="url" id="postPhotoUrl" class="form-input" placeholder="https://example.com/photo.jpg">
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label"><i class="fa-solid fa-video"></i> Video URL (MP4)</label>
-                                <input type="url" id="postVideoUrl" class="form-input" placeholder="https://example.com/video.mp4">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label"><i class="fa-solid fa-microphone"></i> Audio Voice Pitch URL (MP3)</label>
-                                <input type="url" id="postAudioUrl" class="form-input" placeholder="https://example.com/audio.mp3">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Delivery / Logistics Information</label>
-                            <input type="text" id="postDeliveryInfo" class="form-input" placeholder="e.g. Nationwide dispatch available">
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                            Publish Listing with Multimedia
-                        </button>
-                    </form>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- ======================================================================
-           PAGE 6: ADMIN & SOURCING DESK PORTAL
+           PAGE 5: ADMIN & MODERATION PORTAL
            ====================================================================== -->
         <div id="page-admin" class="page-view">
             <div class="container section">
                 <div class="section-header">
                     <div>
-                        <h2 class="section-title">Administration & Buying Operations Portal</h2>
-                        <p class="section-subtitle">Manage businesses, listings, sourcing tickets, categories, and reviews.</p>
-                    </div>
-                    <span class="badge badge-success"><i class="fa-solid fa-circle"></i> Neon DB Connected</span>
-                </div>
-
-                <!-- Admin Sub-Navigation Tabs -->
-                <div class="admin-tab-bar">
-                    <button class="admin-tab-btn active" data-tab="overview" onclick="switchAdminSubTab('overview')">
-                        <i class="fa-solid fa-chart-pie"></i> Overview
-                    </button>
-                    <button class="admin-tab-btn" data-tab="businesses" onclick="switchAdminSubTab('businesses')">
-                        <i class="fa-solid fa-building"></i> Businesses
-                    </button>
-                    <button class="admin-tab-btn" data-tab="listings" onclick="switchAdminSubTab('listings')">
-                        <i class="fa-solid fa-box-open"></i> Listings & Ads
-                    </button>
-                    <button class="admin-tab-btn" data-tab="buying_desk" onclick="switchAdminSubTab('buying_desk')">
-                        <i class="fa-solid fa-handshake-angle"></i> Buying Sourcing Desk
-                    </button>
-                    <button class="admin-tab-btn" data-tab="categories" onclick="switchAdminSubTab('categories')">
-                        <i class="fa-solid fa-tags"></i> Category Manager
-                    </button>
-                    <button class="admin-tab-btn" data-tab="reviews" onclick="switchAdminSubTab('reviews')">
-                        <i class="fa-solid fa-star"></i> Reviews Moderation
-                    </button>
-                </div>
-
-                <!-- Sub-Tab 1: Overview -->
-                <div id="admin-subtab-overview" class="admin-pane active">
-                    <div id="adminStatsGrid" class="stats-grid">
-                        <!-- Injected dynamically -->
+                        <h2 class="section-title">🛡️ Admin & Moderation Portal</h2>
+                        <p class="section-subtitle">Verify seller identity & guarantors, moderate listings, and manage requests.</p>
                     </div>
                 </div>
 
-                <!-- Sub-Tab 2: Businesses -->
-                <div id="admin-subtab-businesses" class="admin-pane">
-                    <div class="card">
-                        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:14px;">Registered Businesses</h3>
-                        <div class="table-responsive">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Business</th>
-                                        <th>Category</th>
-                                        <th>Location</th>
-                                        <th>Phone / WhatsApp</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminBusinessesTableBody"></tbody>
-                            </table>
-                        </div>
+                <!-- Admin Tabs -->
+                <div class="admin-nav-tabs">
+                    <button class="admin-tab-btn active" onclick="switchAdminTab('sellers', this)">
+                        <i class="fa-solid fa-user-check"></i> Verify Sellers & Guarantors
+                    </button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab('products', this)">
+                        <i class="fa-solid fa-boxes-stacked"></i> Moderate Products
+                    </button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab('requests', this)">
+                        <i class="fa-solid fa-handshake"></i> Sourcing Desk
+                    </button>
+                </div>
+
+                <!-- Admin Tab 1: Verify Sellers -->
+                <div id="admin-sellers-view">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Seller & Store</th>
+                                    <th>National ID (NIN)</th>
+                                    <th>Location</th>
+                                    <th>Brother's/Sister's Info</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminSellersTableBody">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Sub-Tab 3: Listings -->
-                <div id="admin-subtab-listings" class="admin-pane">
-                    <div class="card">
-                        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:14px;">Marketplace Listings & Ads</h3>
-                        <div class="table-responsive">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Business</th>
-                                        <th>Price</th>
-                                        <th>Media Assets</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminListingsTableBody"></tbody>
-                            </table>
-                        </div>
+                <!-- Admin Tab 2: Moderate Products -->
+                <div id="admin-products-view" style="display:none;">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Seller</th>
+                                    <th>Price</th>
+                                    <th>Location</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsTableBody">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Sub-Tab 4: Buying Desk -->
-                <div id="admin-subtab-buying_desk" class="admin-pane">
-                    <div class="card">
-                        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:14px;">Buying Assistance Sourcing Desk</h3>
-                        <div class="table-responsive">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Ticket Code</th>
-                                        <th>Client</th>
-                                        <th>Requested Item</th>
-                                        <th>Budget & Fee</th>
-                                        <th>Status Workflow</th>
-                                        <th>Assigned Agent & Notes</th>
-                                        <th>Save</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminBuyingRequestsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sub-Tab 5: Categories -->
-                <div id="admin-subtab-categories" class="admin-pane">
-                    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
-                        <div class="card">
-                            <h4 style="font-size:1rem; font-weight:800; margin-bottom:12px;">Add New Category</h4>
-                            <form id="addCategoryForm">
-                                <div class="form-group">
-                                    <label class="form-label">Category Name *</label>
-                                    <input type="text" id="newCatName" class="form-input" placeholder="e.g. Solar & Energy" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Slug *</label>
-                                    <input type="text" id="newCatSlug" class="form-input" placeholder="solar-energy" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">FontAwesome Icon Class</label>
-                                    <input type="text" id="newCatIcon" class="form-input" placeholder="fa-solar-panel" value="fa-folder">
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="width:100%;">
-                                    Save Category
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="card">
-                            <h4 style="font-size:1rem; font-weight:800; margin-bottom:12px;">All Active Categories</h4>
-                            <div id="adminCategoriesList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sub-Tab 6: Reviews -->
-                <div id="admin-subtab-reviews" class="admin-pane">
-                    <div class="card">
-                        <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:14px;">Customer Reviews & Ratings</h3>
-                        <div id="adminReviewsList">
-                            <p style="color:var(--text-secondary);">No reviews found.</p>
-                        </div>
+                <!-- Admin Tab 3: Sourcing Requests -->
+                <div id="admin-requests-view" style="display:none;">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Customer</th>
+                                    <th>Item</th>
+                                    <th>Location</th>
+                                    <th>Package</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminRequestsTableBody">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -747,97 +586,189 @@
     </main>
 
     <!-- ==========================================================================
-       MODALS: BUSINESS PROFILE & VIDEO PLAYER
+       WEBSITE FOOTER (DECENT & ELEGANT)
        ========================================================================== -->
-    <!-- Business Profile Modal -->
-    <div id="businessProfileModal" class="modal-overlay">
-        <div class="modal-dialog">
-            <div class="biz-profile-hero">
-                <img id="bizModalBanner" src="" class="biz-profile-banner" alt="Banner">
-                <button class="modal-close-btn" onclick="closeBusinessModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="biz-profile-avatar-row">
-                    <img id="bizModalLogo" src="" class="biz-profile-avatar" alt="Logo">
-                    <div>
-                        <h3 id="bizModalTitle" class="biz-profile-title">Business Name</h3>
-                        <span id="bizModalCategory" class="biz-profile-category">Category</span>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                
+                <!-- Col 1: About Platform -->
+                <div class="footer-brand">
+                    <h4><i class="fa-solid fa-store" style="color:var(--brand-green-light);"></i> GLOBAL BIZ</h4>
+                    <p>
+                        A verified public online marketplace connecting buyers directly with authenticated sellers across Abuja, Kano, Kaduna, and nationwide. Every seller is backed by ID & guarantor verification.
+                    </p>
+                    <div class="footer-socials">
+                        <a href="https://wa.me/" target="_blank" class="footer-social-link" title="WhatsApp Support"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="#" class="footer-social-link" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="footer-social-link" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="footer-social-link" title="Twitter / X"><i class="fa-brands fa-x-twitter"></i></a>
                     </div>
                 </div>
+
+                <!-- Col 2: Popular Categories -->
+                <div class="footer-col">
+                    <h5>Popular Categories</h5>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="searchFor('Ankara'); return false;">👗 Clothing & Ankara</a></li>
+                        <li><a href="#" onclick="searchFor('Wig'); return false;">💇 Wigs & Beauty</a></li>
+                        <li><a href="#" onclick="searchFor('Yam'); return false;">🌾 Agriculture & Produce</a></li>
+                        <li><a href="#" onclick="searchFor('Samsung'); return false;">📱 Phones & Gadgets</a></li>
+                        <li><a href="#" onclick="switchPage('marketplace'); return false;">🛋️ Furniture & Decor</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: For Sellers -->
+                <div class="footer-col">
+                    <h5>For Sellers</h5>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="switchPage('seller'); switchSellerSubTab('kyc'); return false;">Seller Registration</a></li>
+                        <li><a href="#" onclick="switchPage('seller'); switchSellerSubTab('dashboard'); return false;">Seller Dashboard</a></li>
+                        <li><a href="#" onclick="openAddProductModal(); return false;">Post Free Product</a></li>
+                        <li><a href="#" onclick="switchPage('seller'); return false;">KYC & Guarantor Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Buying & Trust -->
+                <div class="footer-col">
+                    <h5>Buying & Sourcing</h5>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="switchPage('assistance'); return false;">Buying Assistance Desk</a></li>
+                        <li><a href="#" onclick="switchPage('marketplace'); return false;">Browse Verified Listings</a></li>
+                        <li><a href="#" onclick="switchPage('admin'); return false;">Admin & Moderation</a></li>
+                        <li><a href="https://wa.me/" target="_blank">Direct WhatsApp Support</a></li>
+                    </ul>
+                </div>
+
             </div>
 
-            <div class="biz-profile-body">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
-                    <div id="bizModalVerifiedBadge"></div>
-                    <div style="display:flex; gap:8px;">
-                        <a id="bizModalWhatsappBtn" href="#" target="_blank" class="btn btn-whatsapp">
-                            <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp
-                        </a>
-                        <a id="bizModalCallBtn" href="#" class="btn btn-primary">
-                            <i class="fa-solid fa-phone"></i> Call
-                        </a>
-                    </div>
+            <!-- Bottom Copyright Bar -->
+            <div class="footer-bottom">
+                <div>© 2026 GlobalBiz Marketplace. All rights reserved.</div>
+                <div>Secured by National ID & Guarantor Verification</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================================================
+       MODALS: PRODUCT DETAILS & ADD PRODUCT
+       ========================================================================== -->
+    
+    <!-- Modal 1: Product Details View -->
+    <div id="productDetailModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title" id="detailModalTitle">Product Details</div>
+                <button class="modal-close-btn" onclick="closeModal('productDetailModal')">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="detailModalContent">
+                    <!-- Populated via JS -->
                 </div>
-
-                <p id="bizModalDescription" class="biz-profile-desc"></p>
-
-                <div class="biz-profile-info-box">
-                    <div><i class="fa-solid fa-location-dot" style="color:var(--accent);"></i> <strong id="bizModalAddress"></strong></div>
-                    <div style="margin-top:4px;"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> <span id="bizModalHours"></span></div>
-                </div>
-
-                <h4 style="font-size:1rem; font-weight:800; margin:16px 0 10px 0;">Products & Services Catalog</h4>
-                <div id="bizModalProductsContainer" class="biz-catalog-grid"></div>
             </div>
         </div>
     </div>
 
-    <!-- Video Modal -->
-    <div id="videoModal" class="modal-overlay">
-        <div class="modal-dialog" style="max-width:700px; background:#000; padding:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h4 id="videoModalTitle" style="color:#fff; font-size:1rem; font-weight:700;">Product Video Showcase</h4>
-                <button class="modal-close-btn" style="background:rgba(255,255,255,0.2); color:#fff;" onclick="closeVideoModal()">
+    <!-- Modal 2: Add / Edit Product Modal -->
+    <div id="addProductModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title" id="addProductModalTitle">Add New Product</div>
+                <button class="modal-close-btn" onclick="closeModal('addProductModal')">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <video id="videoPlayerElement" controls style="width:100%; border-radius:8px; max-height:450px;" src=""></video>
+            <div class="modal-body">
+                <form id="sellerProductForm">
+                    <input type="hidden" id="editProductId" value="">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Product Name / Title *</label>
+                        <input type="text" id="sellerProdTitle" class="form-input" placeholder="e.g. Ankara Material 6-Yards" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Price (in ₦ Naira or USD) *</label>
+                            <input type="number" step="any" id="sellerProdPrice" class="form-input" placeholder="e.g. 15000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <select id="sellerProdCategory" class="form-select" required></select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Seller / Business Name *</label>
+                            <input type="text" id="sellerProdSellerName" class="form-input" placeholder="e.g. Amina" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location (City) *</label>
+                            <input type="text" id="sellerProdLocation" class="form-input" placeholder="e.g. Abuja / Kano / Kaduna" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">WhatsApp / Phone Number *</label>
+                        <input type="tel" id="sellerProdPhone" class="form-input" placeholder="+234 803 000 0000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="sellerProdDesc" class="form-textarea" rows="2" placeholder="Quality, specifications, sizing, delivery terms..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-image"></i> Product Picture URL (or image link)</label>
+                        <input type="url" id="sellerProdPhoto" class="form-input" placeholder="https://images.unsplash.com/photo-..." value="https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish Product
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Bottom Dock Navigation Bar -->
+    <!-- ==========================================================================
+       BOTTOM DOCK NAVIGATION BAR (NATIVE MOBILE APP)
+       ========================================================================== -->
     <nav class="bottom-nav">
-        <a href="#" class="bottom-nav-item active" data-page="home" onclick="switchPage('home'); return false;">
+        <a class="bottom-nav-item active" data-page="home" onclick="switchPage('home')">
             <i class="fa-solid fa-house"></i>
             <span>Home</span>
         </a>
-        <a href="#" class="bottom-nav-item" data-page="marketplace" onclick="switchPage('marketplace'); return false;">
+        <a class="bottom-nav-item" data-page="marketplace" onclick="switchPage('marketplace')">
             <i class="fa-solid fa-store"></i>
             <span>Market</span>
         </a>
-        <a href="#" class="bottom-nav-item post-btn" data-page="post" onclick="switchPage('post'); return false;" title="Post Ad or Register Business">
+        <a class="bottom-nav-item post-btn" data-page="seller" onclick="openAddProductModal()" title="Sell a Product">
             <i class="fa-solid fa-plus"></i>
-            <span>Post</span>
+            <span>Sell</span>
         </a>
-        <a href="#" class="bottom-nav-item" data-page="directory" onclick="switchPage('directory'); return false;">
-            <i class="fa-solid fa-building"></i>
-            <span>Directory</span>
-        </a>
-        <a href="#" class="bottom-nav-item" data-page="assistance" onclick="switchPage('assistance'); return false;">
+        <a class="bottom-nav-item" data-page="assistance" onclick="switchPage('assistance')">
             <i class="fa-solid fa-handshake-angle"></i>
-            <span>Assistance</span>
+            <span>Sourcing</span>
         </a>
-        <a href="#" class="bottom-nav-item" data-page="admin" onclick="switchPage('admin'); return false;">
+        <a class="bottom-nav-item" data-page="seller" onclick="switchPage('seller')">
+            <i class="fa-solid fa-user-check"></i>
+            <span>Seller Hub</span>
+        </a>
+        <a class="bottom-nav-item" data-page="admin" onclick="switchPage('admin')">
             <i class="fa-solid fa-shield-halved"></i>
             <span>Admin</span>
         </a>
     </nav>
 
-    <!-- JavaScript Layers -->
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/app.js"></script>
+    <!-- Scripts with cache busting v=2.2 -->
+    <script src="assets/js/api.js?v=2.2"></script>
+    <script src="assets/js/app.js?v=2.2"></script>
 </body>
 </html>
