@@ -40,7 +40,26 @@ async function initApp() {
 /* ==========================================================================
    PAGE ROUTING & BOTTOM DOCK
    ========================================================================== */
+function isAuthenticated() {
+    return !!(getCurrentUser() || isAdminAuthenticated());
+}
+
+function requireAuth(actionName = 'perform this action') {
+    if (!isAuthenticated()) {
+        showToast(`Account required: Please sign in or register to ${actionName}`, 'info');
+        openAuthModal('login');
+        return false;
+    }
+    return true;
+}
+
 function switchPage(pageName) {
+    // Route guards
+    if (pageName === 'seller' && !isAuthenticated()) {
+        requireAuth('access the Seller Hub & manage products');
+        return;
+    }
+
     AppState.currentPage = pageName;
 
     // Update Nav Links & Bottom Dock Items
@@ -65,6 +84,13 @@ function switchPage(pageName) {
     }
 }
 
+function handleRequestAssistanceClick() {
+    if (!requireAuth('request verified Buying Assistance & purchase inspection')) {
+        return;
+    }
+    switchPage('assistance');
+}
+
 /* ==========================================================================
    USER & ADMIN AUTHENTICATION & PROFILE DROPDOWN
    ========================================================================== */
@@ -85,10 +111,12 @@ function updateNavAuthUI() {
     const roleBadgeEl = document.getElementById('dropdownUserRoleBadge');
     const dropNameEl = document.getElementById('dropdownUserFullName');
     const dropPhoneEl = document.getElementById('dropdownUserPhone');
+    const guestBanner = document.getElementById('guestNoticeBanner');
 
     if (isAdmin) {
         if (guestNav) guestNav.style.display = 'none';
         if (userNav) userNav.style.display = 'inline-block';
+        if (guestBanner) guestBanner.style.display = 'none';
         if (userNameEl) userNameEl.innerText = 'Admin (Amina)';
         if (roleBadgeEl) {
             roleBadgeEl.innerText = 'ADMIN';
@@ -99,6 +127,7 @@ function updateNavAuthUI() {
     } else if (user && user.full_name) {
         if (guestNav) guestNav.style.display = 'none';
         if (userNav) userNav.style.display = 'inline-block';
+        if (guestBanner) guestBanner.style.display = 'none';
         const roleLabel = user.role === 'seller' ? ' (Seller)' : ' (Buyer)';
         if (userNameEl) userNameEl.innerText = user.full_name.split(' ')[0] + roleLabel;
         if (roleBadgeEl) {
@@ -110,6 +139,7 @@ function updateNavAuthUI() {
     } else {
         if (guestNav) guestNav.style.display = 'block';
         if (userNav) userNav.style.display = 'none';
+        if (guestBanner) guestBanner.style.display = 'block';
     }
 }
 
@@ -380,6 +410,22 @@ async function loadMarketplaceProducts(filterParams = {}) {
     }
 }
 
+function handleProtectedContact(type, link, sellerName, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    if (!requireAuth(`contact ${sellerName || 'this verified seller'} directly`)) {
+        return false;
+    }
+    if (type === 'whatsapp') {
+        window.open(link, '_blank');
+    } else if (type === 'tel') {
+        window.location.href = link;
+    }
+    return true;
+}
+
 function renderProductsHtml(products) {
     return products.map(p => {
         const cleanPhone = (p.whatsapp || p.phone || '').replace(/[^0-9]/g, '');
@@ -387,6 +433,7 @@ function renderProductsHtml(products) {
         const waLink = `https://wa.me/${cleanPhone}?text=${waMsg}`;
         const telLink = `tel:${p.phone || cleanPhone}`;
         const sellerName = p.seller_name || p.business_name || 'Verified Seller';
+        const safeSellerName = sellerName.replace(/'/g, "\\'");
         const locationCity = p.city || 'Nigeria';
 
         return `
@@ -413,12 +460,12 @@ function renderProductsHtml(products) {
                     </div>
 
                     <div class="product-actions" onclick="event.stopPropagation();">
-                        <a href="${waLink}" target="_blank" class="btn-card-action btn-whatsapp" title="Chat on WhatsApp">
+                        <button type="button" class="btn-card-action btn-whatsapp" onclick="handleProtectedContact('whatsapp', '${waLink}', '${safeSellerName}', event)" title="Chat on WhatsApp">
                             <i class="fa-brands fa-whatsapp"></i> Chat Seller
-                        </a>
-                        <a href="${telLink}" class="btn-card-action btn-outline" title="Call Seller">
+                        </button>
+                        <button type="button" class="btn-card-action btn-outline" onclick="handleProtectedContact('tel', '${telLink}', '${safeSellerName}', event)" title="Call Seller">
                             <i class="fa-solid fa-phone"></i> Call
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -431,29 +478,33 @@ async function loadFeaturedBusinesses() {
     const grid = document.getElementById('homeBusinessesGrid');
     if (!grid) return;
 
-    grid.innerHTML = businesses.slice(0, 3).map(b => `
-        <div class="business-card">
-            <div class="business-header">
-                <img src="${b.logo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=200'}" alt="${b.name}" class="business-logo">
-                <div class="business-title-wrap">
-                    <div class="business-name">${b.name}</div>
-                    <div class="business-category">${b.category_name}</div>
+    grid.innerHTML = businesses.slice(0, 3).map(b => {
+        const safeName = (b.name || 'Business').replace(/'/g, "\\'");
+        const waLink = `https://wa.me/${(b.whatsapp || b.phone || '').replace(/[^0-9]/g, '')}`;
+        return `
+            <div class="business-card">
+                <div class="business-header">
+                    <img src="${b.logo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=200'}" alt="${b.name}" class="business-logo">
+                    <div class="business-title-wrap">
+                        <div class="business-name">${b.name}</div>
+                        <div class="business-category">${b.category_name}</div>
+                    </div>
+                </div>
+                <p style="font-size:0.8rem; color:var(--text-secondary); line-height:1.45; margin-bottom:12px; flex:1;">
+                    ${b.description || 'Verified supplier providing quality goods with nationwide delivery.'}
+                </p>
+                <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-location-dot" style="color:#FA5252;"></i> ${b.city}, ${b.country}
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn btn-whatsapp btn-sm" style="flex:1;" onclick="handleProtectedContact('whatsapp', '${waLink}', '${safeName}', event)">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="searchFor('${safeName}')">View Products</button>
                 </div>
             </div>
-            <p style="font-size:0.8rem; color:var(--text-secondary); line-height:1.45; margin-bottom:12px; flex:1;">
-                ${b.description || 'Verified supplier providing quality goods with nationwide delivery.'}
-            </p>
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
-                <i class="fa-solid fa-location-dot" style="color:#FA5252;"></i> ${b.city}, ${b.country}
-            </div>
-            <div style="display:flex; gap:8px;">
-                <a href="https://wa.me/${(b.whatsapp || b.phone || '').replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp btn-sm" style="flex:1;">
-                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                </a>
-                <button class="btn btn-outline btn-sm" onclick="searchFor('${b.name}')">View Products</button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 /* ==========================================================================
@@ -474,6 +525,7 @@ async function openProductDetail(productId) {
     const waMsg = encodeURIComponent(`Hello ${p.seller_name || p.business_name || 'Seller'}, I want to buy "${p.title}" listed on GlobalBiz for ${formatPrice(p.price)}. Is it available in ${p.city}?`);
     const waLink = `https://wa.me/${cleanPhone}?text=${waMsg}`;
     const telLink = `tel:${p.phone || cleanPhone}`;
+    const safeSellerName = (p.seller_name || p.business_name || 'Verified Seller').replace(/'/g, "\\'");
 
     content.innerHTML = `
         <div style="margin-bottom:16px;">
@@ -502,12 +554,12 @@ async function openProductDetail(productId) {
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <a href="${waLink}" target="_blank" class="btn btn-whatsapp" style="padding:12px;">
+            <button type="button" class="btn btn-whatsapp" style="padding:12px;" onclick="handleProtectedContact('whatsapp', '${waLink}', '${safeSellerName}', event)">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp Seller
-            </a>
-            <a href="${telLink}" class="btn btn-primary" style="padding:12px;">
+            </button>
+            <button type="button" class="btn btn-primary" style="padding:12px;" onclick="handleProtectedContact('tel', '${telLink}', '${safeSellerName}', event)">
                 <i class="fa-solid fa-phone"></i> Call Seller
-            </a>
+            </button>
         </div>
     `;
 
@@ -1057,6 +1109,9 @@ function setupForms() {
     if (kycForm) {
         kycForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (!requireAuth('submit Seller KYC verification')) {
+                return;
+            }
             const payload = {
                 full_name: document.getElementById('kycFullName').value.trim(),
                 id_number: document.getElementById('kycIdNumber').value.trim(),
@@ -1080,6 +1135,9 @@ function setupForms() {
     if (prodForm) {
         prodForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (!requireAuth('publish product listings')) {
+                return;
+            }
             const editId = document.getElementById('editProductId').value;
             const inputPrice = parseFloat(document.getElementById('sellerProdPrice').value) || 0;
             // Convert to base USD for storage
@@ -1118,6 +1176,9 @@ function setupForms() {
     if (pbaForm) {
         pbaForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (!requireAuth('submit a buying assistance order')) {
+                return;
+            }
             const payload = {
                 item_title: document.getElementById('mainPbaItem').value.trim(),
                 target_city: document.getElementById('mainPbaCity').value.trim(),

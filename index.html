@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Decent & Professional Stylesheet (v2.6 Cache Bust) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=2.6">
+    <!-- Decent & Professional Stylesheet (v2.7 Cache Bust) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.7">
 </head>
 <body>
 
@@ -119,6 +119,20 @@
         </div>
     </header>
 
+    <!-- Mandatory Login Alert Banner (Shown to unauthenticated guests) -->
+    <div id="guestNoticeBanner" class="guest-notice-banner" style="display:none;">
+        <div class="container" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-lock" style="color:#D97706; font-size:1.05rem;"></i>
+                <span><strong>Account Required:</strong> Sign in or register as a Buyer / Seller to chat with sellers, post items, or request purchase inspection.</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-sm btn-primary" onclick="openAuthModal('login')"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
+                <button class="btn btn-sm btn-outline" onclick="openAuthModal('register')"><i class="fa-solid fa-user-plus"></i> Register</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN PAGE VIEWS -->
     <main>
 
@@ -195,7 +209,7 @@
                             <h3>Need Professional Buying Assistance?</h3>
                             <p>Ordering from another city like Kano, Kaduna or Abuja? Our certified sourcing desk visits the seller, inspects the item, negotiates the wholesale price, and secures your delivery.</p>
                         </div>
-                        <button class="btn btn-white" onclick="switchPage('assistance')">
+                        <button class="btn btn-white" onclick="handleRequestAssistanceClick()">
                             Request Assistance <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
@@ -1248,8 +1262,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with cache busting v=2.6 -->
-    <script src="assets/js/api.js?v=2.6"></script>
-    <script src="assets/js/app.js?v=2.6"></script>
+    <!-- Scripts with cache busting v=2.7 -->
+    <script src="assets/js/api.js?v=2.7"></script>
+    <script src="assets/js/app.js?v=2.7"></script>
 </body>
 </html>
