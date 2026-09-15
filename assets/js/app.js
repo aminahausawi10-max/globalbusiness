@@ -1529,14 +1529,36 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPwaInstallPrompt = e;
-    const installBtn = document.getElementById('pwaInstallBtn');
-    if (installBtn) {
-        installBtn.style.display = 'inline-flex';
+    
+    // Check if dismissed recently (within 3 days)
+    const lastDismissed = localStorage.getItem('pwa_prompt_dismissed');
+    const isDismissedRecently = lastDismissed && (Date.now() - parseInt(lastDismissed, 10) < 3 * 24 * 60 * 60 * 1000);
+    
+    const floatingPrompt = document.getElementById('pwaFloatingPrompt');
+    if (floatingPrompt && !isDismissedRecently) {
+        // Show after a gentle 3-second delay so user can orient on page first
+        setTimeout(() => {
+            if (floatingPrompt && deferredPwaInstallPrompt) {
+                floatingPrompt.style.display = 'block';
+            }
+        }, 3000);
     }
 });
 
+// Dismiss floating PWA install prompt
+function dismissPwaPrompt() {
+    const floatingPrompt = document.getElementById('pwaFloatingPrompt');
+    if (floatingPrompt) {
+        floatingPrompt.style.display = 'none';
+    }
+    localStorage.setItem('pwa_prompt_dismissed', Date.now().toString());
+}
+
 // 3. User trigger to install PWA app
 async function installPwaApp() {
+    const floatingPrompt = document.getElementById('pwaFloatingPrompt');
+    if (floatingPrompt) floatingPrompt.style.display = 'none';
+
     if (deferredPwaInstallPrompt) {
         deferredPwaInstallPrompt.prompt();
         const { outcome } = await deferredPwaInstallPrompt.userChoice;
@@ -1544,8 +1566,6 @@ async function installPwaApp() {
             showToast('🎉 Thank you for installing GlobalBiz!', 'success');
         }
         deferredPwaInstallPrompt = null;
-        const installBtn = document.getElementById('pwaInstallBtn');
-        if (installBtn) installBtn.style.display = 'none';
     } else {
         // Fallback instructions for iOS Safari or already installed browsers
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -1561,8 +1581,8 @@ async function installPwaApp() {
 window.addEventListener('appinstalled', () => {
     console.log('✅ [GlobalBiz PWA] App installed to user device');
     showToast('🎉 GlobalBiz is now installed on your home screen!', 'success');
-    const installBtn = document.getElementById('pwaInstallBtn');
-    if (installBtn) installBtn.style.display = 'none';
+    const floatingPrompt = document.getElementById('pwaFloatingPrompt');
+    if (floatingPrompt) floatingPrompt.style.display = 'none';
     deferredPwaInstallPrompt = null;
 });
 

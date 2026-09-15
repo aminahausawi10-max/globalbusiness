@@ -80,13 +80,8 @@
                 <a href="#" class="nav-link" data-page="assistance" onclick="switchPage('assistance'); return false;">Buying Assistance</a>
             </nav>
 
-            <!-- Right Header Actions -->
+            <!-- Right Header Actions (Clean & Spacious) -->
             <div class="nav-actions">
-                <!-- PWA 1-Tap App Install Button -->
-                <button id="pwaInstallBtn" class="btn btn-sm btn-primary pwa-install-pill" onclick="installPwaApp()" style="display:none;" title="Install GlobalBiz as Mobile App">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> <span class="nav-install-text">Install</span>
-                </button>
-
                 <div class="currency-wrapper">
                     <select id="currencySelector" class="currency-select" title="Change Currency">
                         <option value="NGN" selected>₦ NGN</option>
@@ -97,7 +92,7 @@
                     </select>
                 </div>
 
-                <!-- Guest Sign In Button (Shown when not logged in - Always Prominent) -->
+                <!-- Guest Sign In Button (Shown when not logged in - Always Clear & Prominent) -->
                 <div id="guestAuthNav">
                     <button class="btn btn-primary btn-sm nav-signin-btn" onclick="openAuthModal('login')">
                         <i class="fa-solid fa-user"></i> <span>Sign In</span>
@@ -125,6 +120,10 @@
                         <button type="button" class="profile-dropdown-item" onclick="handleDropdownGoToWebsite()">
                             <i class="fa-solid fa-earth-americas" style="color:#3B82F6;"></i>
                             <span>Go Back to Website</span>
+                        </button>
+                        <button type="button" class="profile-dropdown-item" onclick="installPwaApp()">
+                            <i class="fa-solid fa-mobile-screen-button" style="color:var(--brand-green);"></i>
+                            <span>Install App</span>
                         </button>
                         <div class="profile-dropdown-divider"></div>
                         <button type="button" class="profile-dropdown-item item-logout" onclick="handleUnifiedLogout()">
@@ -905,6 +904,7 @@
                     <ul class="footer-links">
                         <li><a href="#" onclick="switchPage('assistance'); return false;">Buying Assistance Desk</a></li>
                         <li><a href="#" onclick="switchPage('marketplace'); return false;">Browse Verified Listings</a></li>
+                        <li><a href="#" onclick="installPwaApp(); return false;" style="color:var(--brand-green); font-weight:700;"><i class="fa-solid fa-mobile-screen-button"></i> Install Mobile App</a></li>
                         <li><a href="#" onclick="switchPage('admin'); return false;">Admin & Moderation</a></li>
                         <li><a href="https://wa.me/2349090809080" target="_blank" style="color:#25D366; font-weight:700;"><i class="fa-brands fa-whatsapp"></i> Chat Developer (09090809080)</a></li>
                     </ul>
@@ -1331,6 +1331,26 @@
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- PWA Smart Install Discrete Floating Prompt -->
+    <div id="pwaFloatingPrompt" class="pwa-floating-card" style="display:none;">
+        <button class="pwa-floating-close" onclick="dismissPwaPrompt()" title="Dismiss">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="pwa-floating-content">
+            <div class="pwa-floating-icon">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <div class="pwa-floating-text">
+                <div class="pwa-floating-title">Install GlobalBiz App</div>
+                <div class="pwa-floating-desc">Fast browsing, instant access & offline catalog.</div>
+            </div>
+        </div>
+        <div class="pwa-floating-actions">
+            <button class="btn-pwa-dismiss" onclick="dismissPwaPrompt()">Not Now</button>
+            <button class="btn-pwa-install" onclick="installPwaApp()">Install App</button>
         </div>
     </div>
 
