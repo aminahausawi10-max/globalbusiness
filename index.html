@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Decent & Professional Stylesheet (v2.2 Cache Bust) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=2.2">
+    <!-- Decent & Professional Stylesheet (v2.3 Cache Bust) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.3">
 </head>
 <body>
 
@@ -55,25 +55,30 @@
                     </select>
                 </div>
 
-                <button class="btn-post-header" onclick="switchPage('seller')">
+                <!-- Guest Sign In Button (Shown when not logged in) -->
+                <div id="guestAuthNav">
+                    <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">
+                        <i class="fa-solid fa-user"></i> <span>Sign In</span>
+                    </button>
+                </div>
+
+                <!-- User Profile Pill (Shown when logged in) -->
+                <div id="userProfileNav" style="display:none; align-items:center; gap:6px; background:var(--brand-green-soft); border:1px solid rgba(5,150,105,0.2); padding:4px 8px; border-radius:var(--radius-full);">
+                    <i class="fa-solid fa-circle-user" style="color:var(--brand-green); font-size:1rem;"></i>
+                    <span id="navUserName" style="font-size:0.75rem; font-weight:800; color:var(--primary); max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">User</span>
+                    <button onclick="handleUserLogout()" title="Sign Out" style="background:transparent; border:none; color:#EF4444; cursor:pointer; padding:2px 4px; font-size:0.8rem;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+
+                <button class="btn-post-header" onclick="handlePostAdClick()">
                     <i class="fa-solid fa-plus"></i> <span>Post Ad</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- ==========================================================================
-       MOBILE STORIES CATEGORIES BAR
-       ========================================================================== -->
-    <div class="mobile-stories-bar">
-        <div class="stories-track" id="storiesTrack">
-            <!-- Dynamically populated via JS -->
-        </div>
-    </div>
-
-    <!-- ==========================================================================
-       MAIN PAGE VIEWS
-       ========================================================================== -->
+    <!-- MAIN PAGE VIEWS -->
     <main>
 
         <!-- ======================================================================
@@ -793,6 +798,143 @@
         </div>
     </div>
 
+    <!-- Modal 3: User Authentication (Sign In / Register for Buyer & Seller) -->
+    <div id="userAuthModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title" id="userAuthModalTitle">User Account</div>
+                <button class="modal-close-btn" onclick="closeModal('userAuthModal')">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Auth Tabs -->
+                <div class="admin-nav-tabs" style="margin-bottom:16px;">
+                    <button class="admin-tab-btn active" id="authTabLoginBtn" onclick="switchAuthTab('login')">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+                    </button>
+                    <button class="admin-tab-btn" id="authTabRegisterBtn" onclick="switchAuthTab('register')">
+                        <i class="fa-solid fa-user-plus"></i> Create Account
+                    </button>
+                </div>
+
+                <!-- 1. Sign In Form -->
+                <div id="authLoginFormView">
+                    <form id="userLoginForm">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-phone"></i> Phone Number or Email *</label>
+                            <input type="text" id="loginPhoneEmail" class="form-input" placeholder="e.g. 08030000000 or amina@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-lock"></i> Password *</label>
+                            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:6px;">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Account
+                        </button>
+                    </form>
+
+                    <div style="text-align:center; margin-top:16px; font-size:0.8rem; color:var(--text-secondary);">
+                        Don't have an account yet? 
+                        <a href="#" onclick="switchAuthTab('register'); return false;" style="color:var(--brand-green); font-weight:800; text-decoration:none;">
+                            Register as Buyer or Seller
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. Create Account Form -->
+                <div id="authRegisterFormView" style="display:none;">
+                    <form id="userRegisterForm">
+                        <!-- Role Selector -->
+                        <div class="form-group">
+                            <label class="form-label">I want to join as: *</label>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                                <label id="roleBuyerLabel" style="border:2px solid var(--brand-green); background:var(--brand-green-soft); padding:10px; border-radius:var(--radius-md); cursor:pointer; text-align:center; font-size:0.82rem; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                                    <input type="radio" name="authRole" value="buyer" checked onchange="toggleAuthRole(this.value)" style="display:none;">
+                                    <i class="fa-solid fa-bag-shopping" style="font-size:1.2rem; color:var(--brand-green);"></i>
+                                    <span>🛍️ Buyer</span>
+                                    <small style="font-size:0.68rem; font-weight:600; color:var(--text-secondary);">To buy items</small>
+                                </label>
+
+                                <label id="roleSellerLabel" style="border:2px solid var(--border); background:var(--bg-alt); padding:10px; border-radius:var(--radius-md); cursor:pointer; text-align:center; font-size:0.82rem; font-weight:800; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                                    <input type="radio" name="authRole" value="seller" onchange="toggleAuthRole(this.value)" style="display:none;">
+                                    <i class="fa-solid fa-store" style="font-size:1.2rem; color:var(--text-secondary);"></i>
+                                    <span>🏪 Seller</span>
+                                    <small style="font-size:0.68rem; font-weight:600; color:var(--text-secondary);">To list products</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Basic Profile -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" id="regFullName" class="form-input" placeholder="e.g. Amina Bello" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone / WhatsApp *</label>
+                                <input type="tel" id="regPhone" class="form-input" placeholder="+234 803 000 0000" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Location (City) *</label>
+                                <input type="text" id="regLocation" class="form-input" placeholder="e.g. Abuja / Kano / Kaduna" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password *</label>
+                                <input type="password" id="regPassword" class="form-input" placeholder="Create password" required>
+                            </div>
+                        </div>
+
+                        <!-- Extra Seller Specific KYC fields -->
+                        <div id="authSellerExtraFields" style="display:none; background:var(--brand-green-soft); padding:12px; border-radius:var(--radius-md); border:1px solid rgba(5,150,105,0.2); margin:10px 0;">
+                            <h4 style="font-size:0.82rem; font-weight:800; color:var(--brand-green); margin-bottom:8px;">
+                                <i class="fa-solid fa-id-card"></i> Seller KYC & Guarantor Information
+                            </h4>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">National ID Number (NIN) *</label>
+                                    <input type="text" id="regIdNumber" class="form-input" placeholder="NIN-78492019482">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Store Name *</label>
+                                    <input type="text" id="regStoreName" class="form-input" placeholder="e.g. Amina Fabrics">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Brother's / Sister's Name *</label>
+                                    <input type="text" id="regKinName" class="form-input" placeholder="e.g. Usman Bello (Brother)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Brother's / Sister's Phone *</label>
+                                    <input type="tel" id="regKinPhone" class="form-input" placeholder="+234 802 000 0000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:6px;">
+                            <i class="fa-solid fa-user-check"></i> Complete Registration
+                        </button>
+                    </form>
+
+                    <div style="text-align:center; margin-top:14px; font-size:0.8rem; color:var(--text-secondary);">
+                        Already have an account? 
+                        <a href="#" onclick="switchAuthTab('login'); return false;" style="color:var(--brand-green); font-weight:800; text-decoration:none;">
+                            Sign In
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
 
@@ -826,8 +968,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with cache busting v=2.2 -->
-    <script src="assets/js/api.js?v=2.2"></script>
-    <script src="assets/js/app.js?v=2.2"></script>
+    <!-- Scripts with cache busting v=2.3 -->
+    <script src="assets/js/api.js?v=2.3"></script>
+    <script src="assets/js/app.js?v=2.3"></script>
 </body>
 </html>

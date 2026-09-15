@@ -27,10 +27,10 @@ async function initApp() {
     setupCurrencySwitcher();
     setupSearchEngine();
     setupForms();
+    updateNavAuthUI();
     
     // Load Core Data
     await loadCategories();
-    await loadStoriesBar();
     await loadMarketplaceProducts();
     await loadFeaturedBusinesses();
     await loadSellerDashboard();
@@ -62,6 +62,110 @@ function switchPage(pageName) {
         loadSellerDashboard();
     } else if (pageName === 'admin') {
         loadAdminPortal();
+    }
+}
+
+/* ==========================================================================
+   USER AUTHENTICATION & SESSION MANAGEMENT
+   ========================================================================== */
+function getCurrentUser() {
+    try {
+        return JSON.parse(localStorage.getItem('globalbiz_user_session'));
+    } catch (e) {
+        return null;
+    }
+}
+
+function updateNavAuthUI() {
+    const user = getCurrentUser();
+    const guestNav = document.getElementById('guestAuthNav');
+    const userNav = document.getElementById('userProfileNav');
+    const userNameEl = document.getElementById('navUserName');
+
+    if (user && user.full_name) {
+        if (guestNav) guestNav.style.display = 'none';
+        if (userNav) userNav.style.display = 'inline-flex';
+        const roleLabel = user.role === 'seller' ? ' (Seller)' : ' (Buyer)';
+        if (userNameEl) userNameEl.innerText = user.full_name.split(' ')[0] + roleLabel;
+    } else {
+        if (guestNav) guestNav.style.display = 'block';
+        if (userNav) userNav.style.display = 'none';
+    }
+}
+
+function openAuthModal(tab = 'login') {
+    switchAuthTab(tab);
+    document.getElementById('userAuthModal').classList.add('active');
+}
+
+function switchAuthTab(tab) {
+    const loginView = document.getElementById('authLoginFormView');
+    const registerView = document.getElementById('authRegisterFormView');
+    const loginBtn = document.getElementById('authTabLoginBtn');
+    const registerBtn = document.getElementById('authTabRegisterBtn');
+
+    if (tab === 'login') {
+        if (loginView) loginView.style.display = 'block';
+        if (registerView) registerView.style.display = 'none';
+        if (loginBtn) loginBtn.classList.add('active');
+        if (registerBtn) registerBtn.classList.remove('active');
+        document.getElementById('userAuthModalTitle').innerText = 'Sign In to GlobalBiz';
+    } else {
+        if (loginView) loginView.style.display = 'none';
+        if (registerView) registerView.style.display = 'block';
+        if (loginBtn) loginBtn.classList.remove('active');
+        if (registerBtn) registerBtn.classList.add('active');
+        document.getElementById('userAuthModalTitle').innerText = 'Create Account (Buyer or Seller)';
+    }
+}
+
+function toggleAuthRole(role) {
+    const extraFields = document.getElementById('authSellerExtraFields');
+    const buyerLabel = document.getElementById('roleBuyerLabel');
+    const sellerLabel = document.getElementById('roleSellerLabel');
+
+    if (role === 'seller') {
+        if (extraFields) extraFields.style.display = 'block';
+        if (sellerLabel) {
+            sellerLabel.style.borderColor = 'var(--brand-green)';
+            sellerLabel.style.background = 'var(--brand-green-soft)';
+        }
+        if (buyerLabel) {
+            buyerLabel.style.borderColor = 'var(--border)';
+            buyerLabel.style.background = 'var(--bg-alt)';
+        }
+    } else {
+        if (extraFields) extraFields.style.display = 'none';
+        if (buyerLabel) {
+            buyerLabel.style.borderColor = 'var(--brand-green)';
+            buyerLabel.style.background = 'var(--brand-green-soft)';
+        }
+        if (sellerLabel) {
+            sellerLabel.style.borderColor = 'var(--border)';
+            sellerLabel.style.background = 'var(--bg-alt)';
+        }
+    }
+}
+
+function handleUserLogout() {
+    localStorage.removeItem('globalbiz_user_session');
+    updateNavAuthUI();
+    showToast('You have signed out successfully', 'info');
+    switchPage('home');
+}
+
+function handlePostAdClick() {
+    const user = getCurrentUser();
+    if (!user) {
+        showToast('Please sign in or create a seller account to post products', 'info');
+        openAuthModal('login');
+        return;
+    }
+    if (user.role === 'seller') {
+        openAddProductModal();
+    } else {
+        showToast('You are signed in as a Buyer. Switch or register as a Seller to post ads.', 'info');
+        openAuthModal('register');
     }
 }
 
@@ -599,6 +703,91 @@ function filterMarketplace() {
 }
 
 function setupForms() {
+    // 1. User Sign In Form
+    const userLoginForm = document.getElementById('userLoginForm');
+    if (userLoginForm) {
+        userLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const phoneEmail = document.getElementById('loginPhoneEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!phoneEmail || !password) {
+                showToast('Please enter both phone/email and password', 'error');
+                return;
+            }
+
+            // Authenticate user
+            const userName = phoneEmail.includes('@') ? phoneEmail.split('@')[0] : phoneEmail;
+            const userSession = {
+                full_name: userName.charAt(0).toUpperCase() + userName.slice(1),
+                phone: phoneEmail,
+                role: 'seller' // Defaults to seller access
+            };
+
+            localStorage.setItem('globalbiz_user_session', JSON.stringify(userSession));
+            updateNavAuthUI();
+            closeModal('userAuthModal');
+            showToast(`Welcome back, ${userSession.full_name}!`, 'success');
+            userLoginForm.reset();
+        });
+    }
+
+    // 2. User Register Form (Buyer / Seller)
+    const userRegForm = document.getElementById('userRegisterForm');
+    if (userRegForm) {
+        userRegForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const role = document.querySelector('input[name="authRole"]:checked')?.value || 'buyer';
+            const fullName = document.getElementById('regFullName').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const location = document.getElementById('regLocation').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            const userSession = {
+                full_name: fullName,
+                phone: phone,
+                location: location,
+                role: role
+            };
+
+            if (role === 'seller') {
+                const idNumber = document.getElementById('regIdNumber').value.trim();
+                const storeName = document.getElementById('regStoreName').value.trim() || `${fullName}'s Store`;
+                const kinName = document.getElementById('regKinName').value.trim();
+                const kinPhone = document.getElementById('regKinPhone').value.trim();
+
+                userSession.id_number = idNumber;
+                userSession.store_name = storeName;
+                userSession.kin_name = kinName;
+                userSession.kin_phone = kinPhone;
+
+                // Register seller in API/state
+                await API.registerSeller({
+                    full_name: fullName,
+                    id_number: idNumber,
+                    phone: phone,
+                    location: location,
+                    kin_name: kinName,
+                    kin_phone: kinPhone,
+                    store_name: storeName
+                });
+            }
+
+            localStorage.setItem('globalbiz_user_session', JSON.stringify(userSession));
+            updateNavAuthUI();
+            closeModal('userAuthModal');
+            userRegForm.reset();
+
+            if (role === 'seller') {
+                showToast(`Welcome Seller ${fullName}! Your store is ready.`, 'success');
+                switchPage('seller');
+            } else {
+                showToast(`Welcome Buyer ${fullName}! You can now browse & order.`, 'success');
+                switchPage('marketplace');
+            }
+        });
+    }
+
     // Admin Login Form
     const adminForm = document.getElementById('adminLoginForm');
     if (adminForm) {
