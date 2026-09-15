@@ -518,43 +518,53 @@ async function openProductDetail(productId) {
 
     if (title) title.innerText = p.title;
 
-    const cleanPhone = (p.whatsapp || p.phone || '').replace(/[^0-9]/g, '');
-    const waMsg = encodeURIComponent(`Hello ${p.seller_name || p.business_name || 'Seller'}, I want to buy "${p.title}" listed on GlobalBiz for ${formatPrice(p.price)}. Is it available in ${p.city}?`);
+    const cleanPhone = (p.whatsapp || p.phone || p.seller_phone || '').replace(/[^0-9]/g, '');
+    const waMsg = encodeURIComponent(`Hello ${p.seller_name || p.business_name || 'Seller'}, I want to buy "${p.title}" listed on GlobalBiz for ${formatPrice(p.price)}. Please let me know how to proceed with payment and delivery to my location.`);
     const waLink = `https://wa.me/${cleanPhone}?text=${waMsg}`;
-    const telLink = `tel:${p.phone || cleanPhone}`;
-    const safeSellerName = (p.seller_name || p.business_name || 'Verified Seller').replace(/'/g, "\\'");
+    const telLink = `tel:${p.phone || p.seller_phone || cleanPhone}`;
+    const sellerName = p.seller_name || p.business_name || 'Verified Seller';
+    const safeSellerName = sellerName.replace(/'/g, "\\'");
+    const city = p.city || 'Nigeria';
 
     content.innerHTML = `
-        <div style="margin-bottom:16px;">
-            <img src="${p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600'}" alt="${p.title}" style="width:100%; height:240px; object-fit:cover; border-radius:var(--radius-md); box-shadow:var(--shadow-sm);">
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div style="font-size:1.5rem; font-weight:900; color:var(--naira-green);">
+        <div style="position:relative; border-radius:14px; overflow:hidden; margin-bottom:16px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+            <img src="${p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600'}" alt="${p.title}" style="width:100%; height:260px; object-fit:cover; display:block;">
+            <div style="position:absolute; bottom:12px; left:12px; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); color:#FFFFFF; font-size:1.25rem; font-weight:900; padding:6px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.2);">
                 ${formatPrice(p.price)}
             </div>
-            <span class="badge badge-verified"><i class="fa-solid fa-circle-check"></i> Verified Seller</span>
+            <div style="position:absolute; top:12px; right:12px;">
+                <span class="badge badge-verified" style="padding:6px 12px; font-size:0.75rem;"><i class="fa-solid fa-circle-check"></i> Verified Good</span>
+            </div>
         </div>
 
-        <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary-dark); margin-bottom:8px;">
+        <h3 style="font-size:1.2rem; font-weight:800; color:#0F172A; margin-bottom:12px; line-height:1.35;">
             ${p.title}
         </h3>
 
-        <div style="background:var(--bg-alt); padding:12px; border-radius:var(--radius-md); font-size:0.82rem; margin-bottom:14px; display:flex; flex-direction:column; gap:6px;">
-            <div><i class="fa-solid fa-location-dot" style="color:#FA5252;"></i> <strong>Location:</strong> ${p.city || 'Abuja'}, ${p.country || 'Nigeria'} (${p.area || 'Metropolis'})</div>
-            <div><i class="fa-solid fa-store" style="color:var(--accent);"></i> <strong>Seller:</strong> ${p.seller_name || p.business_name || 'Amina'}</div>
-            <div><i class="fa-solid fa-truck" style="color:var(--naira-green);"></i> <strong>Delivery:</strong> ${p.delivery_info || 'Same-day local delivery & interstate cargo available.'}</div>
+        <div class="form-section-block" style="padding:12px 14px; margin-bottom:14px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.82rem;">
+                <div><i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> <strong>City:</strong> ${city}</div>
+                <div><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> <strong>Seller:</strong> ${sellerName}</div>
+                <div><i class="fa-solid fa-shield-halved" style="color:#3B82F6;"></i> <strong>Trust:</strong> Direct Verified</div>
+                <div><i class="fa-solid fa-truck" style="color:var(--brand-green);"></i> <strong>Delivery:</strong> Nationwide</div>
+            </div>
         </div>
 
-        <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.55; margin-bottom:20px;">
-            ${p.description || 'Authentic product in excellent brand new condition directly from verified supplier.'}
+        <div class="form-section-block" style="padding:12px 14px; margin-bottom:16px;">
+            <div class="form-section-title" style="margin-bottom:6px; padding-bottom:4px;">
+                <i class="fa-solid fa-align-left" style="color:var(--brand-green);"></i>
+                <span>Product Description</span>
+            </div>
+            <p style="font-size:0.84rem; color:#475569; line-height:1.55; margin:0;">
+                ${p.description || 'Authentic quality product listed directly by verified merchant on GlobalBiz.'}
+            </p>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <button type="button" class="btn btn-whatsapp" style="padding:12px;" onclick="handleProtectedContact('whatsapp', '${waLink}', '${safeSellerName}', event)">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp Seller
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+            <button type="button" class="btn btn-whatsapp" style="padding:12px 14px; font-size:0.88rem; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="handleProtectedContact('whatsapp', '${waLink}', '${safeSellerName}', event)">
+                <i class="fa-brands fa-whatsapp" style="font-size:1.15rem;"></i> Buy on WhatsApp
             </button>
-            <button type="button" class="btn btn-primary" style="padding:12px;" onclick="handleProtectedContact('tel', '${telLink}', '${safeSellerName}', event)">
+            <button type="button" class="btn btn-publish-lux" style="padding:12px 14px; font-size:0.88rem; font-weight:800; width:100%;" onclick="handleProtectedContact('tel', '${telLink}', '${safeSellerName}', event)">
                 <i class="fa-solid fa-phone"></i> Call Seller
             </button>
         </div>
@@ -1239,8 +1249,10 @@ function setupForms() {
             const curr = AppState.currencyRates[AppState.currentCurrency] || AppState.currencyRates['NGN'];
             const priceInUSD = inputPrice / curr.rate;
 
-            const sellerName = (user && user.full_name) || document.getElementById('sellerProdSellerName').value.trim() || 'Verified Seller';
-            const sellerPhone = (user && user.phone) || document.getElementById('sellerProdPhone').value.trim() || '+234 800 000 0000';
+            const inputSellerName = document.getElementById('sellerProdSellerName').value.trim();
+            const inputSellerPhone = document.getElementById('sellerProdPhone').value.trim();
+            const sellerName = inputSellerName || (user && user.full_name) || 'Verified Seller';
+            const sellerPhone = inputSellerPhone || (user && user.phone) || '+234 800 000 0000';
 
             const payload = {
                 title: document.getElementById('sellerProdTitle').value.trim(),
@@ -1253,7 +1265,7 @@ function setupForms() {
                 city: document.getElementById('sellerProdLocation').value.trim() || 'Abuja',
                 description: document.getElementById('sellerProdDesc').value.trim(),
                 photo_url: document.getElementById('sellerProdPhoto').value.trim(),
-                user_id: user ? (user.id || user.phone) : Date.now()
+                user_id: user ? (user.id || user.phone) : (sellerPhone || Date.now())
             };
 
             if (editId) {
@@ -1265,16 +1277,16 @@ function setupForms() {
                     return;
                 }
                 await API.updateProduct(editId, payload);
-                showToast('Good updated successfully!', 'success');
+                showToast('Good updated and live on marketplace!', 'success');
             } else {
                 await API.createProduct(payload);
-                showToast('New good published! Buyers in search can now discover it.', 'success');
+                showToast('🎉 Good published! Buyers in search & marketplace can now view and buy it.', 'success');
             }
 
             closeModal('addProductModal');
-            loadMarketplaceProducts();
-            loadSellerDashboard();
-            loadAdminPortal();
+            await loadMarketplaceProducts();
+            await loadSellerDashboard();
+            await loadAdminPortal();
         });
     }
 

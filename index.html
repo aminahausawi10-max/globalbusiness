@@ -872,14 +872,22 @@
     
     <!-- Modal 1: Product Details View -->
     <div id="productDetailModal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div class="modal-title" id="detailModalTitle">Product Details</div>
-                <button class="modal-close-btn" onclick="closeModal('productDetailModal')">
+        <div class="modal-card modal-card-premium">
+            <div class="modal-header modal-header-modern">
+                <div class="modal-header-content">
+                    <div class="modal-badge-icon">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <div class="modal-header-text">
+                        <div class="modal-title" id="detailModalTitle">Product Details</div>
+                        <p class="modal-subtitle">Verified Supplier Listing & Direct Purchase</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('productDetailModal')" title="Close Modal">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body-styled">
                 <div id="detailModalContent">
                     <!-- Populated via JS -->
                 </div>
