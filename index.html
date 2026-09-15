@@ -889,57 +889,110 @@
 
     <!-- Modal 2: Add / Edit Product Modal -->
     <div id="addProductModal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div class="modal-title" id="addProductModalTitle">Add New Product</div>
-                <button class="modal-close-btn" onclick="closeModal('addProductModal')">
+        <div class="modal-card modal-card-premium">
+            <div class="modal-header modal-header-modern">
+                <div class="modal-header-content">
+                    <div class="modal-badge-icon">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+                    <div class="modal-header-text">
+                        <div class="modal-title" id="addProductModalTitle">Add New Good / Product</div>
+                        <p class="modal-subtitle">Publish your product to verified buyers across Nigeria & Diaspora</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('addProductModal')" title="Close Modal">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body-styled">
                 <form id="sellerProductForm">
                     <input type="hidden" id="editProductId" value="">
-                    
-                    <div class="form-group">
-                        <label class="form-label">Product Name / Title *</label>
-                        <input type="text" id="sellerProdTitle" class="form-input" placeholder="e.g. Ankara Material 6-Yards" required>
+
+                    <!-- Section 1: Item Basic Info -->
+                    <div class="form-section-block">
+                        <div class="form-section-title">
+                            <i class="fa-solid fa-tag" style="color:var(--brand-green);"></i>
+                            <span>Product Information</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Product Name / Title <span class="req-star">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-cube input-icon"></i>
+                                <input type="text" id="sellerProdTitle" class="form-input form-input-icon" placeholder="e.g. Authentic Senegalese Kaftan / Ankara Fabric" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-2col">
+                            <div class="form-group">
+                                <label class="form-label">Price <span class="req-star">*</span></label>
+                                <div class="input-with-icon">
+                                    <span class="input-currency-badge">₦ / $</span>
+                                    <input type="number" step="any" id="sellerProdPrice" class="form-input form-input-currency" placeholder="e.g. 25000" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category <span class="req-star">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-layer-group input-icon"></i>
+                                    <select id="sellerProdCategory" class="form-select form-input-icon" required></select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-row">
+                    <!-- Section 2: Seller & Location Details -->
+                    <div class="form-section-block">
+                        <div class="form-section-title">
+                            <i class="fa-solid fa-user-shield" style="color:var(--brand-green);"></i>
+                            <span>Seller & Location Details</span>
+                        </div>
+
+                        <div class="form-row form-row-2col">
+                            <div class="form-group">
+                                <label class="form-label">Seller / Business Name <span class="req-star">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-store input-icon"></i>
+                                    <input type="text" id="sellerProdSellerName" class="form-input form-input-icon" placeholder="e.g. Amina Ventures" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Location (City / State) <span class="req-star">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-location-dot input-icon" style="color:#EF4444;"></i>
+                                    <input type="text" id="sellerProdLocation" class="form-input form-input-icon" placeholder="e.g. Abuja / Kano / Lagos" required>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label class="form-label">Price (in ₦ Naira or USD) *</label>
-                            <input type="number" step="any" id="sellerProdPrice" class="form-input" placeholder="e.g. 15000" required>
+                            <label class="form-label">WhatsApp / Phone Number <span class="req-star">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fa-brands fa-whatsapp input-icon" style="color:#22C55E; font-size:1.1rem;"></i>
+                                <input type="tel" id="sellerProdPhone" class="form-input form-input-icon" placeholder="+234 803 456 7890" required>
+                            </div>
+                            <span class="field-hint"><i class="fa-solid fa-circle-info"></i> Buyers can tap directly to message you on WhatsApp</span>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Product Description -->
+                    <div class="form-section-block">
+                        <div class="form-section-title">
+                            <i class="fa-solid fa-align-left" style="color:var(--brand-green);"></i>
+                            <span>Product Details & Specs</span>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Category *</label>
-                            <select id="sellerProdCategory" class="form-select" required></select>
+                            <label class="form-label">Description & Delivery Terms</label>
+                            <textarea id="sellerProdDesc" class="form-textarea form-textarea-styled" rows="3" placeholder="Describe quality, material, sizing, colors available, and nationwide or international shipping..."></textarea>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Seller / Business Name *</label>
-                            <input type="text" id="sellerProdSellerName" class="form-input" placeholder="e.g. Amina" required>
+                    <!-- Section 4: Product Picture Import & Upload -->
+                    <div class="form-section-block">
+                        <div class="form-section-title">
+                            <i class="fa-solid fa-camera-retro" style="color:var(--brand-green);"></i>
+                            <span>Product Picture (Photo / Gallery) <span class="req-star">*</span></span>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Location (City) *</label>
-                            <input type="text" id="sellerProdLocation" class="form-input" placeholder="e.g. Abuja / Kano / Kaduna" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">WhatsApp / Phone Number *</label>
-                        <input type="tel" id="sellerProdPhone" class="form-input" placeholder="+234 803 000 0000" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea id="sellerProdDesc" class="form-textarea" rows="2" placeholder="Quality, specifications, sizing, delivery terms..."></textarea>
-                    </div>
-
-                    <!-- Product Picture Import & Upload -->
-                    <div class="form-group">
-                        <label class="form-label"><i class="fa-solid fa-camera" style="color:var(--brand-green);"></i> Product Picture (Import from Phone or Device) *</label>
                         
                         <div class="photo-upload-container">
                             <!-- Hidden File Input for Device Photo Import / Camera -->
@@ -949,38 +1002,53 @@
                             <input type="hidden" id="sellerProdPhoto" value="https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80">
 
                             <!-- Interactive Clickable Dropzone -->
-                            <div id="sellerProdPhotoDropzone" class="photo-upload-dropzone" onclick="document.getElementById('sellerProdPhotoFileInput').click()">
-                                <div class="photo-upload-icon">
+                            <div id="sellerProdPhotoDropzone" class="photo-upload-dropzone-modern" onclick="document.getElementById('sellerProdPhotoFileInput').click()">
+                                <div class="photo-upload-icon-modern">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
                                 </div>
-                                <strong style="font-size:0.85rem; color:var(--primary);">📸 Tap to Import Photo from Gallery or Camera</strong>
-                                <span style="font-size:0.72rem; color:var(--text-secondary);">Select picture from phone, laptop, or camera</span>
+                                <div class="photo-upload-texts">
+                                    <strong class="upload-headline">📸 Tap to Upload or Take Photo</strong>
+                                    <span class="upload-subline">Select from phone gallery, camera, or computer (PNG, JPG, WEBP)</span>
+                                </div>
+                                <div class="upload-action-btn">
+                                    <i class="fa-solid fa-folder-open"></i> Browse Files
+                                </div>
                             </div>
 
                             <!-- Live Photo Preview Box -->
-                            <div id="sellerProdPhotoPreviewCard" class="photo-preview-card" style="display:flex;">
-                                <img id="sellerProdPhotoPreviewImg" src="https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80" alt="Product Preview" class="photo-preview-img">
-                                <div class="photo-preview-overlay">
-                                    <button type="button" class="btn btn-sm btn-white" onclick="document.getElementById('sellerProdPhotoFileInput').click()" style="padding:4px 10px; font-size:0.75rem;">
+                            <div id="sellerProdPhotoPreviewCard" class="photo-preview-card-modern" style="display:flex;">
+                                <img id="sellerProdPhotoPreviewImg" src="https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80" alt="Product Preview" class="photo-preview-img-modern">
+                                <div class="photo-preview-badge-status">
+                                    <i class="fa-solid fa-circle-check"></i> Image Ready
+                                </div>
+                                <div class="photo-preview-actions-bar">
+                                    <button type="button" class="photo-preview-btn photo-preview-change-btn" onclick="document.getElementById('sellerProdPhotoFileInput').click()">
                                         <i class="fa-solid fa-camera"></i> Change Photo
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Preset Sample Photos Quick Picker -->
-                            <div style="margin-top:8px; display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
-                                <span style="font-size:0.68rem; font-weight:700; color:var(--text-muted);">Quick Sample:</span>
-                                <button type="button" class="hero-loc-pill" style="padding:3px 9px; font-size:0.7rem;" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80')">👗 Ankara</button>
-                                <button type="button" class="hero-loc-pill" style="padding:3px 9px; font-size:0.7rem;" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&auto=format&fit=crop&q=80')">💇 Wig</button>
-                                <button type="button" class="hero-loc-pill" style="padding:3px 9px; font-size:0.7rem;" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80')">🌾 Yam</button>
-                                <button type="button" class="hero-loc-pill" style="padding:3px 9px; font-size:0.7rem;" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop&q=80')">📱 Phone</button>
+                            <div class="photo-quick-samples-wrapper">
+                                <span class="quick-sample-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Samples:</span>
+                                <div class="quick-sample-chips">
+                                    <button type="button" class="sample-chip-pill" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80')">👗 Ankara</button>
+                                    <button type="button" class="sample-chip-pill" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&auto=format&fit=crop&q=80')">💇 Wig</button>
+                                    <button type="button" class="sample-chip-pill" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80')">🌾 Foodstuff</button>
+                                    <button type="button" class="sample-chip-pill" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop&q=80')">📱 Gadgets</button>
+                                    <button type="button" class="sample-chip-pill" onclick="setProductSamplePhoto('https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&auto=format&fit=crop&q=80')">👜 Bags</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish Product
-                    </button>
+                    <!-- Submit & Publish Action Button -->
+                    <div class="modal-form-actions">
+                        <button type="submit" class="btn btn-publish-lux">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Save & Publish Product</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
