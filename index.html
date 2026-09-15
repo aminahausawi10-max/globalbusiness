@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Decent & Professional Stylesheet (v2.5 Cache Bust) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=2.5">
+    <!-- Decent & Professional Stylesheet (v2.6 Cache Bust) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.6">
 </head>
 <body>
 
@@ -82,13 +82,34 @@
                     </button>
                 </div>
 
-                <!-- User Profile Pill (Shown when logged in) -->
-                <div id="userProfileNav" style="display:none; align-items:center; gap:6px; background:var(--brand-green-soft); border:1px solid rgba(5,150,105,0.2); padding:4px 8px; border-radius:var(--radius-full);">
-                    <i class="fa-solid fa-circle-user" style="color:var(--brand-green); font-size:1rem;"></i>
-                    <span id="navUserName" style="font-size:0.75rem; font-weight:800; color:var(--primary); max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">User</span>
-                    <button onclick="handleUserLogout()" title="Sign Out" style="background:transparent; border:none; color:#EF4444; cursor:pointer; padding:2px 4px; font-size:0.8rem;">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <!-- User & Admin Profile Dropdown (Shown when logged in or Admin active) -->
+                <div id="userProfileNav" class="user-profile-dropdown-wrapper" style="display:none;">
+                    <button id="userProfileBtn" class="profile-trigger-pill" onclick="toggleProfileDropdown(event)">
+                        <i class="fa-solid fa-circle-user" style="color:var(--brand-green); font-size:1rem;"></i>
+                        <span id="navUserName">Admin</span>
+                        <i class="fa-solid fa-chevron-down" id="navDropdownChevron" style="font-size:0.65rem; color:var(--text-secondary); transition:transform 0.2s ease;"></i>
                     </button>
+                    <div id="profileDropdownMenu" class="profile-dropdown-menu">
+                        <div class="profile-dropdown-header">
+                            <span id="dropdownUserRoleBadge" class="badge badge-verified">ADMIN</span>
+                            <div id="dropdownUserFullName" style="font-weight:800; font-size:0.85rem; color:var(--primary); margin-top:4px;">Amina Ahmed</div>
+                            <div id="dropdownUserPhone" style="font-size:0.72rem; color:var(--text-secondary);">WhatsApp: 09090809080</div>
+                        </div>
+                        <div class="profile-dropdown-divider"></div>
+                        <button type="button" class="profile-dropdown-item" onclick="handleDropdownPortal()">
+                            <i class="fa-solid fa-gauge-high" style="color:var(--brand-green);"></i>
+                            <span>Portal</span>
+                        </button>
+                        <button type="button" class="profile-dropdown-item" onclick="handleDropdownGoToWebsite()">
+                            <i class="fa-solid fa-earth-americas" style="color:#3B82F6;"></i>
+                            <span>Go Back to Website</span>
+                        </button>
+                        <div class="profile-dropdown-divider"></div>
+                        <button type="button" class="profile-dropdown-item item-logout" onclick="handleUnifiedLogout()">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
                 </div>
 
                 <button class="btn-post-header" onclick="handlePostAdClick()">
@@ -577,16 +598,19 @@
                     <!-- Admin Tabs -->
                     <div class="admin-nav-tabs">
                         <button class="admin-tab-btn active" onclick="switchAdminTab('overview', this)">
-                            <i class="fa-solid fa-chart-pie"></i> Overview & Activity Feed
+                            <i class="fa-solid fa-chart-pie"></i> Overview
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('sellers', this)">
-                            <i class="fa-solid fa-user-check"></i> Verify Sellers & Guarantors
+                            <i class="fa-solid fa-user-check"></i> Manage Sellers (<span id="adminTabSellerCount">3</span>)
+                        </button>
+                        <button class="admin-tab-btn" onclick="switchAdminTab('buyers', this)">
+                            <i class="fa-solid fa-users"></i> Manage Buyers (<span id="adminTabBuyerCount">4</span>)
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('products', this)">
-                            <i class="fa-solid fa-boxes-stacked"></i> Moderate Products
+                            <i class="fa-solid fa-boxes-stacked"></i> Products (<span id="adminTabProductCount">6</span>)
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('requests', this)">
-                            <i class="fa-solid fa-handshake"></i> Sourcing Desk
+                            <i class="fa-solid fa-handshake"></i> Sourcing Desk (<span id="adminTabRequestCount">1</span>)
                         </button>
                     </div>
 
@@ -595,14 +619,21 @@
                         <!-- KPI Metric Counters -->
                         <div class="seller-stats-grid">
                             <div class="stat-card">
-                                <div class="stat-icon green"><i class="fa-solid fa-users"></i></div>
+                                <div class="stat-icon green"><i class="fa-solid fa-store"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalSellers">3</div>
                                     <div class="stat-label">Registered Sellers</div>
                                 </div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-icon indigo"><i class="fa-solid fa-boxes-stacked"></i></div>
+                                <div class="stat-icon indigo"><i class="fa-solid fa-users"></i></div>
+                                <div>
+                                    <div class="stat-value" id="adminTotalBuyers">4</div>
+                                    <div class="stat-label">Registered Buyers</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon green"><i class="fa-solid fa-boxes-stacked"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalProducts">6</div>
                                     <div class="stat-label">Active Listings</div>
@@ -632,18 +663,31 @@
                         </div>
                     </div>
 
-                    <!-- Admin Tab 1: Verify Sellers -->
+                    <!-- Admin Tab 1: Manage Sellers (Add, Delete, Verify) -->
                     <div id="admin-sellers-view" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                            <div>
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Registered Sellers & Stores</h3>
+                                <p style="font-size:0.75rem; color:var(--text-secondary);">Verify KYC identities, review Next-of-Kin guarantors, or add/remove sellers.</p>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="adminSellerSearchInput" oninput="handleAdminSellerSearch(this.value)" placeholder="Search sellers..." class="form-input" style="padding:6px 12px; font-size:0.8rem; width:180px;">
+                                <button class="btn btn-sm btn-primary" onclick="openAdminAddSellerModal()">
+                                    <i class="fa-solid fa-plus"></i> Add New Seller
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="admin-table-container">
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Seller & Store</th>
+                                        <th>Seller Name & Store</th>
                                         <th>National ID (NIN)</th>
-                                        <th>Location</th>
-                                        <th>Brother's/Sister's Info</th>
+                                        <th>Phone & Location</th>
+                                        <th>Guarantor (Kin) Info</th>
                                         <th>Status</th>
-                                        <th>Action</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="adminSellersTableBody">
@@ -653,8 +697,51 @@
                         </div>
                     </div>
 
-                    <!-- Admin Tab 2: Moderate Products -->
+                    <!-- Admin Tab 2: Manage Buyers (Add, Delete) -->
+                    <div id="admin-buyers-view" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                            <div>
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-users" style="color:var(--brand-green);"></i> Registered Buyers & Customers</h3>
+                                <p style="font-size:0.75rem; color:var(--text-secondary);">Monitor buyers registered on the platform, add new buyers, or remove accounts.</p>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="adminBuyerSearchInput" oninput="handleAdminBuyerSearch(this.value)" placeholder="Search buyers..." class="form-input" style="padding:6px 12px; font-size:0.8rem; width:180px;">
+                                <button class="btn btn-sm btn-primary" onclick="openAdminAddBuyerModal()">
+                                    <i class="fa-solid fa-user-plus"></i> Add New Buyer
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Buyer Full Name</th>
+                                        <th>Phone / WhatsApp</th>
+                                        <th>Location & City</th>
+                                        <th>Registration Date</th>
+                                        <th>Orders</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminBuyersTableBody">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Admin Tab 3: Moderate Products -->
                     <div id="admin-products-view" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                            <div>
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-boxes-stacked" style="color:var(--brand-green);"></i> Moderate Products</h3>
+                                <p style="font-size:0.75rem; color:var(--text-secondary);">Oversee active marketplace listings across Abuja, Kano, Kaduna & Nigeria.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="openAddProductModal()">
+                                <i class="fa-solid fa-plus"></i> Add Product
+                            </button>
+                        </div>
                         <div class="admin-table-container">
                             <table class="admin-table">
                                 <thead>
@@ -673,8 +760,14 @@
                         </div>
                     </div>
 
-                    <!-- Admin Tab 3: Sourcing Requests -->
+                    <!-- Admin Tab 4: Sourcing Requests -->
                     <div id="admin-requests-view" style="display:none;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                            <div>
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-handshake" style="color:var(--brand-green);"></i> Buying Assistance & Sourcing Desk</h3>
+                                <p style="font-size:0.75rem; color:var(--text-secondary);">Direct concierge orders requiring agent inspection and supplier negotiation.</p>
+                            </div>
+                        </div>
                         <div class="admin-table-container">
                             <table class="admin-table">
                                 <thead>
@@ -1005,6 +1098,127 @@
         </div>
     </div>
 
+    <!-- Modal 4: Admin Add Seller Modal -->
+    <div id="adminAddSellerModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Admin: Add New Verified Seller</div>
+                <button class="modal-close-btn" onclick="closeModal('adminAddSellerModal')">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="adminAddSellerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Seller Full Name *</label>
+                            <input type="text" id="adminSellerFullName" class="form-input" placeholder="e.g. Hajiya Maryam Bello" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone / WhatsApp *</label>
+                            <input type="tel" id="adminSellerPhone" class="form-input" placeholder="+234 803 000 0000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Store / Brand Name *</label>
+                            <input type="text" id="adminSellerStoreName" class="form-input" placeholder="e.g. Maryam Wigs & Boutique" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location (City / State) *</label>
+                            <input type="text" id="adminSellerLocation" class="form-input" placeholder="e.g. Abuja / Kano / Kaduna" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">National ID Number (NIN) *</label>
+                            <input type="text" id="adminSellerNIN" class="form-input" placeholder="NIN-99281726354" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Store Category *</label>
+                            <select id="adminSellerCategory" class="form-select">
+                                <option value="Clothing & Fashion">Clothing & Fashion (Ankara)</option>
+                                <option value="Wigs & Beauty" selected>Wigs & Beauty</option>
+                                <option value="Agriculture & Produce">Agriculture & Produce</option>
+                                <option value="Mobile Phones">Mobile Phones & Tech</option>
+                                <option value="General Marketplace">General Marketplace</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="background:var(--brand-green-soft); border:1px solid rgba(5,150,105,0.2); padding:10px 12px; border-radius:var(--radius-md); margin-bottom:12px;">
+                        <span style="font-size:0.75rem; font-weight:800; color:var(--brand-green); display:block; margin-bottom:6px;">
+                            <i class="fa-solid fa-shield-halved"></i> Brother's / Sister's Guarantor Details
+                        </span>
+                        <div class="form-row" style="margin-bottom:0;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label" style="font-size:0.72rem;">Brother / Sister Full Name</label>
+                                <input type="text" id="adminSellerKinName" class="form-input" placeholder="e.g. Ahmad Bello (Brother)" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label" style="font-size:0.72rem;">Guarantor Phone Number</label>
+                                <input type="tel" id="adminSellerKinPhone" class="form-input" placeholder="+234 802 000 0000" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; font-weight:700; cursor:pointer;">
+                            <input type="checkbox" id="adminSellerVerifiedCheck" checked>
+                            <span>Mark as Verified Seller with Verified Badge</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
+                        <i class="fa-solid fa-user-plus"></i> Save & Register Seller
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Admin Add Buyer Modal -->
+    <div id="adminAddBuyerModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-user-plus" style="color:var(--brand-green);"></i> Admin: Add New Registered Buyer</div>
+                <button class="modal-close-btn" onclick="closeModal('adminAddBuyerModal')">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="adminAddBuyerForm">
+                    <div class="form-group">
+                        <label class="form-label">Buyer Full Name *</label>
+                        <input type="text" id="adminBuyerFullName" class="form-input" placeholder="e.g. Usman Danladi" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Phone / WhatsApp *</label>
+                            <input type="tel" id="adminBuyerPhone" class="form-input" placeholder="+234 809 000 0000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City / Location *</label>
+                            <input type="text" id="adminBuyerLocation" class="form-input" placeholder="e.g. Kano (Fagge) or Abuja" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <input type="text" id="adminBuyerCountry" class="form-input" value="Nigeria">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
+                        <i class="fa-solid fa-user-check"></i> Register Buyer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
 
@@ -1034,8 +1248,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with cache busting v=2.5 -->
-    <script src="assets/js/api.js?v=2.5"></script>
-    <script src="assets/js/app.js?v=2.5"></script>
+    <!-- Scripts with cache busting v=2.6 -->
+    <script src="assets/js/api.js?v=2.6"></script>
+    <script src="assets/js/app.js?v=2.6"></script>
 </body>
 </html>

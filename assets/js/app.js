@@ -66,7 +66,7 @@ function switchPage(pageName) {
 }
 
 /* ==========================================================================
-   USER AUTHENTICATION & SESSION MANAGEMENT
+   USER & ADMIN AUTHENTICATION & PROFILE DROPDOWN
    ========================================================================== */
 function getCurrentUser() {
     try {
@@ -78,19 +78,104 @@ function getCurrentUser() {
 
 function updateNavAuthUI() {
     const user = getCurrentUser();
+    const isAdmin = isAdminAuthenticated();
     const guestNav = document.getElementById('guestAuthNav');
     const userNav = document.getElementById('userProfileNav');
     const userNameEl = document.getElementById('navUserName');
+    const roleBadgeEl = document.getElementById('dropdownUserRoleBadge');
+    const dropNameEl = document.getElementById('dropdownUserFullName');
+    const dropPhoneEl = document.getElementById('dropdownUserPhone');
 
-    if (user && user.full_name) {
+    if (isAdmin) {
         if (guestNav) guestNav.style.display = 'none';
-        if (userNav) userNav.style.display = 'inline-flex';
+        if (userNav) userNav.style.display = 'inline-block';
+        if (userNameEl) userNameEl.innerText = 'Admin (Amina)';
+        if (roleBadgeEl) {
+            roleBadgeEl.innerText = 'ADMIN';
+            roleBadgeEl.className = 'badge badge-verified';
+        }
+        if (dropNameEl) dropNameEl.innerText = 'Amina Ahmed (Admin)';
+        if (dropPhoneEl) dropPhoneEl.innerText = 'WhatsApp: 09090809080';
+    } else if (user && user.full_name) {
+        if (guestNav) guestNav.style.display = 'none';
+        if (userNav) userNav.style.display = 'inline-block';
         const roleLabel = user.role === 'seller' ? ' (Seller)' : ' (Buyer)';
         if (userNameEl) userNameEl.innerText = user.full_name.split(' ')[0] + roleLabel;
+        if (roleBadgeEl) {
+            roleBadgeEl.innerText = user.role === 'seller' ? 'VERIFIED SELLER' : 'BUYER';
+            roleBadgeEl.className = user.role === 'seller' ? 'badge badge-verified' : 'badge badge-warning';
+        }
+        if (dropNameEl) dropNameEl.innerText = user.full_name;
+        if (dropPhoneEl) dropPhoneEl.innerText = user.phone || 'Verified User';
     } else {
         if (guestNav) guestNav.style.display = 'block';
         if (userNav) userNav.style.display = 'none';
     }
+}
+
+function toggleProfileDropdown(event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    const menu = document.getElementById('profileDropdownMenu');
+    const chevron = document.getElementById('navDropdownChevron');
+    const btn = document.getElementById('userProfileBtn');
+    
+    if (menu) {
+        const isShown = menu.classList.toggle('show');
+        if (chevron) {
+            chevron.style.transform = isShown ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+        if (btn) {
+            btn.classList.toggle('active', isShown);
+        }
+    }
+}
+
+function closeProfileDropdown() {
+    const menu = document.getElementById('profileDropdownMenu');
+    const chevron = document.getElementById('navDropdownChevron');
+    const btn = document.getElementById('userProfileBtn');
+    if (menu) menu.classList.remove('show');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+    if (btn) btn.classList.remove('active');
+}
+
+// Close dropdown when clicking anywhere outside
+document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('userProfileNav');
+    if (wrapper && !wrapper.contains(e.target)) {
+        closeProfileDropdown();
+    }
+});
+
+function handleDropdownPortal() {
+    closeProfileDropdown();
+    if (isAdminAuthenticated()) {
+        switchPage('admin');
+    } else {
+        const user = getCurrentUser();
+        if (user && user.role === 'seller') {
+            switchPage('seller');
+        } else {
+            switchPage('marketplace');
+        }
+    }
+}
+
+function handleDropdownGoToWebsite() {
+    closeProfileDropdown();
+    switchPage('home');
+}
+
+function handleUnifiedLogout() {
+    closeProfileDropdown();
+    localStorage.removeItem('globalbiz_user_session');
+    localStorage.removeItem('globalbiz_admin_session');
+    updateNavAuthUI();
+    showToast('You have logged out successfully', 'info');
+    loadAdminPortal();
+    switchPage('home');
 }
 
 function openAuthModal(tab = 'login') {
@@ -148,25 +233,18 @@ function toggleAuthRole(role) {
 }
 
 function handleUserLogout() {
-    localStorage.removeItem('globalbiz_user_session');
-    updateNavAuthUI();
-    showToast('You have signed out successfully', 'info');
-    switchPage('home');
+    handleUnifiedLogout();
 }
 
 function handlePostAdClick() {
     const user = getCurrentUser();
-    if (!user) {
+    const isAdmin = isAdminAuthenticated();
+    if (!user && !isAdmin) {
         showToast('Please sign in or create a seller account to post products', 'info');
         openAuthModal('login');
         return;
     }
-    if (user.role === 'seller') {
-        openAddProductModal();
-    } else {
-        showToast('You are signed in as a Buyer. Switch or register as a Seller to post ads.', 'info');
-        openAuthModal('register');
-    }
+    openAddProductModal();
 }
 
 /* ==========================================================================
@@ -565,6 +643,7 @@ function switchAdminTab(tabName, btnEl) {
 
     document.getElementById('admin-overview-view').style.display = tabName === 'overview' ? 'block' : 'none';
     document.getElementById('admin-sellers-view').style.display = tabName === 'sellers' ? 'block' : 'none';
+    document.getElementById('admin-buyers-view').style.display = tabName === 'buyers' ? 'block' : 'none';
     document.getElementById('admin-products-view').style.display = tabName === 'products' ? 'block' : 'none';
     document.getElementById('admin-requests-view').style.display = tabName === 'requests' ? 'block' : 'none';
 }
@@ -578,6 +657,7 @@ async function loadAdminPortal() {
         if (loginGate) loginGate.style.display = 'block';
         if (dashboardView) dashboardView.style.display = 'none';
         if (quickBar) quickBar.style.display = 'none';
+        updateNavAuthUI();
         return;
     }
 
@@ -585,19 +665,34 @@ async function loadAdminPortal() {
     if (loginGate) loginGate.style.display = 'none';
     if (dashboardView) dashboardView.style.display = 'block';
     if (quickBar) quickBar.style.display = 'block';
+    updateNavAuthUI();
 
     const sellers = await API.getSellers();
+    const buyers = await API.getBuyers();
     const products = await API.getProducts();
     const requests = await API.getBuyingRequests();
 
     // 0. Update KPI Counters
     const totalSellersEl = document.getElementById('adminTotalSellers');
+    const totalBuyersEl = document.getElementById('adminTotalBuyers');
     const totalProductsEl = document.getElementById('adminTotalProducts');
     const totalRequestsEl = document.getElementById('adminTotalRequests');
 
     if (totalSellersEl) totalSellersEl.innerText = sellers.length;
+    if (totalBuyersEl) totalBuyersEl.innerText = buyers.length;
     if (totalProductsEl) totalProductsEl.innerText = products.length;
     if (totalRequestsEl) totalRequestsEl.innerText = requests.length;
+
+    // Tab badges
+    const tabSellerCount = document.getElementById('adminTabSellerCount');
+    const tabBuyerCount = document.getElementById('adminTabBuyerCount');
+    const tabProductCount = document.getElementById('adminTabProductCount');
+    const tabRequestCount = document.getElementById('adminTabRequestCount');
+
+    if (tabSellerCount) tabSellerCount.innerText = sellers.length;
+    if (tabBuyerCount) tabBuyerCount.innerText = buyers.length;
+    if (tabProductCount) tabProductCount.innerText = products.length;
+    if (tabRequestCount) tabRequestCount.innerText = requests.length;
 
     // 0b. Live Activity Log List
     const activityLogEl = document.getElementById('adminActivityLogList');
@@ -618,12 +713,12 @@ async function loadAdminPortal() {
 
             <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-alt); border-radius:var(--radius-md); font-size:0.8rem;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <div style="width:32px; height:32px; border-radius:50%; background:var(--gold-soft); color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:0.9rem;">
-                        <i class="fa-solid fa-box-open"></i>
+                    <div style="width:32px; height:32px; border-radius:50%; background:var(--indigo-soft, #EEF2FF); color:#4F46E5; display:flex; align-items:center; justify-content:center; font-size:0.9rem;">
+                        <i class="fa-solid fa-bag-shopping"></i>
                     </div>
                     <div>
-                        <strong>New Product Listed:</strong> "Authentic 6-Yards Premium Ankara Material" for <em>₦15,000</em>.
-                        <div style="font-size:0.72rem; color:var(--text-muted);">Seller: Amina &bull; City: Abuja</div>
+                        <strong>Buyer Registered:</strong> Ahmed Yusuf Al-Mansoor joined from <em>Abuja (Maitama)</em>.
+                        <div style="font-size:0.72rem; color:var(--text-muted);">Phone: +234 802 345 6789 &bull; Direct Buyer</div>
                     </div>
                 </div>
                 <span class="badge badge-verified">Active</span>
@@ -631,12 +726,12 @@ async function loadAdminPortal() {
 
             <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-alt); border-radius:var(--radius-md); font-size:0.8rem;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <div style="width:32px; height:32px; border-radius:50%; background:var(--brand-green-soft); color:var(--brand-green); display:flex; align-items:center; justify-content:center; font-size:0.9rem;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:var(--gold-soft); color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:0.9rem;">
                         <i class="fa-solid fa-box-open"></i>
                     </div>
                     <div>
-                        <strong>New Product Listed:</strong> "Luxury Human Hair Wig (HD Lace)" for <em>₦80,000</em>.
-                        <div style="font-size:0.72rem; color:var(--text-muted);">Seller: Hajiya Fatima &bull; City: Abuja</div>
+                        <strong>New Product Listed:</strong> "Authentic 6-Yards Premium Ankara Material" for <em>₦15,000</em>.
+                        <div style="font-size:0.72rem; color:var(--text-muted);">Seller: Amina &bull; City: Abuja</div>
                     </div>
                 </div>
                 <span class="badge badge-verified">Active</span>
@@ -657,36 +752,13 @@ async function loadAdminPortal() {
         `;
     }
 
-    // 1. Sellers Table
-    const sellersTbody = document.getElementById('adminSellersTableBody');
-    if (sellersTbody) {
-        sellersTbody.innerHTML = sellers.map(s => `
-            <tr>
-                <td>
-                    <strong>${s.full_name}</strong><br>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">${s.store_name}</span>
-                </td>
-                <td><code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${s.id_number}</code></td>
-                <td>${s.location}</td>
-                <td>
-                    <strong>${s.kin_name}</strong><br>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">${s.kin_phone}</span>
-                </td>
-                <td>
-                    <span class="badge ${s.verified ? 'badge-verified' : 'badge-warning'}">
-                        ${s.verified ? '<i class="fa-solid fa-check"></i> Verified' : '<i class="fa-solid fa-clock"></i> Pending'}
-                    </span>
-                </td>
-                <td>
-                    <button class="btn btn-sm ${s.verified ? 'btn-outline' : 'btn-success'}" onclick="handleToggleSellerVerify(${s.id}, ${s.verified ? 0 : 1})">
-                        ${s.verified ? 'Revoke' : 'Verify Seller'}
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-    }
+    // 1. Render Sellers Table
+    renderAdminSellersTable(sellers);
 
-    // 2. Products Table
+    // 2. Render Buyers Table
+    renderAdminBuyersTable(buyers);
+
+    // 3. Products Table
     const productsTbody = document.getElementById('adminProductsTableBody');
     if (productsTbody) {
         productsTbody.innerHTML = products.map(p => `
@@ -709,7 +781,7 @@ async function loadAdminPortal() {
         `).join('');
     }
 
-    // 3. Requests Table
+    // 4. Requests Table
     const requestsTbody = document.getElementById('adminRequestsTableBody');
     if (requestsTbody) {
         requestsTbody.innerHTML = requests.map(r => `
@@ -723,6 +795,108 @@ async function loadAdminPortal() {
             </tr>
         `).join('');
     }
+}
+
+function renderAdminSellersTable(sellers) {
+    const sellersTbody = document.getElementById('adminSellersTableBody');
+    if (!sellersTbody) return;
+    if (sellers.length === 0) {
+        sellersTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">No registered sellers found.</td></tr>`;
+        return;
+    }
+    sellersTbody.innerHTML = sellers.map(s => `
+        <tr>
+            <td>
+                <strong>${s.full_name}</strong><br>
+                <span style="font-size:0.75rem; color:var(--text-muted);">${s.store_name}</span>
+            </td>
+            <td><code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${s.id_number}</code></td>
+            <td>
+                <strong>${s.phone}</strong><br>
+                <span style="font-size:0.75rem; color:var(--text-muted);">${s.location}</span>
+            </td>
+            <td>
+                <strong>${s.kin_name}</strong><br>
+                <span style="font-size:0.75rem; color:var(--text-muted);">${s.kin_phone}</span>
+            </td>
+            <td>
+                <span class="badge ${s.verified ? 'badge-verified' : 'badge-warning'}">
+                    ${s.verified ? '<i class="fa-solid fa-check"></i> Verified' : '<i class="fa-solid fa-clock"></i> Pending'}
+                </span>
+            </td>
+            <td>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <button class="btn btn-sm ${s.verified ? 'btn-outline' : 'btn-success'}" onclick="handleToggleSellerVerify(${s.id}, ${s.verified ? 0 : 1})" title="${s.verified ? 'Revoke badge' : 'Verify seller'}">
+                        ${s.verified ? 'Revoke' : 'Verify'}
+                    </button>
+                    <button class="btn btn-sm btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="handleDeleteSeller(${s.id})" title="Delete Seller">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderAdminBuyersTable(buyers) {
+    const buyersTbody = document.getElementById('adminBuyersTableBody');
+    if (!buyersTbody) return;
+    if (buyers.length === 0) {
+        buyersTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">No registered buyers found.</td></tr>`;
+        return;
+    }
+    buyersTbody.innerHTML = buyers.map(b => `
+        <tr>
+            <td>
+                <strong>${b.full_name}</strong>
+            </td>
+            <td><strong>${b.phone}</strong></td>
+            <td>${b.location || b.city || 'Nigeria'}</td>
+            <td><span style="font-size:0.75rem; color:var(--text-muted);">${b.registered_at || '2026-08-15'}</span></td>
+            <td><span class="badge badge-verified">${b.orders_count || 0} Orders</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="handleDeleteBuyer(${b.id})" title="Delete Buyer">
+                    <i class="fa-solid fa-trash"></i> Delete
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function handleAdminSellerSearch(query) {
+    const sellers = await API.getSellers({ q: query });
+    renderAdminSellersTable(sellers);
+}
+
+async function handleAdminBuyerSearch(query) {
+    const buyers = await API.getBuyers({ q: query });
+    renderAdminBuyersTable(buyers);
+}
+
+async function handleDeleteSeller(sellerId) {
+    if (confirm('Are you sure you want to remove this seller from the platform?')) {
+        await API.deleteSeller(sellerId);
+        showToast('Seller removed successfully', 'success');
+        loadAdminPortal();
+    }
+}
+
+async function handleDeleteBuyer(buyerId) {
+    if (confirm('Are you sure you want to remove this buyer account?')) {
+        await API.deleteBuyer(buyerId);
+        showToast('Buyer account removed successfully', 'success');
+        loadAdminPortal();
+    }
+}
+
+function openAdminAddSellerModal() {
+    document.getElementById('adminAddSellerForm')?.reset();
+    document.getElementById('adminAddSellerModal')?.classList.add('active');
+}
+
+function openAdminAddBuyerModal() {
+    document.getElementById('adminAddBuyerForm')?.reset();
+    document.getElementById('adminAddBuyerModal')?.classList.add('active');
 }
 
 async function handleToggleSellerVerify(sellerId, status) {
@@ -957,6 +1131,65 @@ function setupForms() {
             const res = await API.submitBuyingAssistance(payload);
             showToast(`Request submitted! Tracking Code: ${res.tracking_code}`, 'success');
             pbaForm.reset();
+            loadAdminPortal();
+        });
+    }
+
+    // 6. Admin Add Seller Form
+    const adminSellerForm = document.getElementById('adminAddSellerForm');
+    if (adminSellerForm) {
+        adminSellerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById('adminSellerFullName').value.trim();
+            const phone = document.getElementById('adminSellerPhone').value.trim();
+            const storeName = document.getElementById('adminSellerStoreName').value.trim();
+            const location = document.getElementById('adminSellerLocation').value.trim();
+            const nin = document.getElementById('adminSellerNIN').value.trim();
+            const category = document.getElementById('adminSellerCategory').value;
+            const kinName = document.getElementById('adminSellerKinName').value.trim();
+            const kinPhone = document.getElementById('adminSellerKinPhone').value.trim();
+            const isVerified = document.getElementById('adminSellerVerifiedCheck').checked ? 1 : 0;
+
+            const res = await API.registerSeller({
+                full_name: fullName,
+                phone: phone,
+                store_name: storeName,
+                location: location,
+                id_number: nin,
+                category_name: category,
+                kin_name: kinName,
+                kin_phone: kinPhone,
+                verified: isVerified
+            });
+
+            closeModal('adminAddSellerModal');
+            adminSellerForm.reset();
+            showToast(`Seller "${fullName}" registered successfully!`, 'success');
+            loadAdminPortal();
+        });
+    }
+
+    // 7. Admin Add Buyer Form
+    const adminBuyerForm = document.getElementById('adminAddBuyerForm');
+    if (adminBuyerForm) {
+        adminBuyerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById('adminBuyerFullName').value.trim();
+            const phone = document.getElementById('adminBuyerPhone').value.trim();
+            const location = document.getElementById('adminBuyerLocation').value.trim();
+            const country = document.getElementById('adminBuyerCountry').value.trim() || 'Nigeria';
+
+            await API.createBuyer({
+                full_name: fullName,
+                phone: phone,
+                location: location,
+                country: country,
+                orders_count: 0
+            });
+
+            closeModal('adminAddBuyerModal');
+            adminBuyerForm.reset();
+            showToast(`Buyer "${fullName}" registered successfully!`, 'success');
             loadAdminPortal();
         });
     }

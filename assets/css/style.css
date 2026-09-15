@@ -331,6 +331,109 @@ main {
 }
 
 /* ==========================================================================
+   USER & ADMIN PROFILE DROPDOWN MENU
+   ========================================================================== */
+.user-profile-dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-trigger-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--brand-green-soft);
+    border: 1.5px solid rgba(5, 150, 105, 0.25);
+    padding: 5px 10px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--primary);
+    transition: var(--transition);
+}
+
+.profile-trigger-pill:hover, .profile-trigger-pill.active {
+    background: #D1FAE5;
+    border-color: var(--brand-green);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.profile-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 230px;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-float);
+    z-index: 2000;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.15s ease-out;
+}
+
+.profile-dropdown-menu.show {
+    display: block;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-dropdown-header {
+    padding: 12px 14px;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+}
+
+.profile-dropdown-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+.profile-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+}
+
+.profile-dropdown-item i {
+    font-size: 0.95rem;
+    width: 18px;
+    text-align: center;
+}
+
+.profile-dropdown-item:hover {
+    background: var(--bg-alt);
+    color: var(--brand-green);
+}
+
+.profile-dropdown-item.item-logout {
+    color: #EF4444;
+}
+
+.profile-dropdown-item.item-logout:hover {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+/* ==========================================================================
    MOBILE STORIES CATEGORIES BAR
    ========================================================================== */
 .mobile-stories-bar {

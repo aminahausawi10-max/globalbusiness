@@ -71,39 +71,104 @@ const API = {
 
     // Seller KYC Registration & Management
     async registerSeller(payload) {
+        this.initLocalData();
         const newSeller = {
             id: Date.now(),
             full_name: payload.full_name,
-            id_number: payload.id_number,
+            id_number: payload.id_number || ('NIN-' + Math.floor(10000000000 + Math.random() * 90000000000)),
             phone: payload.phone,
             location: payload.location,
             city: payload.city || payload.location,
             country: payload.country || 'Nigeria',
-            kin_name: payload.kin_name,
-            kin_phone: payload.kin_phone,
-            store_name: payload.store_name,
+            kin_name: payload.kin_name || 'Relative',
+            kin_phone: payload.kin_phone || '+234 800 000 0000',
+            store_name: payload.store_name || `${payload.full_name}'s Store`,
             category_name: payload.category_name || 'General Marketplace',
-            verified: 0,
-            registered_at: new Date().toISOString()
+            verified: payload.verified !== undefined ? payload.verified : 1,
+            registered_at: new Date().toISOString().split('T')[0]
         };
         this.fallbackSellers.unshift(newSeller);
+        this.saveLocalData('sellers', this.fallbackSellers);
         localStorage.setItem('currentUserSeller', JSON.stringify(newSeller));
-        return { status: 'success', data: newSeller, message: 'Seller registered successfully with Next-of-Kin details!' };
+        return { status: 'success', data: newSeller, message: 'Seller registered successfully!' };
     },
 
-    async getSellers() {
-        return this.fallbackSellers;
+    async getSellers(params = {}) {
+        this.initLocalData();
+        let list = [...this.fallbackSellers];
+        if (params.q) {
+            const q = params.q.toLowerCase();
+            list = list.filter(s => 
+                (s.full_name && s.full_name.toLowerCase().includes(q)) ||
+                (s.store_name && s.store_name.toLowerCase().includes(q)) ||
+                (s.location && s.location.toLowerCase().includes(q)) ||
+                (s.id_number && s.id_number.toLowerCase().includes(q)) ||
+                (s.phone && s.phone.includes(q))
+            );
+        }
+        return list;
+    },
+
+    async deleteSeller(id) {
+        this.initLocalData();
+        this.fallbackSellers = this.fallbackSellers.filter(s => s.id != id);
+        this.saveLocalData('sellers', this.fallbackSellers);
+        return { status: 'success', message: 'Seller removed successfully from system' };
     },
 
     async verifySeller(id, isVerified = 1) {
+        this.initLocalData();
         const seller = this.fallbackSellers.find(s => s.id == id);
         if (seller) {
             seller.verified = isVerified;
+            this.saveLocalData('sellers', this.fallbackSellers);
             // Also update any matching businesses
             const biz = this.fallbackBusinesses.find(b => b.name === seller.store_name);
-            if (biz) biz.verified = isVerified;
+            if (biz) {
+                biz.verified = isVerified;
+                this.saveLocalData('businesses', this.fallbackBusinesses);
+            }
         }
         return { status: 'success', message: isVerified ? 'Seller verified with badge!' : 'Seller verification updated.' };
+    },
+
+    // Buyer Account Management
+    async getBuyers(params = {}) {
+        this.initLocalData();
+        let list = [...this.fallbackBuyers];
+        if (params.q) {
+            const q = params.q.toLowerCase();
+            list = list.filter(b => 
+                (b.full_name && b.full_name.toLowerCase().includes(q)) ||
+                (b.location && b.location.toLowerCase().includes(q)) ||
+                (b.phone && b.phone.includes(q))
+            );
+        }
+        return list;
+    },
+
+    async createBuyer(payload) {
+        this.initLocalData();
+        const newBuyer = {
+            id: Date.now(),
+            full_name: payload.full_name,
+            phone: payload.phone,
+            location: payload.location || 'Abuja, Nigeria',
+            city: payload.city || payload.location || 'Abuja',
+            country: payload.country || 'Nigeria',
+            orders_count: payload.orders_count || 0,
+            registered_at: new Date().toISOString().split('T')[0]
+        };
+        this.fallbackBuyers.unshift(newBuyer);
+        this.saveLocalData('buyers', this.fallbackBuyers);
+        return { status: 'success', data: newBuyer, message: 'Buyer registered successfully!' };
+    },
+
+    async deleteBuyer(id) {
+        this.initLocalData();
+        this.fallbackBuyers = this.fallbackBuyers.filter(b => b.id != id);
+        this.saveLocalData('buyers', this.fallbackBuyers);
+        return { status: 'success', message: 'Buyer removed successfully from system' };
     },
 
     async getProducts(params = {}) {
@@ -314,6 +379,80 @@ const API = {
             registered_at: '2026-08-20'
         }
     ],
+
+    // Seed Registered Buyers & Customers
+    fallbackBuyers: [
+        {
+            id: 201,
+            full_name: 'Ahmed Yusuf Al-Mansoor',
+            phone: '+234 802 345 6789',
+            location: 'Abuja (Maitama)',
+            city: 'Abuja',
+            country: 'Nigeria',
+            registered_at: '2026-08-12',
+            orders_count: 5
+        },
+        {
+            id: 202,
+            full_name: 'Chioma Okafor',
+            phone: '+234 813 456 7890',
+            location: 'Kano (Nassarawa)',
+            city: 'Kano',
+            country: 'Nigeria',
+            registered_at: '2026-08-18',
+            orders_count: 3
+        },
+        {
+            id: 203,
+            full_name: 'Ibrahim Al-Rashid',
+            phone: '+966 55 112 2334',
+            location: 'Kaduna / International',
+            city: 'Kaduna',
+            country: 'Saudi Arabia',
+            registered_at: '2026-08-22',
+            orders_count: 8
+        },
+        {
+            id: 204,
+            full_name: 'Zainab Kabir Musa',
+            phone: '+234 808 222 3344',
+            location: 'Abuja (Garki)',
+            city: 'Abuja',
+            country: 'Nigeria',
+            registered_at: '2026-08-25',
+            orders_count: 2
+        }
+    ],
+
+    initLocalData() {
+        if (!this._initialized) {
+            try {
+                const s = localStorage.getItem('globalbiz_sellers_store');
+                if (s) this.fallbackSellers = JSON.parse(s);
+                else localStorage.setItem('globalbiz_sellers_store', JSON.stringify(this.fallbackSellers));
+
+                const b = localStorage.getItem('globalbiz_buyers_store');
+                if (b) this.fallbackBuyers = JSON.parse(b);
+                else localStorage.setItem('globalbiz_buyers_store', JSON.stringify(this.fallbackBuyers));
+
+                const p = localStorage.getItem('globalbiz_products_store');
+                if (p) this.fallbackProducts = JSON.parse(p);
+                else localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+            } catch (e) {
+                console.warn('Local storage sync notice', e);
+            }
+            this._initialized = true;
+        }
+    },
+
+    saveLocalData(type, data) {
+        try {
+            if (type === 'sellers') localStorage.setItem('globalbiz_sellers_store', JSON.stringify(data));
+            if (type === 'buyers') localStorage.setItem('globalbiz_buyers_store', JSON.stringify(data));
+            if (type === 'products') localStorage.setItem('globalbiz_products_store', JSON.stringify(data));
+            if (type === 'businesses') localStorage.setItem('globalbiz_biz_store', JSON.stringify(data));
+        } catch (e) {}
+    },
 
     // Seed Registered Businesses
     fallbackBusinesses: [
