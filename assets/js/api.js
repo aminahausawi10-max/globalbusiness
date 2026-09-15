@@ -172,12 +172,13 @@ const API = {
     },
 
     async getProducts(params = {}) {
+        this.initLocalData();
         const query = new URLSearchParams(params).toString();
         try {
             const res = await fetch(`${this.baseUrl}/products.php?${query}`);
             if (res.ok) {
                 const data = await res.json();
-                return data.data || [];
+                if (data.data && data.data.length) return data.data;
             }
         } catch (e) {
             console.warn('Backend offline, using fallback products');
@@ -186,46 +187,58 @@ const API = {
     },
 
     async createProduct(payload) {
+        this.initLocalData();
         try {
             const res = await fetch(`${this.baseUrl}/products.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            return await res.json();
+            const data = await res.json();
+            if (data && data.id) {
+                this.fallbackProducts.unshift({ id: data.id, views: 1, business_verified: 1, ...payload });
+                this.saveLocalData('products', this.fallbackProducts);
+                return data;
+            }
         } catch (e) {
-            const newProd = {
-                id: Date.now(),
-                views: 1,
-                business_verified: 1,
-                ...payload
-            };
-            this.fallbackProducts.unshift(newProd);
-            return { status: 'success', id: newProd.id, message: 'Product listed successfully!' };
+            // Local mode fallback
         }
+        const newProd = {
+            id: Date.now(),
+            views: 1,
+            business_verified: 1,
+            seller_phone: payload.seller_phone || payload.phone || '',
+            ...payload
+        };
+        this.fallbackProducts.unshift(newProd);
+        this.saveLocalData('products', this.fallbackProducts);
+        return { status: 'success', id: newProd.id, message: 'Good listed on marketplace successfully!' };
     },
 
     async updateProduct(id, payload) {
+        this.initLocalData();
         const idx = this.fallbackProducts.findIndex(p => p.id == id);
         if (idx !== -1) {
             this.fallbackProducts[idx] = { ...this.fallbackProducts[idx], ...payload };
-            return { status: 'success', message: 'Product updated successfully!' };
+            this.saveLocalData('products', this.fallbackProducts);
+            return { status: 'success', message: 'Good updated successfully!' };
         }
-        return { status: 'error', message: 'Product not found' };
+        return { status: 'error', message: 'Good not found' };
     },
 
     async deleteProduct(id) {
+        this.initLocalData();
         try {
             const res = await fetch(`${this.baseUrl}/admin.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'delete_product', id })
             });
-            return await res.json();
-        } catch (e) {
-            this.fallbackProducts = this.fallbackProducts.filter(x => x.id != id);
-            return { status: 'success', message: 'Product listing removed successfully!' };
-        }
+            await res.json();
+        } catch (e) {}
+        this.fallbackProducts = this.fallbackProducts.filter(x => x.id != id);
+        this.saveLocalData('products', this.fallbackProducts);
+        return { status: 'success', message: 'Good removed successfully from your store and search!' };
     },
 
     async submitBuyingAssistance(payload) {

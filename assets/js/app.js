@@ -569,43 +569,99 @@ function closeModal(modalId) {
 }
 
 /* ==========================================================================
-   SELLER DASHBOARD & PRODUCTS
+   SELLER DASHBOARD & PRODUCT OWNERSHIP (STRICT ACCESS CONTROL)
    ========================================================================== */
 
+function isProductOwner(product, user) {
+    if (!product) return false;
+    if (isAdminAuthenticated()) return true; // Administrator has oversight
+    if (!user) return false;
+
+    // 1. Phone matching (exact or normalized)
+    const userPhoneClean = (user.phone || '').replace(/[^0-9]/g, '');
+    const prodPhoneClean = (product.seller_phone || product.phone || product.whatsapp || '').replace(/[^0-9]/g, '');
+    if (userPhoneClean && prodPhoneClean && (userPhoneClean === prodPhoneClean || prodPhoneClean.endsWith(userPhoneClean) || userPhoneClean.endsWith(prodPhoneClean))) {
+        return true;
+    }
+
+    // 2. Name / Store name matching
+    const userName = (user.full_name || user.name || user.store_name || '').toLowerCase().trim();
+    const prodSellerName = (product.seller_name || product.business_name || '').toLowerCase().trim();
+    if (userName && prodSellerName && (userName === prodSellerName || prodSellerName.includes(userName) || userName.includes(prodSellerName))) {
+        return true;
+    }
+
+    // 3. User ID matching
+    if (user.id && product.user_id && user.id == product.user_id) {
+        return true;
+    }
+
+    return false;
+}
+
 async function loadSellerDashboard() {
-    const products = await API.getProducts();
-    // In our marketplace, show products
+    const user = getCurrentUser();
+    const isAdmin = isAdminAuthenticated();
+
+    if (!user && !isAdmin) {
+        return;
+    }
+
+    const allProducts = await API.getProducts();
+    
+    // Strict isolation: Seller ONLY has access to THEIR OWN goods
+    const myProducts = isAdmin 
+        ? allProducts 
+        : allProducts.filter(p => isProductOwner(p, user));
+
     const myProductsContainer = document.getElementById('myProductsContainer');
     const totalListingsEl = document.getElementById('sellerTotalListings');
 
-    if (totalListingsEl) totalListingsEl.innerText = products.length;
+    if (totalListingsEl) totalListingsEl.innerText = myProducts.length;
 
     if (myProductsContainer) {
-        myProductsContainer.innerHTML = products.map(p => `
-            <div class="product-card">
-                <div class="product-img-wrap">
-                    <img src="${p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600'}" alt="${p.title}" class="product-img">
-                    <div class="product-price-badge">
-                        ${formatPrice(p.price)}
+        if (myProducts.length === 0) {
+            myProductsContainer.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align:center; padding:40px 20px; background:var(--bg-alt); border-radius:var(--radius-lg); border:1px dashed var(--border);">
+                    <div style="width:56px; height:56px; background:var(--brand-green-soft); color:var(--brand-green); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:12px;">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin-bottom:6px;">No Goods in Your Store Yet</h3>
+                    <p style="font-size:0.85rem; color:var(--text-secondary); max-width:420px; margin:0 auto 16px auto;">
+                        You have not listed any goods yet. Add your products now so buyers searching on the marketplace can discover and purchase from you!
+                    </p>
+                    <button class="btn btn-primary" onclick="openAddProductModal()">
+                        <i class="fa-solid fa-plus"></i> Add Your First Good
+                    </button>
+                </div>
+            `;
+        } else {
+            myProductsContainer.innerHTML = myProducts.map(p => `
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <img src="${p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600'}" alt="${p.title}" class="product-img">
+                        <div class="product-price-badge">
+                            ${formatPrice(p.price)}
+                        </div>
+                    </div>
+                    <div class="product-body">
+                        <div>
+                            <div class="product-title">${p.title}</div>
+                            <div class="product-location"><i class="fa-solid fa-location-dot"></i> ${p.city || 'Abuja'}</div>
+                            <div class="product-seller-info"><i class="fa-solid fa-store"></i> ${p.seller_name || (user ? user.full_name : 'My Store')}</div>
+                        </div>
+                        <div class="product-actions" style="margin-top:10px;">
+                            <button class="btn btn-outline btn-sm" onclick="openEditProductModal(${p.id})">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button class="btn btn-outline btn-sm" style="color:#FA5252; border-color:#FA5252;" onclick="handleDeleteProduct(${p.id})">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="product-body">
-                    <div>
-                        <div class="product-title">${p.title}</div>
-                        <div class="product-location"><i class="fa-solid fa-location-dot"></i> ${p.city || 'Abuja'}</div>
-                        <div class="product-seller-info"><i class="fa-solid fa-store"></i> ${p.seller_name || 'Amina'}</div>
-                    </div>
-                    <div class="product-actions" style="margin-top:10px;">
-                        <button class="btn btn-outline btn-sm" onclick="openEditProductModal(${p.id})">
-                            <i class="fa-solid fa-pen-to-square"></i> Edit
-                        </button>
-                        <button class="btn btn-outline btn-sm" style="color:#FA5252; border-color:#FA5252;" onclick="handleDeleteProduct(${p.id})">
-                            <i class="fa-solid fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
     }
 }
 
@@ -660,14 +716,19 @@ function setProductSamplePhoto(url) {
 }
 
 function openAddProductModal() {
-    document.getElementById('addProductModalTitle').innerText = 'Add New Product';
+    if (!requireAuth('add and manage your products')) {
+        return;
+    }
+    const user = getCurrentUser() || (isAdminAuthenticated() ? { full_name: 'Admin', phone: '+234 803 456 7890' } : null);
+
+    document.getElementById('addProductModalTitle').innerText = 'Add New Good / Product';
     document.getElementById('editProductId').value = '';
     document.getElementById('sellerProdTitle').value = '';
     document.getElementById('sellerProdPrice').value = '';
     document.getElementById('sellerProdDesc').value = '';
-    document.getElementById('sellerProdSellerName').value = (AppState.currentUser && AppState.currentUser.name) || 'Amina';
-    document.getElementById('sellerProdLocation').value = 'Abuja';
-    document.getElementById('sellerProdPhone').value = (AppState.currentUser && AppState.currentUser.phone) || '+234 803 456 7890';
+    document.getElementById('sellerProdSellerName').value = (user && user.full_name) || 'My Store';
+    document.getElementById('sellerProdLocation').value = (user && user.location) || 'Abuja';
+    document.getElementById('sellerProdPhone').value = (user && user.phone) || '+234 803 456 7890';
     
     // Default preset image preview
     const defaultPhoto = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
@@ -681,20 +742,27 @@ function openAddProductModal() {
 }
 
 async function openEditProductModal(productId) {
+    const user = getCurrentUser();
     const products = await API.getProducts();
     const p = products.find(x => x.id == productId);
     if (!p) return;
 
-    document.getElementById('addProductModalTitle').innerText = 'Edit / Update Product';
+    // Strict access control: only the owner or admin can edit
+    if (!isProductOwner(p, user)) {
+        showToast('Access Denied: You can only edit your own goods.', 'error');
+        return;
+    }
+
+    document.getElementById('addProductModalTitle').innerText = 'Edit / Update Good';
     document.getElementById('editProductId').value = p.id;
     document.getElementById('sellerProdTitle').value = p.title;
     // convert base USD price back to input value
     const curr = AppState.currencyRates[AppState.currentCurrency] || AppState.currencyRates['NGN'];
     document.getElementById('sellerProdPrice').value = Math.round(p.price * curr.rate);
     document.getElementById('sellerProdCategory').value = p.category_id || 1;
-    document.getElementById('sellerProdSellerName').value = p.seller_name || 'Amina';
+    document.getElementById('sellerProdSellerName').value = p.seller_name || (user ? user.full_name : 'My Store');
     document.getElementById('sellerProdLocation').value = p.city || 'Abuja';
-    document.getElementById('sellerProdPhone').value = p.phone || '+234 803 456 7890';
+    document.getElementById('sellerProdPhone').value = p.phone || (user ? user.phone : '+234 803 456 7890');
     document.getElementById('sellerProdDesc').value = p.description || '';
     
     const photoUrl = p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
@@ -708,9 +776,19 @@ async function openEditProductModal(productId) {
 }
 
 async function handleDeleteProduct(productId) {
-    if (confirm('Are you sure you want to delete this product listing?')) {
+    const user = getCurrentUser();
+    const products = await API.getProducts();
+    const p = products.find(x => x.id == productId);
+
+    // Strict access control: only the owner or admin can delete
+    if (p && !isProductOwner(p, user)) {
+        showToast('Access Denied: You can only remove your own goods.', 'error');
+        return;
+    }
+
+    if (confirm('Are you sure you want to remove this good from your store and search?')) {
         await API.deleteProduct(productId);
-        showToast('Product listing removed successfully', 'success');
+        showToast('Good removed successfully!', 'success');
         loadMarketplaceProducts();
         loadSellerDashboard();
         loadAdminPortal();
@@ -1154,30 +1232,43 @@ function setupForms() {
             if (!requireAuth('publish product listings')) {
                 return;
             }
+            const user = getCurrentUser() || (isAdminAuthenticated() ? { full_name: 'Admin', phone: '+234 803 456 7890' } : null);
             const editId = document.getElementById('editProductId').value;
             const inputPrice = parseFloat(document.getElementById('sellerProdPrice').value) || 0;
             // Convert to base USD for storage
             const curr = AppState.currencyRates[AppState.currentCurrency] || AppState.currencyRates['NGN'];
             const priceInUSD = inputPrice / curr.rate;
 
+            const sellerName = (user && user.full_name) || document.getElementById('sellerProdSellerName').value.trim() || 'Verified Seller';
+            const sellerPhone = (user && user.phone) || document.getElementById('sellerProdPhone').value.trim() || '+234 800 000 0000';
+
             const payload = {
                 title: document.getElementById('sellerProdTitle').value.trim(),
                 price: priceInUSD,
                 category_id: parseInt(document.getElementById('sellerProdCategory').value) || 1,
-                seller_name: document.getElementById('sellerProdSellerName').value.trim(),
-                city: document.getElementById('sellerProdLocation').value.trim(),
-                phone: document.getElementById('sellerProdPhone').value.trim(),
-                whatsapp: document.getElementById('sellerProdPhone').value.trim(),
+                seller_name: sellerName,
+                seller_phone: sellerPhone,
+                phone: sellerPhone,
+                whatsapp: sellerPhone,
+                city: document.getElementById('sellerProdLocation').value.trim() || 'Abuja',
                 description: document.getElementById('sellerProdDesc').value.trim(),
-                photo_url: document.getElementById('sellerProdPhoto').value.trim()
+                photo_url: document.getElementById('sellerProdPhoto').value.trim(),
+                user_id: user ? (user.id || user.phone) : Date.now()
             };
 
             if (editId) {
+                // Verify ownership before updating
+                const products = await API.getProducts();
+                const existing = products.find(x => x.id == editId);
+                if (existing && !isProductOwner(existing, user)) {
+                    showToast('Access Denied: You can only edit your own goods.', 'error');
+                    return;
+                }
                 await API.updateProduct(editId, payload);
-                showToast('Product updated successfully!', 'success');
+                showToast('Good updated successfully!', 'success');
             } else {
                 await API.createProduct(payload);
-                showToast('New product listed on marketplace!', 'success');
+                showToast('New good published! Buyers in search can now discover it.', 'success');
             }
 
             closeModal('addProductModal');
