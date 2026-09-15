@@ -563,6 +563,7 @@ function switchAdminTab(tabName, btnEl) {
     document.querySelectorAll('#page-admin .admin-tab-btn').forEach(b => b.classList.remove('active'));
     if (btnEl) btnEl.classList.add('active');
 
+    document.getElementById('admin-overview-view').style.display = tabName === 'overview' ? 'block' : 'none';
     document.getElementById('admin-sellers-view').style.display = tabName === 'sellers' ? 'block' : 'none';
     document.getElementById('admin-products-view').style.display = tabName === 'products' ? 'block' : 'none';
     document.getElementById('admin-requests-view').style.display = tabName === 'requests' ? 'block' : 'none';
@@ -571,20 +572,90 @@ function switchAdminTab(tabName, btnEl) {
 async function loadAdminPortal() {
     const loginGate = document.getElementById('admin-login-gate');
     const dashboardView = document.getElementById('admin-dashboard-view');
+    const quickBar = document.getElementById('adminQuickActionsBar');
 
     if (!isAdminAuthenticated()) {
         if (loginGate) loginGate.style.display = 'block';
         if (dashboardView) dashboardView.style.display = 'none';
+        if (quickBar) quickBar.style.display = 'none';
         return;
     }
 
     // Authenticated
     if (loginGate) loginGate.style.display = 'none';
     if (dashboardView) dashboardView.style.display = 'block';
+    if (quickBar) quickBar.style.display = 'block';
 
     const sellers = await API.getSellers();
     const products = await API.getProducts();
     const requests = await API.getBuyingRequests();
+
+    // 0. Update KPI Counters
+    const totalSellersEl = document.getElementById('adminTotalSellers');
+    const totalProductsEl = document.getElementById('adminTotalProducts');
+    const totalRequestsEl = document.getElementById('adminTotalRequests');
+
+    if (totalSellersEl) totalSellersEl.innerText = sellers.length;
+    if (totalProductsEl) totalProductsEl.innerText = products.length;
+    if (totalRequestsEl) totalRequestsEl.innerText = requests.length;
+
+    // 0b. Live Activity Log List
+    const activityLogEl = document.getElementById('adminActivityLogList');
+    if (activityLogEl) {
+        activityLogEl.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-alt); border-radius:var(--radius-md); font-size:0.8rem;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:var(--brand-green-soft); color:var(--brand-green); display:flex; align-items:center; justify-content:center; font-size:0.9rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <div>
+                        <strong>Seller Registration:</strong> Amina Bello Lawal submitted KYC from <em>Abuja (Wuse 2)</em>.
+                        <div style="font-size:0.72rem; color:var(--text-muted);">Guarantor: Usman Bello Lawal (+234 802 111 2233) &bull; ID: NIN-78492019482</div>
+                    </div>
+                </div>
+                <span class="badge badge-verified">Verified</span>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-alt); border-radius:var(--radius-md); font-size:0.8rem;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:var(--gold-soft); color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:0.9rem;">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div>
+                        <strong>New Product Listed:</strong> "Authentic 6-Yards Premium Ankara Material" for <em>₦15,000</em>.
+                        <div style="font-size:0.72rem; color:var(--text-muted);">Seller: Amina &bull; City: Abuja</div>
+                    </div>
+                </div>
+                <span class="badge badge-verified">Active</span>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-alt); border-radius:var(--radius-md); font-size:0.8rem;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:var(--brand-green-soft); color:var(--brand-green); display:flex; align-items:center; justify-content:center; font-size:0.9rem;">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div>
+                        <strong>New Product Listed:</strong> "Luxury Human Hair Wig (HD Lace)" for <em>₦80,000</em>.
+                        <div style="font-size:0.72rem; color:var(--text-muted);">Seller: Hajiya Fatima &bull; City: Abuja</div>
+                    </div>
+                </div>
+                <span class="badge badge-verified">Active</span>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-alt); border-radius:var(--radius-md); font-size:0.8rem;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:var(--gold-soft); color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:0.9rem;">
+                        <i class="fa-solid fa-handshake-angle"></i>
+                    </div>
+                    <div>
+                        <strong>Buying Assistance Order:</strong> Ibrahim Al-Rashid requested <em>200 bags of Benue Yam</em> in Kano.
+                        <div style="font-size:0.72rem; color:var(--text-muted);">Code: PBA-00101 &bull; Status: Sourcing Desk Active</div>
+                    </div>
+                </div>
+                <span class="badge badge-verified">In Progress</span>
+            </div>
+        `;
+    }
 
     // 1. Sellers Table
     const sellersTbody = document.getElementById('adminSellersTableBody');

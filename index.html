@@ -10,10 +10,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Decent & Professional Stylesheet (v2.4 Cache Bust) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=2.4">
+    <!-- Decent & Professional Stylesheet (v2.5 Cache Bust) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=2.5">
 </head>
 <body>
+
+    <!-- ==========================================================================
+       ADMIN TOP ACTION BAR (Shown anywhere when Admin is logged in)
+       ========================================================================== -->
+    <div id="adminQuickActionsBar" style="display:none; background:#0F172A; color:#fff; padding:8px 16px; font-size:0.8rem; border-bottom:2px solid var(--brand-green); position:sticky; top:0; z-index:1100;">
+        <div class="container" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:var(--brand-green); color:#fff; padding:2px 8px; border-radius:var(--radius-xs); font-size:0.7rem; font-weight:800; letter-spacing:0.04em;">ADMIN DESK</span>
+                <span style="font-weight:700;">Welcome, <strong style="color:var(--brand-green-light);">Amina</strong></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <button class="btn btn-sm btn-white" onclick="switchPage('admin')" style="padding:4px 10px; font-size:0.75rem;">
+                    <i class="fa-solid fa-gauge-high"></i> Admin Portal
+                </button>
+                <button class="btn btn-sm btn-outline" onclick="switchPage('home')" style="padding:4px 10px; font-size:0.75rem; color:#fff; border-color:#475569; background:transparent;">
+                    <i class="fa-solid fa-earth-americas"></i> Go Back to Website
+                </button>
+                <button class="btn btn-sm" onclick="handleAdminLogout()" style="padding:4px 10px; font-size:0.75rem; background:#EF4444; color:#fff;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- ==========================================================================
        TOP APP NAVBAR (RESPONSIVE & CLEAN)
@@ -536,19 +559,27 @@
 
                 <!-- 2. Protected Admin Dashboard View (Shown after authentication) -->
                 <div id="admin-dashboard-view" style="display:none;">
-                    <div class="section-header">
+                    <div class="section-header" style="flex-wrap:wrap; gap:12px;">
                         <div>
-                            <h2 class="section-title">🛡️ Admin & Moderation Portal</h2>
-                            <p class="section-subtitle">Logged in as Administrator &bull; Verify seller identity, moderate listings, and manage requests.</p>
+                            <h2 class="section-title">🛡️ Admin Management & Activity Portal</h2>
+                            <p class="section-subtitle">Logged in as Administrator (Amina) &bull; Full system oversight & moderation.</p>
                         </div>
-                        <button class="btn btn-outline btn-sm" onclick="handleAdminLogout()" style="color:#EF4444; border-color:#EF4444;">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
-                        </button>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button class="btn btn-outline btn-sm" onclick="switchPage('home')">
+                                <i class="fa-solid fa-earth-americas" style="color:var(--brand-green);"></i> Go Back to Website
+                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="handleAdminLogout()" style="color:#EF4444; border-color:#EF4444;">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Admin Tabs -->
                     <div class="admin-nav-tabs">
-                        <button class="admin-tab-btn active" onclick="switchAdminTab('sellers', this)">
+                        <button class="admin-tab-btn active" onclick="switchAdminTab('overview', this)">
+                            <i class="fa-solid fa-chart-pie"></i> Overview & Activity Feed
+                        </button>
+                        <button class="admin-tab-btn" onclick="switchAdminTab('sellers', this)">
                             <i class="fa-solid fa-user-check"></i> Verify Sellers & Guarantors
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('products', this)">
@@ -559,8 +590,50 @@
                         </button>
                     </div>
 
+                    <!-- Admin Tab 0: Overview & Live Activities Feed -->
+                    <div id="admin-overview-view">
+                        <!-- KPI Metric Counters -->
+                        <div class="seller-stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon green"><i class="fa-solid fa-users"></i></div>
+                                <div>
+                                    <div class="stat-value" id="adminTotalSellers">3</div>
+                                    <div class="stat-label">Registered Sellers</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon indigo"><i class="fa-solid fa-boxes-stacked"></i></div>
+                                <div>
+                                    <div class="stat-value" id="adminTotalProducts">6</div>
+                                    <div class="stat-label">Active Listings</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon amber"><i class="fa-solid fa-handshake-angle"></i></div>
+                                <div>
+                                    <div class="stat-value" id="adminTotalRequests">1</div>
+                                    <div class="stat-label">Sourcing Orders</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live System Activities Feed -->
+                        <div class="card" style="margin-top:14px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);">
+                                    <i class="fa-solid fa-clock-rotate-left" style="color:var(--brand-green);"></i> Recent Platform Activities
+                                </h3>
+                                <span class="badge badge-verified"><i class="fa-solid fa-circle-dot"></i> Live Feed</span>
+                            </div>
+
+                            <div id="adminActivityLogList" style="display:flex; flex-direction:column; gap:10px;">
+                                <!-- Loaded dynamically via JS -->
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Admin Tab 1: Verify Sellers -->
-                    <div id="admin-sellers-view">
+                    <div id="admin-sellers-view" style="display:none;">
                         <div class="admin-table-container">
                             <table class="admin-table">
                                 <thead>
@@ -961,8 +1034,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with cache busting v=2.4 -->
-    <script src="assets/js/api.js?v=2.4"></script>
-    <script src="assets/js/app.js?v=2.4"></script>
+    <!-- Scripts with cache busting v=2.5 -->
+    <script src="assets/js/api.js?v=2.5"></script>
+    <script src="assets/js/app.js?v=2.5"></script>
 </body>
 </html>
