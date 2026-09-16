@@ -28,7 +28,7 @@ const API = {
                         if (Array.isArray(parsed)) {
                             // Filter out any mock/seed items that were not published by an actual seller
                             this.fallbackProducts = parsed.filter(item => {
-                                const isDummySeed = item.id >= 1001 && item.id <= 1006 && !item.published_by_seller;
+                                const isDummySeed = (item.id >= 1000 && item.id <= 2000) || (!item.published_by_seller && item.id < 100000000000);
                                 return !isDummySeed && (item.seller_name || item.seller_id);
                             }).map(prod => ({
                                 ...prod,
