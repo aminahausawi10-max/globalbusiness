@@ -1903,9 +1903,9 @@ function renderBottomNavDock() {
                 <i class="fa-solid fa-robot" style="color:#38BDF8;"></i>
                 <span>AI Assist</span>
             </a>
-            <a class="bottom-nav-item" onclick="handleAdminLogout()">
-                <i class="fa-solid fa-arrow-right-from-bracket" style="color:#EF4444;"></i>
-                <span>Logout</span>
+            <a class="bottom-nav-item ${curPage === 'admin' ? 'active' : ''}" data-page="admin" onclick="switchPage('admin')">
+                <i class="fa-solid fa-gauge-high" style="color:#10B981;"></i>
+                <span>Admin Portal</span>
             </a>
         `;
         return;
