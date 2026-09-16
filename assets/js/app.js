@@ -1950,6 +1950,29 @@ function handleBottomNavPortalClick() {
     }
 }
 
+// ==========================================
+// 4-ITEM DOCK CONTROLLER (Home, Market, Portal, AI Assist)
+// ==========================================
+function handleBottomNavPortalClick() {
+    if (isAdminAuthenticated()) {
+        switchPage('admin');
+        loadAdminPortalData();
+        return;
+    }
+    const user = getCurrentUser();
+    if (user) {
+        if (user.role === 'seller') {
+            switchPage('seller');
+            loadSellerPortalData();
+        } else {
+            switchPage('buyer');
+            loadBuyerPortalData();
+        }
+    } else {
+        openAuthModal('login');
+    }
+}
+
 function renderBottomNavDock() {
     const bottomNav = document.querySelector('.bottom-nav');
     if (!bottomNav) return;
