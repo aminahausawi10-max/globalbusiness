@@ -25,8 +25,12 @@ const API = {
                 if (p) {
                     try {
                         const parsed = JSON.parse(p);
-                        if (Array.isArray(parsed) && parsed.length > 0) {
-                            this.fallbackProducts = parsed.map(prod => ({
+                        if (Array.isArray(parsed)) {
+                            // Filter out any mock/seed items that were not published by an actual seller
+                            this.fallbackProducts = parsed.filter(item => {
+                                const isDummySeed = item.id >= 1001 && item.id <= 1006 && !item.published_by_seller;
+                                return !isDummySeed && (item.seller_name || item.seller_id);
+                            }).map(prod => ({
                                 ...prod,
                                 title: prod.title || prod.name || 'Untitled Good',
                                 name: prod.name || prod.title || 'Untitled Good',
@@ -36,12 +40,16 @@ const API = {
                                 seller_phone: prod.seller_phone || prod.phone || '',
                                 location: prod.location || (prod.city ? `${prod.city}, ${prod.country || 'Nigeria'}` : 'Nigeria')
                             }));
+                            localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
                         }
                     } catch(err) {
                         console.warn('Error reading stored products', err);
+                        this.fallbackProducts = [];
+                        localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
                     }
                 } else {
-                    localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                    this.fallbackProducts = [];
+                    localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
                 }
 
                 const r = localStorage.getItem('globalbiz_requests_store');
@@ -274,6 +282,7 @@ const API = {
             phone: phone,
             whatsapp: phone.replace(/[^0-9+]/g, ''),
             seller_id: payload.seller_id || ('seller-' + Date.now()),
+            published_by_seller: true,
             country: country,
             state: payload.state || payload.state_province || 'Abuja (FCT)',
             city: city,
@@ -1573,132 +1582,5 @@ const API = {
         }
     ],
 
-    fallbackProducts: [
-        {
-            id: 1001,
-            title: 'Authentic 6-Yards Premium Ankara Material (Holland Wax Grade)',
-            price: 9.68,
-            category_id: 2,
-            category_name: 'Clothing & Fashion',
-            seller_name: 'Amina Luxury Ankara & Fabrics',
-            country: 'Nigeria',
-            state: 'Abuja (FCT)',
-            city: 'Abuja',
-            area: 'Wuse 2',
-            phone: '+234 803 456 7890',
-            whatsapp: '+2348034567890',
-            description: '100% Cotton, color-fast high density weave Dutch Holland wax print. Direct from importer with worldwide air cargo shipping.',
-            photo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Local delivery in Abuja/Nigeria & Worldwide DHL/FedEx shipping',
-            views: 245,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 150
-        },
-        {
-            id: 1002,
-            title: 'Luxury Double Drawn Bone Straight Human Hair Wig (HD Lace Frontal)',
-            price: 77.42,
-            category_id: 3,
-            category_name: 'Wigs & Beauty',
-            seller_name: 'Hajiya Wigs & Beauty Palace',
-            country: 'Nigeria',
-            state: 'Kano',
-            city: 'Kano',
-            area: 'Zoo Road',
-            phone: '+234 814 999 4455',
-            whatsapp: '+2348149994455',
-            description: '100% Unprocessed Brazilian Virgin Hair, silky soft double drawn bone straight 28-inch with pre-plucked invisible Swiss HD lace.',
-            photo_url: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Next-day nationwide courier & Global International Air Delivery',
-            views: 412,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 35
-        },
-        {
-            id: 1003,
-            title: 'Apple iPhone 15 Pro Max 256GB Factory Unlocked (Titanium Blue)',
-            price: 850.00,
-            category_id: 7,
-            category_name: 'Mobile Phones',
-            seller_name: 'Apex Global Tech USA',
-            country: 'United States',
-            state: 'California',
-            city: 'Los Angeles',
-            area: 'Silicon Valley Depot',
-            phone: '+1 213 555 0199',
-            whatsapp: '+12135550199',
-            description: 'Brand new factory sealed US model with Apple 1-Year International Warranty. Works on all 5G networks worldwide with dual eSIM.',
-            photo_url: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Express Worldwide Courier (FedEx / DHL 3-5 days delivery)',
-            views: 580,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 20
-        },
-        {
-            id: 1004,
-            title: 'Wholesale Benue Premium Export Grade White Yam (100 Tubers Bundle)',
-            price: 90.32,
-            category_id: 10,
-            category_name: 'Agriculture & Produce',
-            seller_name: 'Kano Agro & Commodity Hub',
-            country: 'Nigeria',
-            state: 'Kano',
-            city: 'Kano',
-            area: 'Dawanau International Market',
-            phone: '+234 814 999 4455',
-            whatsapp: '+2348149994455',
-            description: 'Export standard dry tubers with long shelf-life. Ready for interstate distribution or international phytosanitary export container loading.',
-            photo_url: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Interstate haulage trucks & international sea/air freight available',
-            views: 310,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 500
-        },
-        {
-            id: 1005,
-            title: 'Designer Luxury AMOLED Smartwatch with Bluetooth Call & Health Tracker',
-            price: 45.00,
-            category_id: 6,
-            category_name: 'Electronics & Gadgets',
-            seller_name: 'Gulf Express Trading LLC',
-            country: 'United Arab Emirates',
-            state: 'Dubai',
-            city: 'Dubai',
-            area: 'Deira Gold Souk & Tech Mart',
-            phone: '+971 50 123 4567',
-            whatsapp: '+971501234567',
-            description: 'Sleek stainless steel bezel with interchangeable leather and silicone straps, IP68 water resistance, sleep monitor, and 14-day battery.',
-            photo_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Gulf Express local dispatch & worldwide air express dispatch',
-            views: 198,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 80
-        },
-        {
-            id: 1006,
-            title: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
-            price: 280.00,
-            category_id: 9,
-            category_name: 'Car Sales & Auto',
-            seller_name: 'Guangzhou Smart Mobility Co.',
-            country: 'China',
-            state: 'Guangdong',
-            city: 'Guangzhou',
-            area: 'Tianhe District',
-            phone: '+86 138 0013 8000',
-            whatsapp: '+8613800138000',
-            description: 'Aircraft-grade aluminum alloy body, dual regenerative braking system, puncture-proof 10-inch pneumatic tires with 45km battery range per charge.',
-            photo_url: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Global door-to-door cargo logistics with tracking',
-            views: 340,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 45
-        }
-    ]
+    fallbackProducts: []
 };

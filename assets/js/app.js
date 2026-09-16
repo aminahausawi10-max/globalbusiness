@@ -123,7 +123,7 @@ async function selectNigeriaState(stateName) {
         gridEl.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:24px; color:#94A3B8;"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading ${stateName} listings...</div>`;
         const products = await API.getProducts({ country: 'Nigeria', search: prefix });
         
-        const displayProducts = (products && products.length > 0) ? products.slice(0, 4) : (await API.getProducts({ country: 'Nigeria' })).slice(0, 4);
+        const displayProducts = (products && products.length > 0) ? products.slice(0, 4) : [];
         renderMapProducts(gridEl, displayProducts, stateName);
     }
 }
@@ -1143,14 +1143,28 @@ function renderProductsGrid(products, grid) {
     if (!grid) return;
 
     if (!products || products.length === 0) {
-        grid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align:center; padding:50px 20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
-                <i class="fa-solid fa-box-open" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:10px;"></i>
-                <h3 style="font-weight:700;">No listings found matching criteria</h3>
-                <p style="color:var(--text-muted); margin-bottom:14px;">Try searching for a different keyword or removing filters.</p>
-                <button class="btn btn-outline btn-sm" onclick="resetMarketplaceFilters()">Reset Catalog</button>
-            </div>
-        `;
+        const hasFilters = !!(document.getElementById('marketSearchFilter')?.value || document.getElementById('marketCategoryFilter')?.value || document.getElementById('marketCountryFilter')?.value || document.getElementById('marketStateFilter')?.value);
+        if (hasFilters) {
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align:center; padding:50px 20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
+                    <i class="fa-solid fa-box-open" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:10px;"></i>
+                    <h3 style="font-weight:700;">No listings found matching criteria</h3>
+                    <p style="color:var(--text-muted); margin-bottom:14px;">Try searching for a different keyword or removing filters.</p>
+                    <button class="btn btn-outline btn-sm" onclick="resetMarketplaceFilters()">Reset Catalog</button>
+                </div>
+            `;
+        } else {
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align:center; padding:50px 20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
+                    <i class="fa-solid fa-store" style="font-size:3rem; color:var(--text-muted); margin-bottom:12px;"></i>
+                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-main); margin-bottom:6px;">No Products Published Yet</h3>
+                    <p style="color:var(--text-muted); font-size:0.88rem; max-width:420px; margin:0 auto 16px auto;">Be the first verified seller to list your goods and sell directly to verified buyers worldwide!</p>
+                    <button class="btn btn-success" onclick="handleBottomNavSellClick()" style="padding:10px 22px; font-weight:700;">
+                        <i class="fa-solid fa-plus"></i> Post a Product Now
+                    </button>
+                </div>
+            `;
+        }
         return;
     }
 
