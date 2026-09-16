@@ -2795,3 +2795,461 @@ main {
     border-radius: 6px;
     transition: width 0.5s ease-out;
 }
+
+
+/* ==========================================================================
+   ADVANCED MARKETPLACE: DARK MODE, 3D EFFECTS, NIGERIA MAP & AI ASSISTANT
+   ========================================================================== */
+
+/* Dark Mode Theme Definition */
+[data-theme="dark"] {
+    --primary: #F8FAFC;
+    --primary-light: #E2E8F0;
+    --primary-muted: #94A3B8;
+    
+    --bg-page: #0B132B;
+    --bg-card: #1C2541;
+    --bg-alt: #162035;
+    --bg-dark: #070B19;
+    
+    --text-main: #F8FAFC;
+    --text-secondary: #CBD5E1;
+    --text-muted: #64748B;
+    
+    --border: #334155;
+    --border-light: #1E293B;
+    --border-focus: #10B981;
+    
+    --brand-green-soft: rgba(16, 185, 129, 0.15);
+    --gold-soft: rgba(245, 158, 11, 0.15);
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .navbar {
+    background: rgba(28, 37, 65, 0.92);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .card {
+    background: var(--bg-card);
+    border-color: var(--border);
+    color: var(--text-main);
+}
+
+[data-theme="dark"] .form-input, 
+[data-theme="dark"] .form-select, 
+[data-theme="dark"] .form-textarea {
+    background: #0F172A;
+    border-color: #334155;
+    color: #F8FAFC;
+}
+
+[data-theme="dark"] .btn-outline {
+    background: #1C2541;
+    color: #F8FAFC;
+    border-color: #334155;
+}
+[data-theme="dark"] .btn-outline:hover {
+    background: #253356;
+}
+
+[data-theme="dark"] .product-card {
+    background: var(--bg-card);
+    border-color: var(--border);
+}
+
+/* Theme Switcher Button in Header */
+.theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-alt);
+    border: 1.5px solid var(--border);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.95rem;
+}
+.theme-toggle-btn:hover {
+    transform: rotate(25deg);
+    border-color: var(--brand-green);
+    color: var(--brand-green);
+}
+
+/* Floating Product Badges in Hero */
+.hero-floating-scene {
+    position: relative;
+    overflow: hidden;
+}
+
+.floating-product-pill {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 30px;
+    padding: 8px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #0F172A;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    z-index: 10;
+    animation: floatSlow 6s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+[data-theme="dark"] .floating-product-pill {
+    background: rgba(28, 37, 65, 0.85);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #F8FAFC;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.float-pill-1 { top: 15%; left: 4%; animation-delay: 0s; }
+.float-pill-2 { top: 20%; right: 5%; animation-delay: 1.5s; }
+.float-pill-3 { bottom: 12%; left: 8%; animation-delay: 3s; }
+.float-pill-4 { bottom: 15%; right: 8%; animation-delay: 4.5s; }
+
+@keyframes floatSlow {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(1.5deg); }
+    100% { transform: translateY(-20px) rotate(-1.5deg); }
+}
+
+@media (max-width: 768px) {
+    .floating-product-pill { display: none; }
+}
+
+/* 3D Product Card Lift & Tilt */
+.product-card {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.product-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(5, 150, 105, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.product-card .product-img {
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.06);
+}
+
+/* Interactive Nigeria Map Explorer */
+.nigeria-map-container {
+    background: linear-gradient(135deg, #0B132B 0%, #1C2541 100%);
+    border-radius: 20px;
+    padding: 28px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.map-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: center;
+}
+
+@media (max-width: 850px) {
+    .map-grid-layout { grid-template-columns: 1fr; }
+}
+
+.nigeria-svg-wrapper {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.state-node-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px;
+}
+
+.state-node-btn:hover {
+    background: var(--brand-green);
+    border-color: var(--brand-green-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.state-node-btn.active {
+    background: var(--brand-green);
+    border-color: #34D399;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+}
+
+/* AI Search Bar with Natural Language Parser */
+.ai-search-card {
+    background: var(--bg-card);
+    border-radius: 18px;
+    padding: 18px 22px;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 24px;
+    transition: var(--transition);
+}
+
+.ai-search-card:focus-within {
+    border-color: var(--brand-green-light);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.ai-chips-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding-top: 10px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.ai-query-chip {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ai-query-chip:hover {
+    background: var(--brand-green-soft);
+    color: var(--brand-green);
+    border-color: var(--brand-green);
+}
+
+/* AI Shopping Assistant Floating Bot */
+.ai-bot-floating-trigger {
+    position: fixed;
+    bottom: 86px;
+    right: 20px;
+    z-index: 1000;
+    background: linear-gradient(135deg, #059669, #10B981);
+    color: #fff;
+    border-radius: 30px;
+    padding: 10px 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 0.85rem;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    transition: var(--transition);
+    animation: pulseGlow 3s infinite;
+}
+
+.ai-bot-floating-trigger:hover {
+    transform: scale(1.05) translateY(-3px);
+    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.5);
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4); }
+    50% { box-shadow: 0 8px 35px rgba(16, 185, 129, 0.7); }
+}
+
+.ai-assistant-drawer {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    height: 520px;
+    max-height: 75vh;
+    background: var(--bg-card);
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow-float);
+    z-index: 1200;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ai-assistant-drawer.active {
+    display: flex;
+}
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ai-chat-header {
+    background: linear-gradient(135deg, #0B132B, #1C2541);
+    color: #fff;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ai-chat-messages {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bg-page);
+}
+
+.chat-bubble {
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.82rem;
+    max-width: 85%;
+    line-height: 1.5;
+}
+
+.chat-bubble-ai {
+    background: var(--bg-card);
+    color: var(--text-main);
+    align-self: flex-start;
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+    box-shadow: var(--shadow-xs);
+}
+
+.chat-bubble-user {
+    background: var(--brand-green);
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+.ai-chat-input-bar {
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+}
+
+/* 360 Degree View Interactive Simulation */
+.rotator-360-box {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    text-align: center;
+    border: 1px solid var(--border);
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rotator-360-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #34D399;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.rotator-slider-control {
+    width: 80%;
+    margin-top: 10px;
+    accent-color: var(--brand-green);
+}
+
+/* Visual Live Order Tracking Route Nodes */
+.order-route-tracker {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    position: relative;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.route-step-node {
+    padding: 10px 6px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    background: var(--bg-alt);
+    color: var(--text-muted);
+    transition: var(--transition);
+}
+
+.route-step-node.completed {
+    background: #ECFDF5;
+    color: #059669;
+    border-color: #A7F3D0;
+}
+
+[data-theme="dark"] .route-step-node.completed {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34D399;
+    border-color: rgba(52, 211, 153, 0.4);
+}
+
+.route-step-node.active-now {
+    background: #EFF6FF;
+    color: #2563EB;
+    border-color: #93C5FD;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+    animation: pulseStep 2s infinite;
+}
+
+[data-theme="dark"] .route-step-node.active-now {
+    background: rgba(37, 99, 235, 0.25);
+    color: #60A5FA;
+    border-color: rgba(96, 165, 250, 0.5);
+}
+
+@keyframes pulseStep {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -21,8 +21,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Decent & Professional Stylesheet (v3.2 Cache Bust) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=3.2">
+    <!-- Advanced Design System (v4.0) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=4.0">
 </head>
 <body>
 
@@ -65,7 +65,7 @@
     </div>
 
     <!-- ==========================================================================
-       TOP APP NAVBAR (RESPONSIVE & CLEAN)
+       TOP APP NAVBAR (RESPONSIVE, PREMIUM & CLEAN)
        ========================================================================== -->
     <header class="navbar">
         <div class="container nav-container">
@@ -92,8 +92,13 @@
                 <a href="#" class="nav-link" data-page="assistance" onclick="switchPage('assistance'); return false;">Buying Assistance</a>
             </nav>
 
-            <!-- Right Header Actions -->
+            <!-- Right Header Actions (Dark Mode, Currency, Cart, Fav, Auth) -->
             <div class="nav-actions">
+                <!-- 🌓 Dark / Light Mode Toggle Button -->
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                    <i class="fa-solid fa-moon" id="themeToggleIcon"></i>
+                </button>
+
                 <!-- Currency Selector -->
                 <div class="currency-wrapper">
                     <select id="currencySelector" class="currency-select" title="Change Currency">
@@ -123,7 +128,7 @@
                     <span id="navFavBadge" class="nav-badge-count" style="display:none; background:#EF4444;">0</span>
                 </button>
 
-                <!-- User Account / Sign In / Portal -->
+                <!-- User Account / Sign In -->
                 <button class="btn btn-primary btn-sm" id="navAuthBtn" onclick="handleNavAuthBtnClick()">
                     <i class="fa-solid fa-user"></i> <span id="navAuthText">Sign In</span>
                 </button>
@@ -137,61 +142,63 @@
     <main id="app-views">
 
         <!-- ======================================================================
-           PAGE 1: HOME (HERO SEARCH, CATEGORIES, FEATURED, SOURCING CTA)
+           PAGE 1: HOME (HERO WITH FLOATING OBJECTS, MAP, AI SEARCH, FEATURED)
            ====================================================================== -->
         <div id="page-home" class="page-view active">
             
-            <!-- Hero Search Section -->
-            <section class="hero-section">
-                <div class="container hero-container">
+            <!-- Hero Search Section with Floating Holograms -->
+            <section class="hero-section hero-floating-scene">
+                
+                <!-- Floating Hologram Product Badges -->
+                <div class="floating-product-pill float-pill-1">
+                    <span>👗</span> Authentic Dutch Holland Wax &bull; <strong style="color:var(--brand-green);">₦15,000</strong>
+                </div>
+                <div class="floating-product-pill float-pill-2">
+                    <span>💇</span> 28" Double Drawn Bone Straight &bull; <strong style="color:var(--brand-green);">₦120,000</strong>
+                </div>
+                <div class="floating-product-pill float-pill-3">
+                    <span>🌾</span> Wholesale Benue White Yam (100x) &bull; <strong style="color:var(--brand-green);">₦140,000</strong>
+                </div>
+                <div class="floating-product-pill float-pill-4">
+                    <span>📱</span> iPhone 15 Pro Max 256GB &bull; <strong style="color:var(--brand-green);">$850</strong>
+                </div>
+
+                <div class="container hero-container" style="position:relative; z-index:20;">
                     <div class="hero-badge">
-                        <i class="fa-solid fa-earth-americas"></i> Worldwide Online Marketplace & Buying Assistance
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> African Identity &bull; Next-Gen Worldwide Marketplace
                     </div>
                     
                     <h1 class="hero-title">
-                        Buy & Sell Authentic Goods <span class="highlight">Worldwide</span>
+                        DISCOVER. CONNECT. <span class="highlight">BUY & SELL.</span>
                     </h1>
                     
                     <p class="hero-subtitle">
-                        Discover verified goods from Abuja, Kano, London, Dubai, Guangzhou, and beyond. Let our certified agents inspect, negotiate, and deliver directly to you.
+                        Experience verified commerce across Abuja, Kano, Lagos, Kaduna, and worldwide hubs with intelligent AI search, escrow protection, and concierge inspection.
                     </p>
 
-                    <!-- Interactive Hero Search Bar -->
-                    <div class="hero-search-card">
-                        <form id="heroSearchForm" class="hero-search-form" onsubmit="handleHeroSearch(event)">
-                            <div class="search-input-group search-keyword">
-                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                                <input type="text" id="heroSearchInput" class="search-input" placeholder="What are you looking for? (e.g. Ankara, Yam, Wigs, Gadgets)...">
+                    <!-- Natural Language AI Search Bar -->
+                    <div class="ai-search-card" style="max-width:820px; margin:0 auto 16px auto;">
+                        <form id="aiSearchMainForm" onsubmit="handleAiSearchSubmit(event)">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="width:38px; height:38px; border-radius:50%; background:var(--brand-green-soft); color:var(--brand-green); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <input type="text" id="aiSearchInput" class="form-input" placeholder="Type naturally: 'I need a black shoe for a wedding under ₦50,000' or 'Ankara in Abuja'..." style="border:none; background:transparent; font-size:0.95rem; font-weight:600; padding:10px 0; box-shadow:none;">
+                                <button type="submit" class="btn btn-primary" style="padding:10px 20px; font-weight:800; white-space:nowrap;">
+                                    <i class="fa-solid fa-sparkles"></i> AI Search
+                                </button>
                             </div>
-
-                            <div class="search-input-group search-country">
-                                <i class="fa-solid fa-globe search-icon"></i>
-                                <select id="heroCountrySelect" class="search-select" onchange="handleHeroCountryChange(this.value)">
-                                    <option value="">🌍 All Countries</option>
-                                    <option value="Nigeria">🇳🇬 Nigeria</option>
-                                    <option value="United States">🇺🇸 United States</option>
-                                    <option value="United Kingdom">🇬🇧 United Kingdom</option>
-                                    <option value="Canada">🇨🇦 Canada</option>
-                                    <option value="United Arab Emirates">🇦🇪 UAE (Dubai)</option>
-                                    <option value="Ghana">🇬🇭 Ghana</option>
-                                    <option value="China">🇨🇳 China</option>
-                                    <option value="Kenya">🇰🇪 Kenya</option>
-                                    <option value="South Africa">🇿🇦 South Africa</option>
-                                    <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
-                                </select>
-                            </div>
-
-                            <div class="search-input-group search-state">
-                                <i class="fa-solid fa-location-dot search-icon"></i>
-                                <select id="heroStateSelect" class="search-select">
-                                    <option value="">All States / Regions</option>
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary search-submit-btn">
-                                <i class="fa-solid fa-magnifying-glass"></i> Search Goods
-                            </button>
                         </form>
+
+                        <!-- Natural Language Quick Query Chips -->
+                        <div class="ai-chips-strip">
+                            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;"><i class="fa-solid fa-bolt" style="color:var(--gold);"></i> Try AI:</span>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Authentic Ankara in Abuja under $15')">👗 Ankara in Abuja under $15</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Bone straight human hair wig in Kano')">💇 Bone straight wig in Kano</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Export Benue yam in bulk')">🌾 Export Yam in bulk</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Apple iPhone 15 Pro Max under $900')">📱 iPhone 15 Pro Max</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Designer smartwatch under $50')">⌚ Smartwatch under $50</button>
+                        </div>
                     </div>
 
                     <!-- Quick Location Shortcuts -->
@@ -205,10 +212,79 @@
                             <button class="hero-loc-pill" onclick="filterByWorldwideLocation('United Arab Emirates', 'Dubai', this)">🇦🇪 Dubai</button>
                             <button class="hero-loc-pill" onclick="filterByWorldwideLocation('United Kingdom', 'London', this)">🇬🇧 London</button>
                             <button class="hero-loc-pill" onclick="filterByWorldwideLocation('China', 'Guangdong (Guangzhou / Shenzhen)', this)">🇨🇳 Guangzhou</button>
-                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('United States', 'California', this)">🇺🇸 USA</button>
                         </div>
                     </div>
 
+                </div>
+            </section>
+
+            <!-- 🌍 INTERACTIVE NIGERIA MAP EXPLORER SECTION -->
+            <section class="section">
+                <div class="container">
+                    <div class="nigeria-map-container">
+                        <div class="map-grid-layout">
+                            
+                            <!-- Left: Interactive Map Nodes -->
+                            <div class="nigeria-svg-wrapper">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <span class="badge" style="background:rgba(52,211,153,0.2); color:#34D399; font-weight:800;">
+                                        <i class="fa-solid fa-map-location-dot"></i> NIGERIA INTERACTIVE TRADE MAP
+                                    </span>
+                                    <span style="font-size:0.75rem; color:#94A3B8;">Tap any state to explore sellers</span>
+                                </div>
+
+                                <!-- Regional State Node Buttons -->
+                                <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:14px 0;">
+                                    <button class="state-node-btn active" id="mapState-Abuja" onclick="selectNigeriaState('Abuja (FCT)')">
+                                        <i class="fa-solid fa-landmark"></i> Abuja (FCT)
+                                    </button>
+                                    <button class="state-node-btn" id="mapState-Kano" onclick="selectNigeriaState('Kano')">
+                                        <i class="fa-solid fa-wheat-awn"></i> Kano (Dawanau / Kurmi)
+                                    </button>
+                                    <button class="state-node-btn" id="mapState-Kaduna" onclick="selectNigeriaState('Kaduna')">
+                                        <i class="fa-solid fa-building"></i> Kaduna (Barnawa)
+                                    </button>
+                                    <button class="state-node-btn" id="mapState-Lagos" onclick="selectNigeriaState('Lagos')">
+                                        <i class="fa-solid fa-city"></i> Lagos (Alaba / Balogun)
+                                    </button>
+                                    <button class="state-node-btn" id="mapState-Rivers" onclick="selectNigeriaState('Rivers (Port Harcourt)')">
+                                        <i class="fa-solid fa-ship"></i> Rivers (Port Harcourt)
+                                    </button>
+                                    <button class="state-node-btn" id="mapState-Oyo" onclick="selectNigeriaState('Oyo (Ibadan)')">
+                                        <i class="fa-solid fa-store"></i> Oyo (Ibadan)
+                                    </button>
+                                    <button class="state-node-btn" id="mapState-Enugu" onclick="selectNigeriaState('Enugu')">
+                                        <i class="fa-solid fa-mountain"></i> Enugu (Ogbete)
+                                    </button>
+                                </div>
+
+                                <div style="font-size:0.78rem; color:#94A3B8; margin-top:8px;">
+                                    Connected Trade Routes: <span style="color:#34D399; font-weight:700;">Interstate Haulage & Sourcing Active</span>
+                                </div>
+                            </div>
+
+                            <!-- Right: Live State Products Preview -->
+                            <div>
+                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                                    <h3 style="font-size:1.3rem; font-weight:800; color:#fff; margin:0;" id="mapSelectedStateTitle">
+                                        Products available in Abuja (FCT)
+                                    </h3>
+                                </div>
+                                <p style="font-size:0.85rem; color:#94A3B8; margin-bottom:14px;" id="mapSelectedStateDesc">
+                                    Direct verified supplier stores in Wuse 2, Maitama, and Emab Plaza.
+                                </p>
+
+                                <div id="mapStateProductsGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                    <!-- Injected dynamically via JS -->
+                                </div>
+
+                                <button class="btn btn-primary btn-sm" style="margin-top:14px; width:100%;" onclick="switchPage('marketplace')">
+                                    <i class="fa-solid fa-store"></i> Explore All Goods in this State
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -217,7 +293,7 @@
                 <div class="container">
                     <div class="section-header">
                         <div>
-                            <span class="section-badge"><i class="fa-solid fa-layer-group"></i> Explore Categories</span>
+                            <span class="section-badge"><i class="fa-solid fa-layer-group"></i> Categories</span>
                             <h2 class="section-title">Popular Marketplace Categories</h2>
                         </div>
                         <button class="btn btn-outline btn-sm" onclick="switchPage('marketplace')">
@@ -231,51 +307,22 @@
                 </div>
             </section>
 
-            <!-- Featured Worldwide Goods Section -->
+            <!-- Featured 3D Products Grid -->
             <section class="section section-alt">
                 <div class="container">
                     <div class="section-header">
                         <div>
-                            <span class="section-badge"><i class="fa-solid fa-fire"></i> Featured Listings</span>
-                            <h2 class="section-title">Verified Goods Available Now</h2>
-                            <p class="section-subtitle">Authenticated listings with direct seller contact or assisted inspection.</p>
+                            <span class="section-badge"><i class="fa-solid fa-fire"></i> Verified Listings</span>
+                            <h2 class="section-title">Featured Goods with 3D Tilt Preview</h2>
+                            <p class="section-subtitle">Hover or tap cards to experience 3D interactive view and instant wishlist actions.</p>
                         </div>
                         <button class="btn btn-primary btn-sm" onclick="switchPage('marketplace')">
-                            <i class="fa-solid fa-store"></i> Browse All Listings
+                            <i class="fa-solid fa-store"></i> Full Catalog
                         </button>
                     </div>
 
                     <div id="homeFeaturedProductsGrid" class="products-grid">
                         <!-- Populated via JS -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- Sourcing & Buying Assistance Banner -->
-            <section class="section">
-                <div class="container">
-                    <div class="card" style="background:linear-gradient(135deg, #0B132B 0%, #1C2541 100%); color:#fff; border-radius:20px; padding:36px 28px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
-                            <div style="max-width:650px;">
-                                <span class="badge badge-verified" style="background:rgba(16,185,129,0.2); color:#34D399; font-size:0.8rem; margin-bottom:10px; display:inline-block;">
-                                    <i class="fa-solid fa-shield-halved"></i> 100% BUYER ESCROW PROTECTION
-                                </span>
-                                <h3 style="font-size:1.6rem; font-weight:800; color:#fff; margin-bottom:8px;">
-                                    Need to source goods in bulk or buy safely?
-                                </h3>
-                                <p style="color:#94A3B8; font-size:0.9rem; line-height:1.6;">
-                                    Our certified agents physically inspect goods in Kano, Abuja, Guangzhou, and global markets, negotiate wholesale rates, and manage shipping to your doorstep.
-                                </p>
-                            </div>
-                            <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                                <button class="btn btn-primary" onclick="switchPage('assistance')" style="padding:12px 24px; font-size:0.95rem;">
-                                    <i class="fa-solid fa-handshake-angle"></i> Request Sourcing Concierge
-                                </button>
-                                <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.3);" onclick="openReportComplaintModal()">
-                                    <i class="fa-solid fa-flag"></i> Report Issue / Dispute
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -288,7 +335,6 @@
         <div id="page-marketplace" class="page-view">
             <div class="container section">
                 
-                <!-- Marketplace Header & Filter Strip -->
                 <div class="card" style="margin-bottom:20px; padding:18px 20px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom:14px;">
                         <div>
@@ -296,7 +342,7 @@
                                 <i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Worldwide Marketplace
                             </h2>
                             <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                Browse products uploaded by verified merchants worldwide.
+                                Discover goods with natural language AI search and state-level filters.
                             </p>
                         </div>
 
@@ -335,7 +381,6 @@
                                 <option value="China">🇨🇳 China</option>
                                 <option value="Kenya">🇰🇪 Kenya</option>
                                 <option value="South Africa">🇿🇦 South Africa</option>
-                                <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
                             </select>
                         </div>
                         <div>
@@ -419,7 +464,6 @@
 
                 <!-- TAB 1: BUYER DASHBOARD -->
                 <div id="buyer-tab-dashboard" class="buyer-subtab-view">
-                    <!-- KPI Cards -->
                     <div class="seller-stats-grid" style="margin-bottom:20px;">
                         <div class="stat-card" onclick="switchBuyerTab('orders')" style="cursor:pointer;">
                             <div class="stat-icon green"><i class="fa-solid fa-box-check"></i></div>
@@ -444,15 +488,14 @@
                         </div>
                     </div>
 
-                    <!-- Recommended & Recently Added Products Grid -->
                     <div class="card" style="margin-bottom:24px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                             <div>
                                 <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin:0;">
-                                    🌟 Recommended Worldwide Goods For You
+                                    🌟 Recommended Goods For You
                                 </h3>
                                 <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                    Verified merchant listings available for direct purchase or assisted inspection.
+                                    Curated items tailored to your recent search and purchase activity.
                                 </p>
                             </div>
                             <button class="btn btn-outline btn-sm" onclick="switchPage('marketplace')">
@@ -465,16 +508,16 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: MY ORDERS (6-STAGE STATUS MATRIX) -->
+                <!-- TAB 2: MY ORDERS WITH VISUAL ROUTE TRACKER -->
                 <div id="buyer-tab-orders" class="buyer-subtab-view" style="display:none;">
                     <div class="card" style="margin-bottom:20px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
                             <div>
                                 <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                    📦 My Orders & Purchase Tracking
+                                    📦 My Orders & Live Route Tracking
                                 </h3>
                                 <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                    Track direct marketplace orders and concierge sourcing requests with live status updates.
+                                    Track direct marketplace orders and concierge sourcing requests with milestone roadmaps.
                                 </p>
                             </div>
                             <div style="display:flex; gap:6px; flex-wrap:wrap;" id="buyerOrderFilterStrip">
@@ -487,7 +530,6 @@
                             </div>
                         </div>
 
-                        <!-- Direct Marketplace Orders Container -->
                         <div id="buyerOrdersListContainer">
                             <!-- Populated dynamically via JS -->
                         </div>
@@ -497,8 +539,6 @@
                 <!-- TAB 3: SHOPPING CART & CHECKOUT -->
                 <div id="buyer-tab-cart" class="buyer-subtab-view" style="display:none;">
                     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
-                        
-                        <!-- Cart Items List -->
                         <div class="card">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                                 <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin:0;">
@@ -508,12 +548,9 @@
                                     <i class="fa-solid fa-trash"></i> Clear Cart
                                 </button>
                             </div>
-                            <div id="buyerCartItemsContainer">
-                                <!-- Populated dynamically via JS -->
-                            </div>
+                            <div id="buyerCartItemsContainer"></div>
                         </div>
 
-                        <!-- Checkout & Delivery Form -->
                         <div class="card">
                             <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin-bottom:14px;">
                                 💳 Order Summary & Delivery
@@ -548,18 +585,17 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Special Delivery Instructions / Notes</label>
-                                    <textarea id="checkoutNotes" class="form-textarea" rows="2" placeholder="e.g. Please call upon arrival, leave with gate security..."></textarea>
+                                    <label class="form-label">Special Delivery Instructions</label>
+                                    <textarea id="checkoutNotes" class="form-textarea" rows="2" placeholder="e.g. Call before arrival..."></textarea>
                                 </div>
 
-                                <!-- Total Calculation Box -->
                                 <div style="background:var(--bg-alt); padding:14px 16px; border-radius:var(--radius-md); margin-bottom:16px; border:1px solid var(--border);">
                                     <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.85rem; color:var(--text-secondary);">
                                         <span>Subtotal:</span>
                                         <strong id="checkoutSubtotalDisplay">$0.00</strong>
                                     </div>
                                     <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.85rem; color:var(--text-secondary);">
-                                        <span>Delivery / Inspection Escrow:</span>
+                                        <span>Inspection & Escrow Protection:</span>
                                         <span style="color:var(--brand-green); font-weight:700;">FREE (Promo)</span>
                                     </div>
                                     <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:8px; font-size:1.15rem; font-weight:900; color:var(--primary);">
@@ -573,7 +609,6 @@
                                 </button>
                             </form>
                         </div>
-
                     </div>
                 </div>
 
@@ -586,16 +621,14 @@
                                     ❤️ My Saved Favorites & Wishlist
                                 </h3>
                                 <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                    Products you have saved for easy access and quick checkout.
+                                    Items you have saved for fast checkout and price alerts.
                                 </p>
                             </div>
                             <button class="btn btn-outline btn-sm" onclick="switchPage('marketplace')">
                                 Explore More Products <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
-                        <div id="buyerFavoritesGrid" class="products-grid">
-                            <!-- Loaded via JS -->
-                        </div>
+                        <div id="buyerFavoritesGrid" class="products-grid"></div>
                     </div>
                 </div>
 
@@ -608,9 +641,7 @@
                             </h3>
                             <span class="badge badge-verified"><i class="fa-solid fa-shield-check"></i> Live Stream</span>
                         </div>
-                        <div id="buyerNotificationsContainer">
-                            <!-- Populated via JS -->
-                        </div>
+                        <div id="buyerNotificationsContainer"></div>
                     </div>
                 </div>
 
@@ -637,7 +668,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Default Delivery Street Address *</label>
-                                <input type="text" id="buyerProfileAddress" class="form-input" placeholder="e.g. Plot 42, Gana Street, Maitama" required>
+                                <input type="text" id="buyerProfileAddress" class="form-input" required>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
@@ -649,12 +680,8 @@
                                     <input type="text" id="buyerProfileCountry" class="form-input" required>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Change Password (optional)</label>
-                                <input type="password" id="buyerProfilePassword" class="form-input" placeholder="Leave blank to keep existing password">
-                            </div>
                             <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
-                                <i class="fa-solid fa-floppy-disk"></i> Save Profile & Address Changes
+                                <i class="fa-solid fa-floppy-disk"></i> Save Profile & Address
                             </button>
                         </form>
                     </div>
@@ -664,12 +691,12 @@
         </div>
 
         <!-- ======================================================================
-           PAGE 4: SELLER PORTAL
+           PAGE 4: 🏪 SELLER PORTAL & ANALYTICS
            ====================================================================== -->
         <div id="page-seller" class="page-view">
             <div class="container section">
                 
-                <!-- Seller Profile Header -->
+                <!-- Seller Profile Banner -->
                 <div class="card" style="margin-bottom:20px; background:linear-gradient(135deg, #0B132B 0%, #1C2541 100%); color:#FFFFFF; border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:22px 24px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
                         <div style="display:flex; align-items:center; gap:16px;">
@@ -702,19 +729,49 @@
                     </div>
                 </div>
 
+                <!-- 📊 Seller Performance Metrics Grid -->
+                <div class="seller-stats-grid" style="margin-bottom:20px;">
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                        <div>
+                            <div class="stat-value">₦850,000</div>
+                            <div class="stat-label">Total Sales Volume</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon indigo"><i class="fa-solid fa-boxes-stacked"></i></div>
+                        <div>
+                            <div class="stat-value" id="sellerListedProductsCount">6</div>
+                            <div class="stat-label">Active Listed Products</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon amber"><i class="fa-solid fa-cart-check"></i></div>
+                        <div>
+                            <div class="stat-value">125</div>
+                            <div class="stat-label">Fulfilled Orders</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fa-solid fa-eye"></i></div>
+                        <div>
+                            <div class="stat-value">8,420</div>
+                            <div class="stat-label">Store Views</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Seller Products Grid -->
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                         <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;">
-                            📦 My Listed Products (<span id="sellerListedProductsCount">0</span>)
+                            📦 My Listed Products & Stock Control
                         </h3>
                         <button class="btn btn-success btn-sm" onclick="openAddProductModal()">
                             <i class="fa-solid fa-plus"></i> Add Product
                         </button>
                     </div>
-                    <div id="myProductsContainer" class="products-grid">
-                        <!-- Populated dynamically via JS -->
-                    </div>
+                    <div id="myProductsContainer" class="products-grid"></div>
                 </div>
 
             </div>
@@ -729,7 +786,7 @@
                     <span class="hero-badge"><i class="fa-solid fa-handshake-angle"></i> Professional Sourcing Concierge</span>
                     <h2 style="font-size:1.6rem; font-weight:800; color:var(--primary); margin:6px 0;">Let Our Certified Agents Handle Your Purchase</h2>
                     <p style="font-size:0.85rem; color:var(--text-secondary);">
-                        Whether buying goods in bulk from Kano, fashion from Abuja, or produce across states, we inspect, negotiate, and deliver directly to your doorstep.
+                        Whether buying goods in bulk from Kano, fashion from Abuja, or electronics across global ports, we physically inspect, negotiate, and deliver directly to you.
                     </p>
                 </div>
 
@@ -773,7 +830,7 @@
                 <!-- Request Form Card -->
                 <div class="card form-container-card">
                     <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin-bottom:12px;">
-                        <i class="fa-solid fa-paper-plane" style="color:var(--brand-green);"></i> Submit Sourcing Request
+                        <i class="fa-solid fa-paper-plane" style="color:var(--brand-green);"></i> Submit Sourcing Request ("Find This For Me")
                     </h3>
 
                     <form id="buyingAssistanceMainForm" onsubmit="handleAssistanceSubmit(event)">
@@ -801,8 +858,6 @@
                                     <option value="United Kingdom">🇬🇧 United Kingdom</option>
                                     <option value="United Arab Emirates">🇦🇪 UAE (Dubai)</option>
                                     <option value="Ghana">🇬🇭 Ghana</option>
-                                    <option value="Kenya">🇰🇪 Kenya</option>
-                                    <option value="South Africa">🇿🇦 South Africa</option>
                                     <option value="Worldwide">🌍 Worldwide (Any Country)</option>
                                 </select>
                             </div>
@@ -818,13 +873,13 @@
                                 <input type="text" id="mainPbaName" class="form-input" placeholder="e.g. Ahmed Yusuf" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">WhatsApp / Phone Number with Country Code *</label>
+                                <label class="form-label">WhatsApp / Phone Number *</label>
                                 <input type="tel" id="mainPbaPhone" class="form-input" placeholder="+234 800 000 0000" required>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Item Specifications & Preferred Supplier Notes</label>
+                            <label class="form-label">Item Specifications & Notes</label>
                             <textarea id="mainPbaSpecs" class="form-textarea" rows="2" placeholder="Quality grade, size, preferred brand, or links to sellers..."></textarea>
                         </div>
 
@@ -843,7 +898,7 @@
         <div id="page-admin" class="page-view">
             <div class="container section">
 
-                <!-- 1. Admin Login Gate (Shown when not logged in) -->
+                <!-- 1. Admin Login Gate -->
                 <div id="admin-login-gate" class="card form-container-card" style="text-align:center; padding:36px 28px; max-width:440px; margin:24px auto; box-shadow:0 10px 30px rgba(0,0,0,0.08); border-radius:20px;">
                     <div style="width:64px; height:64px; background:var(--brand-green-soft); color:var(--brand-green); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.75rem; margin-bottom:14px; border:1.5px solid rgba(5,150,105,0.25);">
                         <i class="fa-solid fa-shield-halved"></i>
@@ -876,7 +931,7 @@
                     </form>
                 </div>
 
-                <!-- 2. Protected Admin Dashboard View (Shown after authentication) -->
+                <!-- 2. Protected Admin Dashboard View -->
                 <div id="admin-dashboard-view" style="display:none;">
                     
                     <!-- Executive Header Banner -->
@@ -925,49 +980,39 @@
                             <a class="admin-sidebar-item active" id="adminMenu-dashboard" onclick="switchAdminTab('dashboard')">
                                 <span><i class="fa-solid fa-chart-pie"></i> 📊 Dashboard</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-users" onclick="switchAdminTab('users')">
                                 <span><i class="fa-solid fa-users"></i> 👥 Users</span>
                                 <span class="badge" id="adminMenuCountUsers">0</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-verification" onclick="switchAdminTab('verification')">
                                 <span><i class="fa-solid fa-shield-halved"></i> 🏪 Seller Verification</span>
                                 <span class="badge" id="adminMenuCountVerification">0</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-products" onclick="switchAdminTab('products')">
                                 <span><i class="fa-solid fa-boxes-stacked"></i> 🛍️ Products</span>
                                 <span class="badge" id="adminMenuCountProducts">0</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-orders" onclick="switchAdminTab('orders')">
                                 <span><i class="fa-solid fa-box-open"></i> 📦 Orders</span>
                                 <span class="badge" id="adminMenuCountOrders">0</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-sourcing" onclick="switchAdminTab('sourcing')">
                                 <span><i class="fa-solid fa-handshake-angle"></i> 🔍 Sourcing Requests</span>
                                 <span class="badge" id="adminMenuCountSourcing">0</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-complaints" onclick="switchAdminTab('complaints')">
                                 <span><i class="fa-solid fa-comments"></i> 💬 Reports & Complaints</span>
                                 <span class="badge" id="adminMenuCountComplaints" style="background:#EF4444; color:#fff;">0</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-notifications" onclick="switchAdminTab('notifications')">
                                 <span><i class="fa-solid fa-bullhorn"></i> 📢 Notifications</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-analytics" onclick="switchAdminTab('analytics')">
                                 <span><i class="fa-solid fa-chart-line"></i> 📈 Reports & Analytics</span>
                             </a>
-
                             <a class="admin-sidebar-item" id="adminMenu-settings" onclick="switchAdminTab('settings')">
                                 <span><i class="fa-solid fa-gears"></i> ⚙️ Settings</span>
                             </a>
-
                             <a class="admin-sidebar-item" style="color:#EF4444; border-top:1px solid var(--border); margin-top:8px; padding-top:10px;" onclick="handleAdminLogout()">
                                 <span><i class="fa-solid fa-arrow-right-from-bracket"></i> 🚪 Logout</span>
                             </a>
@@ -978,33 +1023,28 @@
                             
                             <!-- 1. 📊 ADMIN DASHBOARD -->
                             <div id="admin-tab-dashboard" class="admin-tab-view">
-                                
-                                <!-- 10 KPI Counters Grid -->
                                 <div class="seller-stats-grid" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); margin-bottom:18px;">
-                                    <div class="stat-card" onclick="switchAdminTab('users')" style="cursor:pointer;" title="View all users">
+                                    <div class="stat-card" onclick="switchAdminTab('users')" style="cursor:pointer;">
                                         <div class="stat-icon green"><i class="fa-solid fa-users"></i></div>
                                         <div>
                                             <div class="stat-value" id="kpiTotalUsers">0</div>
-                                            <div class="stat-label">Total Registered Users</div>
+                                            <div class="stat-label">Total Users</div>
                                         </div>
                                     </div>
-
-                                    <div class="stat-card" onclick="switchAdminTab('users'); filterAdminUsers('buyer');" style="cursor:pointer;">
+                                    <div class="stat-card" onclick="switchAdminTab('users'); handleFilterMembers('buyer');" style="cursor:pointer;">
                                         <div class="stat-icon indigo"><i class="fa-solid fa-bag-shopping"></i></div>
                                         <div>
                                             <div class="stat-value" id="kpiTotalBuyers">0</div>
                                             <div class="stat-label">Total Buyers</div>
                                         </div>
                                     </div>
-
-                                    <div class="stat-card" onclick="switchAdminTab('users'); filterAdminUsers('seller');" style="cursor:pointer;">
+                                    <div class="stat-card" onclick="switchAdminTab('users'); handleFilterMembers('seller');" style="cursor:pointer;">
                                         <div class="stat-icon green"><i class="fa-solid fa-store"></i></div>
                                         <div>
                                             <div class="stat-value" id="kpiTotalSellers">0</div>
                                             <div class="stat-label">Total Sellers</div>
                                         </div>
                                     </div>
-
                                     <div class="stat-card" onclick="switchAdminTab('products')" style="cursor:pointer;">
                                         <div class="stat-icon amber"><i class="fa-solid fa-boxes-stacked"></i></div>
                                         <div>
@@ -1012,7 +1052,6 @@
                                             <div class="stat-label">Total Products</div>
                                         </div>
                                     </div>
-
                                     <div class="stat-card" onclick="switchAdminTab('orders')" style="cursor:pointer;">
                                         <div class="stat-icon green"><i class="fa-solid fa-cart-flatbed"></i></div>
                                         <div>
@@ -1020,7 +1059,6 @@
                                             <div class="stat-label">Total Orders</div>
                                         </div>
                                     </div>
-
                                     <div class="stat-card" onclick="switchAdminTab('orders')" style="cursor:pointer;">
                                         <div class="stat-icon amber"><i class="fa-solid fa-clock"></i></div>
                                         <div>
@@ -1028,7 +1066,6 @@
                                             <div class="stat-label">Pending Orders</div>
                                         </div>
                                     </div>
-
                                     <div class="stat-card" onclick="switchAdminTab('orders')" style="cursor:pointer;">
                                         <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
                                         <div>
@@ -1036,15 +1073,13 @@
                                             <div class="stat-label">Completed Orders</div>
                                         </div>
                                     </div>
-
                                     <div class="stat-card" onclick="switchAdminTab('verification')" style="cursor:pointer;">
                                         <div class="stat-icon amber"><i class="fa-solid fa-id-card"></i></div>
                                         <div>
                                             <div class="stat-value" id="kpiPendingVerifications" style="color:#F59E0B;">0</div>
-                                            <div class="stat-label">Pending Seller Verifications</div>
+                                            <div class="stat-label">Pending Verifications</div>
                                         </div>
                                     </div>
-
                                     <div class="stat-card" onclick="switchAdminTab('sourcing')" style="cursor:pointer;">
                                         <div class="stat-icon indigo"><i class="fa-solid fa-handshake-angle"></i></div>
                                         <div>
@@ -1052,17 +1087,15 @@
                                             <div class="stat-label">Sourcing Requests</div>
                                         </div>
                                     </div>
-
                                     <div class="stat-card" onclick="switchAdminTab('complaints')" style="cursor:pointer;">
                                         <div class="stat-icon" style="background:#FEF2F2; color:#DC2626;"><i class="fa-solid fa-triangle-exclamation"></i></div>
                                         <div>
                                             <div class="stat-value" id="kpiReportedItems" style="color:#DC2626;">0</div>
-                                            <div class="stat-label">Reported Users/Products</div>
+                                            <div class="stat-label">Reports & Disputes</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Quick Actions Strip -->
                                 <div class="card" style="margin-bottom:18px; padding:16px 20px;">
                                     <div style="font-size:0.85rem; font-weight:800; color:var(--primary); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
                                         <i class="fa-solid fa-bolt" style="color:var(--gold);"></i> Administrative Shortcuts
@@ -1086,7 +1119,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Live Platform Activity Log -->
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                                         <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;">
@@ -1094,9 +1126,7 @@
                                         </h3>
                                         <span class="badge badge-verified"><i class="fa-solid fa-circle-dot"></i> Live</span>
                                     </div>
-                                    <div id="adminActivityLogList" style="display:flex; flex-direction:column; gap:10px;">
-                                        <!-- Loaded via JS -->
-                                    </div>
+                                    <div id="adminActivityLogList" style="display:flex; flex-direction:column; gap:10px;"></div>
                                 </div>
                             </div>
 
@@ -1109,74 +1139,60 @@
                                                 <i class="fa-solid fa-users" style="color:var(--brand-green);"></i> User Management (Buyers & Sellers)
                                             </h3>
                                             <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                                View all registered users, inspect details, approve/reject, or suspend/deactivate accounts.
+                                                View all registered accounts, inspect details, and activate or suspend accounts.
                                             </p>
                                         </div>
                                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                                            <input type="text" id="adminUserSearchInput" oninput="handleAdminMemberSearch(this.value)" placeholder="Search users by name, phone, email, city..." class="form-input" style="width:220px; font-size:0.8rem; padding:6px 12px;">
-                                            <button class="btn btn-sm btn-primary" onclick="openAdminAddBuyerModal()">
-                                                <i class="fa-solid fa-user-plus"></i> Add Buyer
-                                            </button>
-                                            <button class="btn btn-sm btn-success" onclick="openAdminAddSellerModal()">
-                                                <i class="fa-solid fa-store"></i> Add Seller
-                                            </button>
+                                            <input type="text" id="adminUserSearchInput" oninput="handleAdminMemberSearch(this.value)" placeholder="Search users..." class="form-input" style="width:200px; font-size:0.8rem; padding:6px 12px;">
+                                            <button class="btn btn-sm btn-primary" onclick="openAdminAddBuyerModal()"><i class="fa-solid fa-user-plus"></i> Add Buyer</button>
+                                            <button class="btn btn-sm btn-success" onclick="openAdminAddSellerModal()"><i class="fa-solid fa-store"></i> Add Seller</button>
                                         </div>
                                     </div>
-
-                                    <!-- User Filter Tabs -->
                                     <div style="display:flex; gap:6px; margin-bottom:14px;">
                                         <button class="hero-loc-pill active" onclick="handleFilterMembers('all', this)">All Users</button>
                                         <button class="hero-loc-pill" onclick="handleFilterMembers('buyer', this)">Buyers Only</button>
                                         <button class="hero-loc-pill" onclick="handleFilterMembers('seller', this)">Sellers Only</button>
                                     </div>
-
                                     <div class="admin-table-container">
                                         <table class="admin-table">
                                             <thead>
                                                 <tr>
-                                                    <th>User / Member Info</th>
+                                                    <th>User Info</th>
                                                     <th>Role</th>
-                                                    <th>Contact Details</th>
+                                                    <th>Contact</th>
                                                     <th>Location</th>
-                                                    <th>Account Status</th>
+                                                    <th>Status</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminMembersTableBody">
-                                                <!-- Populated via JS -->
-                                            </tbody>
+                                            <tbody id="adminMembersTableBody"></tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 3. 🏪 SELLER VERIFICATION PIPELINE -->
+                            <!-- 3. 🏪 SELLER VERIFICATION QUEUE -->
                             <div id="admin-tab-verification" class="admin-tab-view" style="display:none;">
                                 <div class="card">
-                                    <div style="margin-bottom:16px;">
-                                        <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                            <i class="fa-solid fa-shield-halved" style="color:var(--brand-green);"></i> Seller Verification Queue
-                                        </h3>
-                                        <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                            Review merchant KYC registrations, identity numbers, guarantor info, and grant or revoke verified badges.
-                                        </p>
-                                    </div>
-
+                                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin-bottom:4px;">
+                                        <i class="fa-solid fa-shield-halved" style="color:var(--brand-green);"></i> Seller Verification Queue
+                                    </h3>
+                                    <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:16px;">
+                                        Review merchant KYC registrations, identity numbers, and grant verified badges.
+                                    </p>
                                     <div class="admin-table-container">
                                         <table class="admin-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Seller / Store Name</th>
-                                                    <th>ID / NIN Number</th>
-                                                    <th>Guarantor / Kin Info</th>
-                                                    <th>Store Category & Location</th>
-                                                    <th>Verification Status</th>
-                                                    <th>Admin Action</th>
+                                                    <th>Seller / Store</th>
+                                                    <th>NIN / ID Number</th>
+                                                    <th>Guarantor</th>
+                                                    <th>Category & Location</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminVerificationTableBody">
-                                                <!-- Populated via JS -->
-                                            </tbody>
+                                            <tbody id="adminVerificationTableBody"></tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -1186,43 +1202,27 @@
                             <div id="admin-tab-products" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
-                                        <div>
-                                            <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                                <i class="fa-solid fa-boxes-stacked" style="color:var(--brand-green);"></i> Product Management & Moderation
-                                            </h3>
-                                            <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                                Review listings, approve/reject products, remove inappropriate items, and see which seller uploaded each good.
-                                            </p>
-                                        </div>
+                                        <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
+                                            <i class="fa-solid fa-boxes-stacked" style="color:var(--brand-green);"></i> Product Management & Moderation
+                                        </h3>
                                         <div style="display:flex; gap:8px;">
-                                            <button class="btn btn-sm btn-outline" onclick="openCategoryManagerModal()">
-                                                <i class="fa-solid fa-layer-group"></i> Manage Categories
-                                            </button>
-                                            <button class="btn btn-sm btn-primary" onclick="openAddProductModal()">
-                                                <i class="fa-solid fa-plus"></i> Post Product
-                                            </button>
+                                            <button class="btn btn-sm btn-outline" onclick="openCategoryManagerModal()"><i class="fa-solid fa-layer-group"></i> Manage Categories</button>
+                                            <button class="btn btn-sm btn-primary" onclick="openAddProductModal()"><i class="fa-solid fa-plus"></i> Post Product</button>
                                         </div>
                                     </div>
-
-                                    <div style="margin-bottom:12px;">
-                                        <input type="text" id="adminProductSearchInput" oninput="handleAdminProductSearch(this.value)" placeholder="Search products by title, seller, country..." class="form-input" style="max-width:300px; padding:6px 12px; font-size:0.8rem;">
-                                    </div>
-
                                     <div class="admin-table-container">
                                         <table class="admin-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Product / Good</th>
-                                                    <th>Seller Name & Phone</th>
+                                                    <th>Product</th>
+                                                    <th>Seller</th>
                                                     <th>Price</th>
-                                                    <th>Stock & Location</th>
+                                                    <th>Stock</th>
                                                     <th>Status</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminProductsTableBody">
-                                                <!-- Populated via JS -->
-                                            </tbody>
+                                            <tbody id="adminProductsTableBody"></tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -1232,14 +1232,9 @@
                             <div id="admin-tab-orders" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
-                                        <div>
-                                            <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                                <i class="fa-solid fa-box-open" style="color:var(--brand-green);"></i> Order Management Matrix
-                                            </h3>
-                                            <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                                Monitor and update orders across 6 stages (Pending, Confirmed, Processing, Shipped, Delivered, Cancelled) & handle disputes.
-                                            </p>
-                                        </div>
+                                        <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
+                                            <i class="fa-solid fa-box-open" style="color:var(--brand-green);"></i> Order Management Matrix
+                                        </h3>
                                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
                                             <button class="hero-loc-pill active" onclick="handleAdminFilterOrders('all', this)">All</button>
                                             <button class="hero-loc-pill" onclick="handleAdminFilterOrders('pending', this)">Pending</button>
@@ -1247,26 +1242,22 @@
                                             <button class="hero-loc-pill" onclick="handleAdminFilterOrders('processing', this)">Processing</button>
                                             <button class="hero-loc-pill" onclick="handleAdminFilterOrders('shipped', this)">Shipped</button>
                                             <button class="hero-loc-pill" onclick="handleAdminFilterOrders('delivered', this)">Delivered</button>
-                                            <button class="hero-loc-pill" onclick="handleAdminFilterOrders('cancelled', this)">Cancelled</button>
                                         </div>
                                     </div>
-
                                     <div class="admin-table-container">
                                         <table class="admin-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Order Number & Date</th>
-                                                    <th>Buyer Name & Phone</th>
+                                                    <th>Order #</th>
+                                                    <th>Buyer</th>
                                                     <th>Item & Qty</th>
-                                                    <th>Amount & Payment</th>
-                                                    <th>Seller / Merchant</th>
+                                                    <th>Total</th>
+                                                    <th>Seller</th>
                                                     <th>Status</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminOrdersTableBody">
-                                                <!-- Populated via JS -->
-                                            </tbody>
+                                            <tbody id="adminOrdersTableBody"></tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -1275,31 +1266,23 @@
                             <!-- 6. 🔍 SOURCING MANAGEMENT -->
                             <div id="admin-tab-sourcing" class="admin-tab-view" style="display:none;">
                                 <div class="card">
-                                    <div style="margin-bottom:14px;">
-                                        <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                            <i class="fa-solid fa-handshake-angle" style="color:var(--brand-green);"></i> Sourcing & Concierge Management Desk
-                                        </h3>
-                                        <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                            View buyer product requests, requested quantities, assign agents, and monitor supplier fulfillment.
-                                        </p>
-                                    </div>
-
+                                    <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin-bottom:14px;">
+                                        <i class="fa-solid fa-handshake-angle" style="color:var(--brand-green);"></i> Sourcing & Concierge Management Desk
+                                    </h3>
                                     <div class="admin-table-container">
                                         <table class="admin-table">
                                             <thead>
                                                 <tr>
                                                     <th>Tracking Code</th>
-                                                    <th>Buyer Customer</th>
-                                                    <th>Requested Item & Qty</th>
-                                                    <th>Target Market / City</th>
-                                                    <th>Assigned Agent & Supplier</th>
-                                                    <th>Progress Status</th>
-                                                    <th>Admin Action</th>
+                                                    <th>Customer</th>
+                                                    <th>Item & Qty</th>
+                                                    <th>Target City</th>
+                                                    <th>Assigned Agent</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminRequestsTableBody">
-                                                <!-- Populated via JS -->
-                                            </tbody>
+                                            <tbody id="adminRequestsTableBody"></tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -1309,34 +1292,24 @@
                             <div id="admin-tab-complaints" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                                        <div>
-                                            <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                                <i class="fa-solid fa-comments" style="color:#EF4444;"></i> Reports & Customer Complaints Desk
-                                            </h3>
-                                            <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                                Review complaints filed against sellers, buyers, fraudulent activities, order disputes, or inappropriate products.
-                                            </p>
-                                        </div>
-                                        <button class="btn btn-outline btn-sm" onclick="openReportComplaintModal()">
-                                            <i class="fa-solid fa-plus"></i> File New Ticket
-                                        </button>
+                                        <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
+                                            <i class="fa-solid fa-comments" style="color:#EF4444;"></i> Reports & Complaints Desk
+                                        </h3>
+                                        <button class="btn btn-outline btn-sm" onclick="openReportComplaintModal()"><i class="fa-solid fa-plus"></i> File Ticket</button>
                                     </div>
-
                                     <div class="admin-table-container">
                                         <table class="admin-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Ticket # & Type</th>
-                                                    <th>Reported By</th>
-                                                    <th>Target Entity</th>
-                                                    <th>Details / Complaint</th>
+                                                    <th>Ticket #</th>
+                                                    <th>Reporter</th>
+                                                    <th>Target</th>
+                                                    <th>Details</th>
                                                     <th>Status</th>
-                                                    <th>Take Action</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminComplaintsTableBody">
-                                                <!-- Populated via JS -->
-                                            </tbody>
+                                            <tbody id="adminComplaintsTableBody"></tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -1344,36 +1317,25 @@
 
                             <!-- 8. 📢 NOTIFICATIONS & BROADCASTS -->
                             <div id="admin-tab-notifications" class="admin-tab-view" style="display:none;">
-                                <div class="card" style="margin-bottom:18px;">
+                                <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                                        <div>
-                                            <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                                <i class="fa-solid fa-bullhorn" style="color:var(--brand-green);"></i> System Announcements & Broadcast Notifications
-                                            </h3>
-                                            <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                                Send announcements, maintenance notices, and platform updates to All Users, Buyers, Sellers, or Specific Users.
-                                            </p>
-                                        </div>
-                                        <button class="btn btn-primary btn-sm" onclick="openBroadcastModal()">
-                                            <i class="fa-solid fa-paper-plane"></i> Compose Broadcast
-                                        </button>
+                                        <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
+                                            <i class="fa-solid fa-bullhorn" style="color:var(--brand-green);"></i> System Announcements & Broadcasts
+                                        </h3>
+                                        <button class="btn btn-primary btn-sm" onclick="openBroadcastModal()"><i class="fa-solid fa-paper-plane"></i> Compose Broadcast</button>
                                     </div>
-
-                                    <!-- Recent Broadcasts Table -->
                                     <div class="admin-table-container">
                                         <table class="admin-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Title & Announcement</th>
-                                                    <th>Target Audience</th>
+                                                    <th>Title & Message</th>
+                                                    <th>Audience</th>
                                                     <th>Priority</th>
                                                     <th>Sent Date</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminAnnouncementsTableBody">
-                                                <!-- Populated via JS -->
-                                            </tbody>
+                                            <tbody id="adminAnnouncementsTableBody"></tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -1381,109 +1343,51 @@
 
                             <!-- 9. 📈 REPORTS & ANALYTICS -->
                             <div id="admin-tab-analytics" class="admin-tab-view" style="display:none;">
-                                <div class="card" style="margin-bottom:18px;">
+                                <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                                        <div>
-                                            <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                                <i class="fa-solid fa-chart-line" style="color:var(--brand-green);"></i> Platform Reports & Performance Analytics
-                                            </h3>
-                                            <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                                Real-time statistics on registered users, sellers, products, order fulfillment, and marketplace conversion.
-                                            </p>
-                                        </div>
-                                        <button class="btn btn-primary btn-sm" onclick="handleExportPlatformData()">
-                                            <i class="fa-solid fa-download"></i> Export Analytics Report
-                                        </button>
+                                        <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
+                                            <i class="fa-solid fa-chart-line" style="color:var(--brand-green);"></i> Platform Analytics & Insights
+                                        </h3>
+                                        <button class="btn btn-primary btn-sm" onclick="handleExportPlatformData()"><i class="fa-solid fa-download"></i> Export JSON</button>
                                     </div>
-
-                                    <div id="adminAnalyticsContainer">
-                                        <!-- Loaded dynamically via JS -->
-                                    </div>
+                                    <div id="adminAnalyticsContainer"></div>
                                 </div>
                             </div>
 
                             <!-- 10. ⚙️ WEBSITE SETTINGS -->
                             <div id="admin-tab-settings" class="admin-tab-view" style="display:none;">
-                                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px;">
-                                    
-                                    <!-- Security & Credentials -->
+                                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:18px;">
                                     <div class="card">
-                                        <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                                            <i class="fa-solid fa-key" style="color:var(--brand-green);"></i> 11. Admin Security & Credentials
-                                        </h3>
+                                        <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin-bottom:14px;">Admin Credentials</h3>
                                         <form id="adminSecurityForm" onsubmit="handleSaveAdminSecurity(event)">
                                             <div class="form-group">
-                                                <label class="form-label">Administrator Display Name</label>
+                                                <label class="form-label">Display Name</label>
                                                 <input type="text" id="adminSettingName" class="form-input" value="Amina Ahmed" required>
                                             </div>
                                             <div class="form-group">
-                                                <label class="form-label">Admin Support Phone / WhatsApp</label>
+                                                <label class="form-label">Phone / WhatsApp</label>
                                                 <input type="tel" id="adminSettingPhone" class="form-input" value="09090809080" required>
                                             </div>
                                             <div class="form-group">
-                                                <label class="form-label">New Admin Password</label>
+                                                <label class="form-label">Change Password</label>
                                                 <input type="password" id="adminSettingPassword" class="form-input" placeholder="Leave blank to keep admin123">
                                             </div>
-                                            <button type="submit" class="btn btn-primary btn-sm" style="width:100%; padding:10px;">
-                                                <i class="fa-solid fa-floppy-disk"></i> Save Admin Credentials
-                                            </button>
+                                            <button type="submit" class="btn btn-primary btn-sm" style="width:100%; padding:10px;">Save Credentials</button>
                                         </form>
                                     </div>
 
-                                    <!-- Platform Configuration -->
-                                    <div class="card">
-                                        <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                                            <i class="fa-solid fa-sliders" style="color:var(--gold);"></i> Marketplace Configurations
-                                        </h3>
-                                        <form id="adminMarketConfigForm" onsubmit="handleSaveMarketConfig(event)">
-                                            <div class="form-group">
-                                                <label class="form-label">Platform Name</label>
-                                                <input type="text" id="cfgSiteName" class="form-input" value="Market at Home — Buy & Sell Worldwide">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Support Email Address</label>
-                                                <input type="email" id="cfgSiteEmail" class="form-input" value="support@marketathome.com">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Seller Commission Rate (%)</label>
-                                                <input type="number" step="0.1" id="cfgCommissionRate" class="form-input" value="5.0">
-                                            </div>
-                                            <button type="submit" class="btn btn-primary btn-sm" style="width:100%; padding:10px;">
-                                                <i class="fa-solid fa-floppy-disk"></i> Save Configuration
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    <!-- Category Manager & Maintenance -->
                                     <div class="card" style="grid-column:1/-1;">
                                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                                            <div>
-                                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;">
-                                                    <i class="fa-solid fa-layer-group" style="color:var(--brand-green);"></i> Product Categories Management
-                                                </h3>
-                                                <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">Add, modify or remove product categories for the worldwide catalog.</p>
-                                            </div>
-                                            <button class="btn btn-primary btn-sm" onclick="openCategoryManagerModal()">
-                                                <i class="fa-solid fa-plus"></i> Add New Category
-                                            </button>
+                                            <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;">Product Categories</h3>
+                                            <button class="btn btn-primary btn-sm" onclick="openCategoryManagerModal()"><i class="fa-solid fa-plus"></i> Add Category</button>
                                         </div>
-                                        <div id="adminCategoriesList" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-                                            <!-- Loaded via JS -->
-                                        </div>
-
+                                        <div id="adminCategoriesList" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
                                         <hr style="border:none; border-top:1px solid var(--border); margin:16px 0;">
-
-                                        <h4 style="font-size:0.95rem; font-weight:800; color:var(--primary); margin-bottom:8px;">Database Maintenance & Backup</h4>
-                                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                            <button type="button" class="btn btn-outline btn-sm" onclick="handleExportPlatformData()">
-                                                <i class="fa-solid fa-download"></i> Download Full Platform Backup (JSON)
-                                            </button>
-                                            <button type="button" class="btn btn-outline btn-sm" style="color:#EF4444; border-color:#EF4444;" onclick="handleResetPlatformData()">
-                                                <i class="fa-solid fa-trash-arrow-up"></i> Reset to Default Seed Data
-                                            </button>
+                                        <div style="display:flex; gap:10px;">
+                                            <button type="button" class="btn btn-outline btn-sm" onclick="handleExportPlatformData()"><i class="fa-solid fa-download"></i> Backup JSON</button>
+                                            <button type="button" class="btn btn-outline btn-sm" style="color:#EF4444;" onclick="handleResetPlatformData()"><i class="fa-solid fa-trash-arrow-up"></i> Factory Reset</button>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
 
@@ -1491,239 +1395,195 @@
                     </div>
 
                 </div>
-
             </div>
         </div>
 
     </main>
 
-    <!-- ==========================================================================
-       WEBSITE FOOTER
-       ========================================================================== -->
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-grid">
-                
-                <!-- Col 1: About Platform -->
-                <div class="footer-brand">
-                    <h4><i class="fa-solid fa-house-laptop" style="color:var(--brand-green-light);"></i> MARKET AT HOME</h4>
-                    <p>
-                        A verified public online marketplace connecting buyers directly with authenticated sellers across Nigeria, China, USA, UK, UAE, and worldwide with full Escrow protection.
-                    </p>
-                    <div class="footer-socials">
-                        <a href="https://wa.me/2349090809080" target="_blank" class="footer-social-link" title="WhatsApp Developer / Support"><i class="fa-brands fa-whatsapp"></i></a>
-                        <a href="#" class="footer-social-link" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" class="footer-social-link" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    </div>
-                </div>
-
-                <!-- Col 2: Three Portals Navigation -->
-                <div class="footer-col">
-                    <h5>Portals & Navigation</h5>
-                    <ul class="footer-links">
-                        <li><a href="#" onclick="switchPage('buyer'); return false;">👤 Buyer Portal</a></li>
-                        <li><a href="#" onclick="switchPage('seller'); return false;">🏪 Seller Portal</a></li>
-                        <li><a href="#" onclick="switchPage('admin'); return false;">🛡️ Admin Portal</a></li>
-                        <li><a href="#" onclick="switchPage('marketplace'); return false;">🛍️ Browse Marketplace</a></li>
-                        <li><a href="#" onclick="switchPage('assistance'); return false;">🔍 Sourcing Concierge</a></li>
-                    </ul>
-                </div>
-
-                <!-- Col 3: Popular Categories -->
-                <div class="footer-col">
-                    <h5>Popular Categories</h5>
-                    <ul class="footer-links">
-                        <li><a href="#" onclick="searchFor('Ankara'); return false;">👗 Clothing & Ankara</a></li>
-                        <li><a href="#" onclick="searchFor('Wig'); return false;">💇 Wigs & Beauty</a></li>
-                        <li><a href="#" onclick="searchFor('Yam'); return false;">🌾 Agriculture & Produce</a></li>
-                        <li><a href="#" onclick="searchFor('iPhone'); return false;">📱 Phones & Gadgets</a></li>
-                    </ul>
-                </div>
-
-                <!-- Col 4: Trust & Support -->
-                <div class="footer-col">
-                    <h5>Safety & Developer</h5>
-                    <ul class="footer-links">
-                        <li><a href="#" onclick="openReportComplaintModal(); return false;"><i class="fa-solid fa-flag" style="color:#EF4444;"></i> File a Complaint</a></li>
-                        <li><a href="#" onclick="installPwaApp(); return false;" style="color:var(--brand-green); font-weight:700;"><i class="fa-solid fa-mobile-screen-button"></i> Install Mobile App</a></li>
-                        <li><a href="https://wa.me/2349090809080" target="_blank" style="color:#25D366; font-weight:700;"><i class="fa-brands fa-whatsapp"></i> Support: 09090809080</a></li>
-                    </ul>
-                </div>
-
-            </div>
-
-            <div class="footer-bottom">
-                <div>© 2026 Market at Home — Buy & Sell Worldwide. All rights reserved.</div>
-                <div>
-                    Developed with <i class="fa-solid fa-heart" style="color:#EF4444;"></i> by <strong>Amina Ahmed</strong> | 
-                    <a href="https://wa.me/2349090809080" target="_blank" style="color:#25D366; text-decoration:none; font-weight:700;">
-                        <i class="fa-brands fa-whatsapp"></i> 09090809080
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ==========================================================================
-       MODALS: FULL SET OF INTERACTIVE MARKETPLACE CONTROLS
-       ========================================================================== -->
-    
-    <!-- Modal 1: Product Details View -->
-    <div id="productDetailModal" class="modal-overlay">
-        <div class="modal-card modal-card-premium">
-            <div class="modal-header modal-header-modern">
-                <div class="modal-header-content">
-                    <div class="modal-badge-icon">
-                        <i class="fa-solid fa-store"></i>
-                    </div>
-                    <div class="modal-header-text">
-                        <div class="modal-title" id="detailModalTitle">Product Details</div>
-                        <p class="modal-subtitle">Verified Supplier Listing & Direct Purchase</p>
-                    </div>
-                </div>
-                <button class="modal-close-btn" onclick="closeModal('productDetailModal')" title="Close Modal">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="modal-body modal-body-styled">
-                <div id="detailModalContent">
-                    <!-- Populated via JS -->
-                </div>
-            </div>
-        </div>
+    <!-- 🤖 AI SHOPPING ASSISTANT FLOATING BOT TRIGGER -->
+    <div class="ai-bot-floating-trigger" id="marketAssistantTrigger" onclick="toggleMarketAssistant()">
+        <i class="fa-solid fa-robot" style="font-size:1.1rem;"></i>
+        <span>Market Assistant</span>
     </div>
 
-    <!-- Modal 2: Add / Edit Product Modal -->
-    <div id="addProductModal" class="modal-overlay">
-        <div class="modal-card modal-card-premium">
-            <div class="modal-header modal-header-modern">
-                <div class="modal-header-content">
-                    <div class="modal-badge-icon">
-                        <i class="fa-solid fa-bag-shopping"></i>
-                    </div>
-                    <div class="modal-header-text">
-                        <div class="modal-title" id="addProductModalTitle">Add New Good / Product</div>
-                        <p class="modal-subtitle">Publish your product to verified buyers worldwide</p>
-                    </div>
+    <!-- 🤖 AI SHOPPING ASSISTANT DRAWER WINDOW -->
+    <div class="ai-assistant-drawer" id="marketAssistantDrawer">
+        <div class="ai-chat-header">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:32px; height:32px; border-radius:50%; background:var(--brand-green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1rem;">
+                    <i class="fa-solid fa-robot"></i>
                 </div>
-                <button class="modal-close-btn" onclick="closeModal('addProductModal')" title="Close Modal">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <div>
+                    <strong style="font-size:0.9rem; color:#fff; display:block;">Market Assistant</strong>
+                    <small style="font-size:0.7rem; color:#34D399;"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> Online AI Concierge</small>
+                </div>
             </div>
-            <div class="modal-body modal-body-styled">
-                <form id="sellerProductForm" onsubmit="handleProductFormSubmit(event)">
-                    <input type="hidden" id="editProductId" value="">
+            <button onclick="toggleMarketAssistant()" style="background:none; border:none; color:#94A3B8; cursor:pointer; font-size:1rem;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
 
-                    <!-- Item Basic Info -->
-                    <div class="form-section-block">
-                        <div class="form-section-title">
-                            <i class="fa-solid fa-tag" style="color:var(--brand-green);"></i>
-                            <span>Product Information</span>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Product Name / Title <span class="req-star">*</span></label>
-                            <input type="text" id="sellerProdTitle" class="form-input" placeholder="e.g. Authentic Senegalese Kaftan / iPhone / Ankara" required>
-                        </div>
+        <div class="ai-chat-messages" id="aiChatMessagesList">
+            <div class="chat-bubble chat-bubble-ai">
+                👋 Hello! I'm your AI Shopping Assistant. Tell me what you're looking for (e.g. <em>"Gift for my sister under ₦30,000"</em> or <em>"Ankara in Abuja"</em>).
+            </div>
+        </div>
 
-                        <div class="form-row form-row-2col">
-                            <div class="form-group">
-                                <label class="form-label">Price (USD) <span class="req-star">*</span></label>
-                                <input type="number" step="any" id="sellerProdPrice" class="form-input" placeholder="e.g. 25.00" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Category <span class="req-star">*</span></label>
-                                <select id="sellerProdCategory" class="form-select" required></select>
-                            </div>
-                        </div>
-                    </div>
+        <form class="ai-chat-input-bar" onsubmit="handleAiChatSubmit(event)">
+            <input type="text" id="aiChatInput" class="form-input" placeholder="Ask Market Assistant..." style="font-size:0.8rem; padding:8px 12px;" required>
+            <button type="submit" class="btn btn-primary btn-sm" style="padding:8px 14px;"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+    </div>
 
-                    <!-- Seller Location Details -->
-                    <div class="form-section-block">
-                        <div class="form-section-title">
-                            <i class="fa-solid fa-earth-americas" style="color:var(--brand-green);"></i>
-                            <span>Seller & Location Details</span>
-                        </div>
-
-                        <div class="form-row form-row-2col">
-                            <div class="form-group">
-                                <label class="form-label">Seller / Store Name <span class="req-star">*</span></label>
-                                <input type="text" id="sellerProdSellerName" class="form-input" placeholder="e.g. Amina Luxury Ankara" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Country <span class="req-star">*</span></label>
-                                <select id="sellerProdCountry" class="form-select" required onchange="handleProductModalCountryChange(this.value)">
-                                    <option value="Nigeria" selected>🇳🇬 Nigeria</option>
-                                    <option value="United States">🇺🇸 United States</option>
-                                    <option value="United Kingdom">🇬🇧 United Kingdom</option>
-                                    <option value="Canada">🇨🇦 Canada</option>
-                                    <option value="Ghana">🇬🇭 Ghana</option>
-                                    <option value="United Arab Emirates">🇦🇪 UAE</option>
-                                    <option value="China">🇨🇳 China</option>
-                                    <option value="Kenya">🇰🇪 Kenya</option>
-                                    <option value="South Africa">🇿🇦 South Africa</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row form-row-2col">
-                            <div class="form-group">
-                                <label class="form-label">State / Region <span class="req-star">*</span></label>
-                                <select id="sellerProdStateSelect" class="form-select" onchange="syncSellerProdLocationInput(this.value)"></select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">City / Area <span class="req-star">*</span></label>
-                                <input type="text" id="sellerProdLocation" class="form-input" placeholder="e.g. Abuja (Wuse 2)" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">WhatsApp / Phone with Country Code <span class="req-star">*</span></label>
-                            <input type="tel" id="sellerProdPhone" class="form-input" placeholder="+234 803 456 7890" required>
-                        </div>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="form-section-block">
-                        <div class="form-section-title">
-                            <i class="fa-solid fa-align-left" style="color:var(--brand-green);"></i>
-                            <span>Description & Shipping</span>
-                        </div>
-                        <div class="form-group">
-                            <textarea id="sellerProdDesc" class="form-textarea" rows="3" placeholder="Describe quality, materials, sizes, and shipping terms..."></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Picture Upload -->
-                    <div class="form-section-block">
-                        <div class="form-section-title">
-                            <i class="fa-solid fa-camera" style="color:var(--brand-green);"></i>
-                            <span>Product Picture <span class="req-star">*</span></span>
-                        </div>
-                        
-                        <input type="file" id="sellerProdPhotoFileInput" accept="image/*" style="display:none;" onchange="handleProductImageImport(event)">
-                        <input type="hidden" id="sellerProdPhoto" value="https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80">
-
-                        <div id="sellerProdPhotoDropzone" class="photo-upload-dropzone-modern" onclick="document.getElementById('sellerProdPhotoFileInput').click()">
-                            <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.5rem; color:var(--brand-green);"></i>
-                            <strong style="display:block; margin:4px 0;">📸 Tap to Upload Photo</strong>
-                            <span style="font-size:0.75rem; color:var(--text-muted);">From gallery, camera, or files</span>
-                        </div>
-
-                        <div id="sellerProdPhotoPreviewCard" class="photo-preview-card-modern" style="display:flex; margin-top:10px;">
-                            <img id="sellerProdPhotoPreviewImg" src="https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80" alt="Preview" class="photo-preview-img-modern">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:1rem; font-weight:800; margin-top:10px;">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish Product
-                    </button>
+    <!-- 💬 IN-APP DIRECT SELLER CHAT MODAL -->
+    <div id="sellerChatModal" class="modal-overlay">
+        <div class="modal-card" style="max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-title" id="sellerChatTitle"><i class="fa-solid fa-comments" style="color:var(--brand-green);"></i> Chat with Merchant</div>
+                <button class="modal-close-btn" onclick="closeModal('sellerChatModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" style="padding:0;">
+                <div id="sellerChatBox" style="height:320px; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:8px; background:var(--bg-page);"></div>
+                <form id="sellerChatForm" onsubmit="handleSendSellerChatMessage(event)" style="display:flex; gap:6px; padding:10px 14px; border-top:1px solid var(--border); background:var(--bg-card);">
+                    <input type="hidden" id="chatSellerPhone">
+                    <input type="text" id="chatMessageInput" class="form-input" placeholder="Type a direct message to seller..." style="font-size:0.82rem;" required>
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-paper-plane"></i></button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal 3: Shopping Cart Modal / Drawer -->
+    <!-- WEBSITE FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h4><i class="fa-solid fa-house-laptop" style="color:var(--brand-green-light);"></i> MARKET AT HOME</h4>
+                    <p>Verified public online marketplace connecting buyers directly with authenticated sellers across Nigeria and worldwide.</p>
+                </div>
+                <div class="footer-col">
+                    <h5>Portals</h5>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="switchPage('buyer'); return false;">👤 Buyer Portal</a></li>
+                        <li><a href="#" onclick="switchPage('seller'); return false;">🏪 Seller Portal</a></li>
+                        <li><a href="#" onclick="switchPage('admin'); return false;">🛡️ Admin Portal</a></li>
+                        <li><a href="#" onclick="switchPage('marketplace'); return false;">🛍️ Browse Catalog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Popular Searches</h5>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="executeAiQuery('Ankara fabric in Abuja'); return false;">👗 Abuja Ankara</a></li>
+                        <li><a href="#" onclick="executeAiQuery('Wigs in Kano'); return false;">💇 Kano Wigs</a></li>
+                        <li><a href="#" onclick="executeAiQuery('Export Benue Yam'); return false;">🌾 Benue Yam Hub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Trust & Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="openReportComplaintModal(); return false;"><i class="fa-solid fa-flag" style="color:#EF4444;"></i> File a Complaint</a></li>
+                        <li><a href="https://wa.me/2349090809080" target="_blank" style="color:#25D366; font-weight:700;"><i class="fa-brands fa-whatsapp"></i> Support: 09090809080</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© 2026 Market at Home — Buy & Sell Worldwide.</div>
+                <div>Developed by <strong>Amina Ahmed</strong> | WhatsApp: 09090809080</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+    <!-- Product Details Modal with 360 & Video Tabs -->
+    <div id="productDetailModal" class="modal-overlay">
+        <div class="modal-card modal-card-premium">
+            <div class="modal-header modal-header-modern">
+                <div class="modal-header-content">
+                    <div class="modal-badge-icon"><i class="fa-solid fa-store"></i></div>
+                    <div class="modal-header-text">
+                        <div class="modal-title" id="detailModalTitle">Product Details</div>
+                        <p class="modal-subtitle">Verified Supplier Listing & Direct Purchase</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('productDetailModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body modal-body-styled">
+                <div id="detailModalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal-overlay">
+        <div class="modal-card modal-card-premium">
+            <div class="modal-header modal-header-modern">
+                <div class="modal-header-content">
+                    <div class="modal-badge-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+                    <div class="modal-header-text">
+                        <div class="modal-title" id="addProductModalTitle">Add New Good</div>
+                        <p class="modal-subtitle">Publish product to verified buyers worldwide</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('addProductModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body modal-body-styled">
+                <form id="sellerProductForm" onsubmit="handleProductFormSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label">Product Name / Title *</label>
+                        <input type="text" id="sellerProdTitle" class="form-input" required>
+                    </div>
+                    <div class="form-row form-row-2col">
+                        <div class="form-group">
+                            <label class="form-label">Price (USD) *</label>
+                            <input type="number" step="any" id="sellerProdPrice" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <select id="sellerProdCategory" class="form-select" required></select>
+                        </div>
+                    </div>
+                    <div class="form-row form-row-2col">
+                        <div class="form-group">
+                            <label class="form-label">Seller Store Name *</label>
+                            <input type="text" id="sellerProdSellerName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Country *</label>
+                            <select id="sellerProdCountry" class="form-select" required onchange="handleProductModalCountryChange(this.value)">
+                                <option value="Nigeria" selected>🇳🇬 Nigeria</option>
+                                <option value="United States">🇺🇸 United States</option>
+                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                <option value="China">🇨🇳 China</option>
+                                <option value="United Arab Emirates">🇦🇪 UAE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row form-row-2col">
+                        <div class="form-group">
+                            <label class="form-label">State *</label>
+                            <select id="sellerProdStateSelect" class="form-select" onchange="syncSellerProdLocationInput(this.value)"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City / Location *</label>
+                            <input type="text" id="sellerProdLocation" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">WhatsApp Phone *</label>
+                        <input type="tel" id="sellerProdPhone" class="form-input" placeholder="+234 803 000 0000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="sellerProdDesc" class="form-textarea" rows="2"></textarea>
+                    </div>
+                    <input type="file" id="sellerProdPhotoFileInput" accept="image/*" style="display:none;" onchange="handleProductImageImport(event)">
+                    <input type="hidden" id="sellerProdPhoto" value="https://images.unsplash.com/photo-1544441893-675973e31985?w=600">
+                    <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="document.getElementById('sellerProdPhotoFileInput').click()">📸 Upload Product Picture</button>
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Save & Publish Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Modal -->
     <div id="cartModal" class="modal-overlay">
         <div class="modal-card modal-card-premium" style="max-width:540px;">
             <div class="modal-header modal-header-modern">
@@ -1731,32 +1591,26 @@
                     <div class="modal-badge-icon"><i class="fa-solid fa-cart-shopping"></i></div>
                     <div class="modal-header-text">
                         <div class="modal-title">Shopping Cart</div>
-                        <p class="modal-subtitle">Review items before proceeding to checkout</p>
+                        <p class="modal-subtitle">Review items before checkout</p>
                     </div>
                 </div>
                 <button class="modal-close-btn" onclick="closeModal('cartModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
-                <div id="modalCartItemsList">
-                    <!-- Loaded via JS -->
-                </div>
-
+                <div id="modalCartItemsList"></div>
                 <div style="background:var(--bg-alt); padding:12px 14px; border-radius:var(--radius-md); margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-weight:700; color:var(--primary);">Subtotal:</span>
+                    <span style="font-weight:700;">Subtotal:</span>
                     <strong id="modalCartTotalDisplay" style="font-size:1.2rem; color:var(--brand-green);">$0.00</strong>
                 </div>
-
                 <div style="display:flex; gap:10px; margin-top:14px;">
                     <button class="btn btn-outline" style="flex:1;" onclick="closeModal('cartModal')">Continue Shopping</button>
-                    <button class="btn btn-primary" style="flex:2;" onclick="closeModal('cartModal'); switchPage('buyer'); switchBuyerTab('cart');">
-                        <i class="fa-solid fa-credit-card"></i> Proceed to Checkout
-                    </button>
+                    <button class="btn btn-primary" style="flex:2;" onclick="closeModal('cartModal'); switchPage('buyer'); switchBuyerTab('cart');">Proceed to Checkout</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal 4: User Authentication (Sign In & Register) -->
+    <!-- User Auth Modal -->
     <div id="userAuthModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -1765,287 +1619,211 @@
             </div>
             <div class="modal-body">
                 <div class="admin-nav-tabs" style="margin-bottom:16px;">
-                    <button class="admin-tab-btn active" id="authTabLoginBtn" onclick="switchAuthTab('login')">
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
-                    </button>
-                    <button class="admin-tab-btn" id="authTabRegisterBtn" onclick="switchAuthTab('register')">
-                        <i class="fa-solid fa-user-plus"></i> Create Account
-                    </button>
+                    <button class="admin-tab-btn active" id="authTabLoginBtn" onclick="switchAuthTab('login')">Sign In</button>
+                    <button class="admin-tab-btn" id="authTabRegisterBtn" onclick="switchAuthTab('register')">Create Account</button>
                 </div>
-
-                <!-- Sign In Form -->
                 <div id="authLoginFormView">
                     <form id="userLoginForm" onsubmit="handleUserLogin(event)">
                         <div class="form-group">
-                            <label class="form-label"><i class="fa-solid fa-phone"></i> Phone Number or Email *</label>
-                            <input type="text" id="loginPhoneEmail" class="form-input" placeholder="e.g. 08023456789 or ahmed@example.com" required>
+                            <label class="form-label">Phone or Email *</label>
+                            <input type="text" id="loginPhoneEmail" class="form-input" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label"><i class="fa-solid fa-lock"></i> Password *</label>
-                            <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" required>
+                            <label class="form-label">Password *</label>
+                            <input type="password" id="loginPassword" class="form-input" required>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Account
-                        </button>
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Sign In</button>
                     </form>
                 </div>
-
-                <!-- Create Account Form -->
                 <div id="authRegisterFormView" style="display:none;">
                     <form id="userRegisterForm" onsubmit="handleUserRegister(event)">
                         <div class="form-group">
                             <label class="form-label">Join as: *</label>
                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                                 <label id="roleBuyerLabel" style="border:2px solid var(--brand-green); background:var(--brand-green-soft); padding:8px; border-radius:var(--radius-md); cursor:pointer; text-align:center; font-size:0.82rem; font-weight:800;">
-                                    <input type="radio" name="authRole" value="buyer" checked onchange="toggleAuthRole(this.value)" style="display:none;">
-                                    🛍️ Buyer
+                                    <input type="radio" name="authRole" value="buyer" checked onchange="toggleAuthRole(this.value)" style="display:none;"> 🛍️ Buyer
                                 </label>
                                 <label id="roleSellerLabel" style="border:2px solid var(--border); background:var(--bg-alt); padding:8px; border-radius:var(--radius-md); cursor:pointer; text-align:center; font-size:0.82rem; font-weight:800;">
-                                    <input type="radio" name="authRole" value="seller" onchange="toggleAuthRole(this.value)" style="display:none;">
-                                    🏪 Seller
+                                    <input type="radio" name="authRole" value="seller" onchange="toggleAuthRole(this.value)" style="display:none;"> 🏪 Seller
                                 </label>
                             </div>
                         </div>
-
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Full Name *</label>
-                                <input type="text" id="regFullName" class="form-input" placeholder="e.g. Amina Bello" required>
+                                <input type="text" id="regFullName" class="form-input" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Phone / WhatsApp *</label>
-                                <input type="tel" id="regPhone" class="form-input" placeholder="+234 803 000 0000" required>
+                                <label class="form-label">Phone *</label>
+                                <input type="tel" id="regPhone" class="form-input" required>
                             </div>
                         </div>
-
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Email Address *</label>
-                                <input type="email" id="regEmail" class="form-input" placeholder="you@example.com" required>
+                                <label class="form-label">Email *</label>
+                                <input type="email" id="regEmail" class="form-input" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">City / State *</label>
-                                <input type="text" id="regLocation" class="form-input" placeholder="e.g. Abuja / Kano" required>
+                                <input type="text" id="regLocation" class="form-input" required>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label">Password *</label>
-                            <input type="password" id="regPassword" class="form-input" placeholder="Create password" required>
+                            <input type="password" id="regPassword" class="form-input" required>
                         </div>
-
-                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                            <i class="fa-solid fa-user-check"></i> Complete Registration
-                        </button>
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Complete Registration</button>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- Modal 5: Report Problem & File Complaint Modal -->
+    <!-- Report Problem Modal -->
     <div id="reportComplaintModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
-                <div class="modal-title"><i class="fa-solid fa-flag" style="color:#EF4444;"></i> File a Report or Complaint</div>
+                <div class="modal-title"><i class="fa-solid fa-flag" style="color:#EF4444;"></i> File a Complaint</div>
                 <button class="modal-close-btn" onclick="closeModal('reportComplaintModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <form id="reportComplaintForm" onsubmit="handleSubmitComplaint(event)">
                     <div class="form-group">
-                        <label class="form-label">Problem Category *</label>
+                        <label class="form-label">Category *</label>
                         <select id="complaintType" class="form-select" required>
                             <option value="seller_issue">Problem with a Seller</option>
                             <option value="buyer_issue">Problem with a Buyer</option>
-                            <option value="inappropriate_product">Inappropriate or Prohibited Product</option>
-                            <option value="order_dispute">Order Delivery or Payment Problem</option>
-                            <option value="fraud">Fraudulent Activity or Scam Attempt</option>
-                            <option value="other">Other Marketplace Complaint</option>
+                            <option value="inappropriate_product">Inappropriate Product</option>
+                            <option value="order_dispute">Order Dispute</option>
+                            <option value="fraud">Fraudulent Activity</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Subject / Title *</label>
-                        <input type="text" id="complaintSubject" class="form-input" placeholder="e.g. Seller did not deliver agreed items" required>
+                        <label class="form-label">Subject *</label>
+                        <input type="text" id="complaintSubject" class="form-input" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Target Seller / Buyer / Product Name (if known)</label>
-                        <input type="text" id="complaintTarget" class="form-input" placeholder="e.g. Amina Store / Order ORD-849201">
+                        <label class="form-label">Details *</label>
+                        <textarea id="complaintDetails" class="form-textarea" rows="3" required></textarea>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Detailed Description of Problem *</label>
-                        <textarea id="complaintDetails" class="form-textarea" rows="3" placeholder="Provide full details, order numbers, dates..." required></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Your Name *</label>
-                            <input type="text" id="complaintReporterName" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Your Phone / WhatsApp *</label>
-                            <input type="tel" id="complaintReporterPhone" class="form-input" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                        <i class="fa-solid fa-paper-plane"></i> Submit Report to Moderation Desk
-                    </button>
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Submit Report</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal 6: Admin Broadcast Composer Modal -->
+    <!-- Admin Broadcast Modal -->
     <div id="adminBroadcastModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
-                <div class="modal-title"><i class="fa-solid fa-bullhorn" style="color:var(--brand-green);"></i> Send Broadcast Notification</div>
+                <div class="modal-title"><i class="fa-solid fa-bullhorn" style="color:var(--brand-green);"></i> Send Broadcast</div>
                 <button class="modal-close-btn" onclick="closeModal('adminBroadcastModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <form id="adminBroadcastForm" onsubmit="handleSendBroadcast(event)">
                     <div class="form-group">
-                        <label class="form-label">Target Audience *</label>
+                        <label class="form-label">Audience *</label>
                         <select id="broadcastTarget" class="form-select">
-                            <option value="all">📢 All Users (Entire Marketplace)</option>
-                            <option value="buyers">🛍️ All Buyers</option>
-                            <option value="sellers">🏪 All Sellers</option>
+                            <option value="all">All Users</option>
+                            <option value="buyers">Buyers Only</option>
+                            <option value="sellers">Sellers Only</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Announcement Title *</label>
-                        <input type="text" id="broadcastTitle" class="form-input" placeholder="e.g. Weekend Flash Sourcing Discount" required>
+                        <label class="form-label">Title *</label>
+                        <input type="text" id="broadcastTitle" class="form-input" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Announcement Message *</label>
-                        <textarea id="broadcastMessage" class="form-textarea" rows="3" placeholder="Enter message text that will be broadcasted live..." required></textarea>
+                        <label class="form-label">Message *</label>
+                        <textarea id="broadcastMessage" class="form-textarea" rows="3" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                        <i class="fa-solid fa-paper-plane"></i> Send Broadcast Announcement Live
-                    </button>
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Send Broadcast Live</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal 7: Admin Category Manager Modal -->
+    <!-- Admin Category Modal -->
     <div id="adminCategoryModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
-                <div class="modal-title"><i class="fa-solid fa-layer-group" style="color:var(--brand-green);"></i> Add New Category</div>
+                <div class="modal-title"><i class="fa-solid fa-layer-group" style="color:var(--brand-green);"></i> Add Category</div>
                 <button class="modal-close-btn" onclick="closeModal('adminCategoryModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <form id="adminCategoryForm" onsubmit="handleAddCategory(event)">
                     <div class="form-group">
                         <label class="form-label">Category Name *</label>
-                        <input type="text" id="newCategoryName" class="form-input" placeholder="e.g. Solar & Clean Energy" required>
+                        <input type="text" id="newCategoryName" class="form-input" required>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Category Description</label>
-                        <input type="text" id="newCategoryDesc" class="form-input" placeholder="Brief description of items">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">FontAwesome Icon Class</label>
-                        <input type="text" id="newCategoryIcon" class="form-input" value="fa-solar-panel" placeholder="fa-tag">
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                        <i class="fa-solid fa-plus"></i> Add Category to Marketplace
-                    </button>
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Add Category</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal 8: Admin Add Seller Modal -->
+    <!-- Admin Add Seller Modal -->
     <div id="adminAddSellerModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
-                <div class="modal-title"><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Add New Verified Seller</div>
+                <div class="modal-title"><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Add Verified Seller</div>
                 <button class="modal-close-btn" onclick="closeModal('adminAddSellerModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <form id="adminAddSellerForm" onsubmit="handleAdminAddSeller(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Full Name *</label>
-                            <input type="text" id="adminSellerFullName" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Phone / WhatsApp *</label>
-                            <input type="tel" id="adminSellerPhone" class="form-input" required>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" id="adminSellerFullName" class="form-input" required>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Store Name *</label>
-                            <input type="text" id="adminSellerStoreName" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">City / Location *</label>
-                            <input type="text" id="adminSellerLocation" class="form-input" required>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone *</label>
+                        <input type="tel" id="adminSellerPhone" class="form-input" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                        <i class="fa-solid fa-user-plus"></i> Register Seller
-                    </button>
+                    <div class="form-group">
+                        <label class="form-label">Store Name *</label>
+                        <input type="text" id="adminSellerStoreName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location *</label>
+                        <input type="text" id="adminSellerLocation" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Register Seller</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal 9: Admin Add Buyer Modal -->
+    <!-- Admin Add Buyer Modal -->
     <div id="adminAddBuyerModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
-                <div class="modal-title"><i class="fa-solid fa-user-plus" style="color:var(--brand-green);"></i> Add New Buyer</div>
+                <div class="modal-title"><i class="fa-solid fa-user-plus" style="color:var(--brand-green);"></i> Add Buyer</div>
                 <button class="modal-close-btn" onclick="closeModal('adminAddBuyerModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <form id="adminAddBuyerForm" onsubmit="handleAdminAddBuyer(event)">
                     <div class="form-group">
-                        <label class="form-label">Buyer Full Name *</label>
+                        <label class="form-label">Full Name *</label>
                         <input type="text" id="adminBuyerFullName" class="form-input" required>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Phone / WhatsApp *</label>
-                            <input type="tel" id="adminBuyerPhone" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">City / Location *</label>
-                            <input type="text" id="adminBuyerLocation" class="form-input" required>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone *</label>
+                        <input type="tel" id="adminBuyerPhone" class="form-input" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
-                        <i class="fa-solid fa-user-check"></i> Register Buyer
-                    </button>
+                    <div class="form-group">
+                        <label class="form-label">City *</label>
+                        <input type="text" id="adminBuyerLocation" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Register Buyer</button>
                 </form>
             </div>
-        </div>
-    </div>
-
-    <!-- PWA Smart Install Prompt -->
-    <div id="pwaFloatingPrompt" class="pwa-floating-card" style="display:none;">
-        <button class="pwa-floating-close" onclick="dismissPwaPrompt()"><i class="fa-solid fa-xmark"></i></button>
-        <div class="pwa-floating-content">
-            <div class="pwa-floating-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-            <div class="pwa-floating-text">
-                <div class="pwa-floating-title">Install Market at Home App</div>
-                <div class="pwa-floating-desc">Fast browsing, instant access & offline catalog.</div>
-            </div>
-        </div>
-        <div class="pwa-floating-actions">
-            <button class="btn-pwa-dismiss" onclick="dismissPwaPrompt()">Not Now</button>
-            <button class="btn-pwa-install" onclick="installPwaApp()">Install App</button>
         </div>
     </div>
 
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- ==========================================================================
-       BOTTOM DOCK NAVIGATION BAR (MOBILE APP)
-       ========================================================================== -->
+    <!-- Bottom Dock Navigation Bar -->
     <nav class="bottom-nav">
         <a class="bottom-nav-item active" data-page="home" onclick="switchPage('home')">
             <i class="fa-solid fa-house"></i>
@@ -2069,8 +1847,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with cache busting v=3.2 -->
-    <script src="assets/js/api.js?v=3.2"></script>
-    <script src="assets/js/app.js?v=3.2"></script>
+    <!-- Scripts with v=4.0 cache bust -->
+    <script src="assets/js/api.js?v=4.0"></script>
+    <script src="assets/js/app.js?v=4.0"></script>
 </body>
 </html>

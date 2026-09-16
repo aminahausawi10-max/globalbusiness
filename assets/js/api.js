@@ -889,6 +889,162 @@ const API = {
         return results;
     },
 
+    
+    // ==========================================
+    // 12. NATURAL LANGUAGE AI SEARCH PARSER
+    // ==========================================
+    parseNaturalLanguageQuery(query) {
+        if (!query) return {};
+        const q = query.toLowerCase().trim();
+        const parsed = {
+            raw: query,
+            keyword: '',
+            category_id: null,
+            category_name: null,
+            max_price: null,
+            location: null,
+            state: null,
+            color: null,
+            intent: null
+        };
+
+        // 1. Detect Maximum Budget / Price (e.g. "under 50000", "under ₦50,000", "below 30k", "under $50")
+        const priceMatch = q.match(/(?:under|below|less than|max|budget(?: of)?|within)\s*(?:₦|\$|usd|ngn)?\s*([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?k?)/i);
+        if (priceMatch && priceMatch[1]) {
+            let numStr = priceMatch[1].replace(/,/g, '');
+            let val = 0;
+            if (numStr.endsWith('k') || numStr.endsWith('K')) {
+                val = parseFloat(numStr.slice(0, -1)) * 1000;
+            } else {
+                val = parseFloat(numStr);
+            }
+            
+            // If the user typed in NGN (> 500), convert to approximate USD base ($1 = 1550 NGN)
+            if (val > 500) {
+                parsed.max_price = val / 1550.0;
+            } else {
+                parsed.max_price = val;
+            }
+        }
+
+        // 2. Detect Locations
+        const locations = ['abuja', 'kano', 'kaduna', 'lagos', 'port harcourt', 'dubai', 'london', 'guangzhou', 'texas', 'california', 'accra', 'nairobi', 'riyadh'];
+        for (const loc of locations) {
+            if (q.includes(loc)) {
+                parsed.location = loc;
+                parsed.state = loc;
+                break;
+            }
+        }
+
+        // 3. Detect Categories
+        if (q.includes('shoe') || q.includes('bag') || q.includes('handbag') || q.includes('heel')) {
+            parsed.category_id = 4;
+            parsed.category_name = 'Shoes & Bags';
+        } else if (q.includes('ankara') || q.includes('cloth') || q.includes('fabric') || q.includes('fashion') || q.includes('dress') || q.includes('kaftan') || q.includes('shirt')) {
+            parsed.category_id = 2;
+            parsed.category_name = 'Clothing & Fashion';
+        } else if (q.includes('wig') || q.includes('hair') || q.includes('beauty') || q.includes('bone straight') || q.includes('lace') || q.includes('frontal')) {
+            parsed.category_id = 3;
+            parsed.category_name = 'Wigs & Beauty';
+        } else if (q.includes('yam') || q.includes('food') || q.includes('grain') || q.includes('produce') || q.includes('agro') || q.includes('coffee')) {
+            parsed.category_id = 10;
+            parsed.category_name = 'Agriculture & Produce';
+        } else if (q.includes('phone') || q.includes('iphone') || q.includes('samsung') || q.includes('mobile')) {
+            parsed.category_id = 7;
+            parsed.category_name = 'Mobile Phones';
+        } else if (q.includes('watch') || q.includes('smartwatch') || q.includes('gadget') || q.includes('electronics') || q.includes('tv')) {
+            parsed.category_id = 6;
+            parsed.category_name = 'Electronics & Gadgets';
+        } else if (q.includes('scooter') || q.includes('car') || q.includes('auto') || q.includes('vehicle')) {
+            parsed.category_id = 9;
+            parsed.category_name = 'Car Sales & Auto';
+        }
+
+        // 4. Detect Colors
+        const colors = ['black', 'blue', 'white', 'red', 'gold', 'green', 'pink', 'silver', 'titanium'];
+        for (const c of colors) {
+            if (q.includes(c)) {
+                parsed.color = c;
+                break;
+            }
+        }
+
+        // 5. Detect Intent
+        if (q.includes('wedding')) parsed.intent = 'wedding';
+        else if (q.includes('gift') || q.includes('sister') || q.includes('brother') || q.includes('mom')) parsed.intent = 'gift';
+        else if (q.includes('wholesale') || q.includes('bulk')) parsed.intent = 'wholesale';
+        else if (q.includes('export')) parsed.intent = 'export';
+
+        return parsed;
+    },
+
+    // ==========================================
+    // 13. AI ASSISTANT CONVERSATION ENGINE
+    // ==========================================
+    async aiAssistantChat(userMessage) {
+        this.initLocalData();
+        const parsed = this.parseNaturalLanguageQuery(userMessage);
+        const msg = userMessage.toLowerCase();
+        let products = await this.getProducts();
+
+        let reply = "";
+        let recommendedProducts = [];
+
+        if (parsed.category_id) {
+            products = products.filter(p => p.category_id == parsed.category_id);
+        }
+        if (parsed.location) {
+            products = products.filter(p => p.city && p.city.toLowerCase().includes(parsed.location));
+        }
+        if (parsed.max_price) {
+            products = products.filter(p => p.price <= parsed.max_price);
+        }
+
+        if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
+            reply = "Hello! 👋 I'm your Market Assistant. Tell me what you're looking for, your budget, or target location (e.g. 'I need premium Ankara under ₦20,000 in Abuja' or 'Wigs in Kano').";
+        } else if (msg.includes('gift') || msg.includes('sister') || msg.includes('birthday')) {
+            reply = "That's lovely! 🎁 Here are verified premium gift selections including Luxury Human Hair Wigs, AMOLED Smartwatches, and Authentic Ankara Fabrics:";
+            recommendedProducts = products.slice(0, 3);
+        } else if (products.length > 0) {
+            reply = `Found ${products.length} matching goods on Market at Home${parsed.category_name ? ' in ' + parsed.category_name : ''}${parsed.location ? ' from ' + parsed.location : ''}${parsed.max_price ? ' within your budget' : ''}:`;
+            recommendedProducts = products.slice(0, 3);
+        } else {
+            reply = "I couldn't find an exact listing matching all those criteria, but our **Sourcing Concierge** can physically find, inspect, and negotiate it for you in Kano, Abuja, or Guangzhou!";
+            recommendedProducts = (await this.getProducts()).slice(0, 2);
+        }
+
+        return {
+            reply: reply,
+            products: recommendedProducts,
+            parsed: parsed
+        };
+    },
+
+    // In-App Chat Messages
+    getChatMessages(sellerPhone) {
+        try {
+            const raw = localStorage.getItem('globalbiz_chat_' + sellerPhone) || '[]';
+            return JSON.parse(raw);
+        } catch (e) {
+            return [];
+        }
+    },
+
+    sendChatMessage(sellerPhone, message, sender = 'buyer', productRef = null) {
+        const list = this.getChatMessages(sellerPhone);
+        const newMsg = {
+            id: Date.now(),
+            text: message,
+            sender: sender,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            productRef: productRef
+        };
+        list.push(newMsg);
+        localStorage.setItem('globalbiz_chat_' + sellerPhone, JSON.stringify(list));
+        return newMsg;
+    },
+
     siteSettings: {
         site_name: 'Market at Home — Buy & Sell Worldwide',
         support_phone: '09090809080',
