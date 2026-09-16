@@ -333,11 +333,13 @@ const API = {
             const newReq = {
                 id: Date.now(),
                 tracking_code: 'PBA-' + Math.floor(10000 + Math.random() * 90000),
-                status: 'New',
-                assigned_agent: 'Assigned to Senior Sourcing Desk',
+                status: 'Sourcing Active',
+                assigned_agent: 'Senior Sourcing Desk',
+                created_at: new Date().toISOString().split('T')[0],
                 ...payload
             };
             this.fallbackBuyingRequests.unshift(newReq);
+            this.saveLocalData('requests', this.fallbackBuyingRequests);
             return {
                 status: 'success',
                 id: newReq.id,
@@ -348,6 +350,7 @@ const API = {
     },
 
     async getBuyingRequests() {
+        this.initLocalData();
         try {
             const res = await fetch(`${this.baseUrl}/buying_assistance.php`);
             if (res.ok) {
@@ -355,9 +358,28 @@ const API = {
                 return data.data || [];
             }
         } catch (e) {
-            console.warn('Backend offline');
+            // fallback
         }
         return this.fallbackBuyingRequests;
+    },
+
+    async getBuyerOrders(user) {
+        const allRequests = await this.getBuyingRequests();
+        if (!user) return [];
+        const userPhoneClean = (user.phone || '').replace(/[^0-9]/g, '');
+        const userNameClean = (user.full_name || '').toLowerCase().trim();
+
+        return allRequests.filter(r => {
+            const rPhoneClean = (r.customer_phone || '').replace(/[^0-9]/g, '');
+            const rNameClean = (r.customer_name || '').toLowerCase().trim();
+            if (userPhoneClean && rPhoneClean && (userPhoneClean === rPhoneClean || rPhoneClean.endsWith(userPhoneClean) || userPhoneClean.endsWith(rPhoneClean))) {
+                return true;
+            }
+            if (userNameClean && rNameClean && (userNameClean === rNameClean || rNameClean.includes(userNameClean) || userNameClean.includes(rNameClean))) {
+                return true;
+            }
+            return false;
+        });
     },
 
     async getAdminData(action = 'overview') {
@@ -539,6 +561,10 @@ const API = {
                     }
                 }
                 localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+
+                const r = localStorage.getItem('globalbiz_requests_store');
+                if (r) this.fallbackBuyingRequests = JSON.parse(r);
+                else localStorage.setItem('globalbiz_requests_store', JSON.stringify(this.fallbackBuyingRequests));
             } catch (e) {
                 console.warn('Local storage sync notice', e);
             }
@@ -552,6 +578,7 @@ const API = {
             if (type === 'buyers') localStorage.setItem('globalbiz_buyers_store', JSON.stringify(data));
             if (type === 'products') localStorage.setItem('globalbiz_products_store', JSON.stringify(data));
             if (type === 'businesses') localStorage.setItem('globalbiz_biz_store', JSON.stringify(data));
+            if (type === 'requests') localStorage.setItem('globalbiz_requests_store', JSON.stringify(data));
         } catch (e) {}
     },
 

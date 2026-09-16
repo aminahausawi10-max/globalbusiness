@@ -152,6 +152,7 @@ async function initApp() {
     await loadMarketplaceProducts();
     await loadFeaturedBusinesses();
     await loadSellerDashboard();
+    await loadBuyerDashboard();
     await loadAdminPortal();
 }
 
@@ -171,10 +172,27 @@ function requireAuth(actionName = 'perform this action') {
     return true;
 }
 
+function handleNavPortalClick() {
+    if (isAdminAuthenticated()) {
+        switchPage('admin');
+    } else {
+        const user = getCurrentUser();
+        if (!user) {
+            requireAuth('access your dashboard portal');
+            return;
+        }
+        if (user.role === 'buyer') {
+            switchPage('buyer');
+        } else {
+            switchPage('seller');
+        }
+    }
+}
+
 function switchPage(pageName) {
     // Route guards
-    if (pageName === 'seller' && !isAuthenticated()) {
-        requireAuth('access the Seller Hub & manage products');
+    if ((pageName === 'seller' || pageName === 'buyer') && !isAuthenticated()) {
+        requireAuth(`access the ${pageName === 'buyer' ? 'Buyer' : 'Seller'} Portal`);
         return;
     }
 
@@ -194,9 +212,11 @@ function switchPage(pageName) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (pageName === 'marketplace') {
-        renderMarketplacePage();
+        loadMarketplaceProducts();
     } else if (pageName === 'seller') {
         loadSellerDashboard();
+    } else if (pageName === 'buyer') {
+        loadBuyerDashboard();
     } else if (pageName === 'admin') {
         loadAdminPortal();
     }
@@ -230,6 +250,10 @@ function updateNavAuthUI() {
     const dropNameEl = document.getElementById('dropdownUserFullName');
     const dropPhoneEl = document.getElementById('dropdownUserPhone');
     const guestBanner = document.getElementById('guestNoticeBanner');
+    const navPortalText = document.getElementById('navPortalText');
+    const navPortalLink = document.getElementById('navPortalLink');
+    const bottomDockPortalText = document.getElementById('bottomDockPortalText');
+    const bottomDockPortalIcon = document.getElementById('bottomDockPortalIcon');
 
     if (isAdmin) {
         if (guestNav) guestNav.style.display = 'none';
@@ -242,22 +266,38 @@ function updateNavAuthUI() {
         }
         if (dropNameEl) dropNameEl.innerText = 'Amina Ahmed (Admin)';
         if (dropPhoneEl) dropPhoneEl.innerText = 'WhatsApp: 09090809080';
+
+        if (navPortalText) navPortalText.innerText = 'Admin Desk';
+        if (navPortalLink) navPortalLink.setAttribute('data-page', 'admin');
+        if (bottomDockPortalText) bottomDockPortalText.innerText = 'Admin';
+        if (bottomDockPortalIcon) bottomDockPortalIcon.className = 'fa-solid fa-shield-halved';
     } else if (user && user.full_name) {
         if (guestNav) guestNav.style.display = 'none';
         if (userNav) userNav.style.display = 'inline-block';
         if (guestBanner) guestBanner.style.display = 'none';
-        const roleLabel = user.role === 'seller' ? ' (Seller)' : ' (Buyer)';
+        const isSeller = user.role === 'seller';
+        const roleLabel = isSeller ? ' (Seller)' : ' (Buyer)';
         if (userNameEl) userNameEl.innerText = user.full_name.split(' ')[0] + roleLabel;
         if (roleBadgeEl) {
-            roleBadgeEl.innerText = user.role === 'seller' ? 'VERIFIED SELLER' : 'BUYER';
-            roleBadgeEl.className = user.role === 'seller' ? 'badge badge-verified' : 'badge badge-warning';
+            roleBadgeEl.innerText = isSeller ? 'VERIFIED SELLER' : 'VERIFIED BUYER';
+            roleBadgeEl.className = isSeller ? 'badge badge-verified' : 'badge badge-warning';
         }
         if (dropNameEl) dropNameEl.innerText = user.full_name;
         if (dropPhoneEl) dropPhoneEl.innerText = user.phone || 'Verified User';
+
+        if (navPortalText) navPortalText.innerText = isSeller ? 'Seller Portal' : 'Buyer Portal';
+        if (navPortalLink) navPortalLink.setAttribute('data-page', isSeller ? 'seller' : 'buyer');
+        if (bottomDockPortalText) bottomDockPortalText.innerText = isSeller ? 'Seller Hub' : 'Buyer Hub';
+        if (bottomDockPortalIcon) bottomDockPortalIcon.className = isSeller ? 'fa-solid fa-store' : 'fa-solid fa-bag-shopping';
     } else {
         if (guestNav) guestNav.style.display = 'block';
         if (userNav) userNav.style.display = 'none';
         if (guestBanner) guestBanner.style.display = 'block';
+
+        if (navPortalText) navPortalText.innerText = 'Portal';
+        if (navPortalLink) navPortalLink.setAttribute('data-page', 'seller');
+        if (bottomDockPortalText) bottomDockPortalText.innerText = 'Portal';
+        if (bottomDockPortalIcon) bottomDockPortalIcon.className = 'fa-solid fa-gauge-high';
     }
 }
 
@@ -303,7 +343,9 @@ function handleDropdownPortal() {
         switchPage('admin');
     } else {
         const user = getCurrentUser();
-        if (user && user.role === 'seller') {
+        if (user && user.role === 'buyer') {
+            switchPage('buyer');
+        } else if (user && user.role === 'seller') {
             switchPage('seller');
         } else {
             switchPage('marketplace');
@@ -946,6 +988,178 @@ async function handleDeleteProduct(productId) {
 }
 
 /* ==========================================================================
+   BUYER PORTAL & ACTIVITY HUB
+   ========================================================================== */
+async function loadBuyerDashboard() {
+    const user = getCurrentUser() || (isAdminAuthenticated() ? { full_name: 'Admin (Buyer View)', phone: '09090809080', location: 'Abuja', country: 'Nigeria', role: 'buyer', id: 201 } : null);
+
+    if (!user) return;
+
+    // 1. Populate Profile Information
+    const avatarEl = document.getElementById('buyerAvatarCircle');
+    const nameEl = document.getElementById('buyerDisplayName');
+    const phoneEl = document.getElementById('buyerDisplayPhone');
+    const locEl = document.getElementById('buyerDisplayLocation');
+    const memberIdEl = document.getElementById('buyerMemberId');
+
+    if (avatarEl) avatarEl.innerText = (user.full_name || 'B').charAt(0).toUpperCase();
+    if (nameEl) nameEl.innerText = user.full_name || 'Verified Buyer';
+    if (phoneEl) phoneEl.innerHTML = `<i class="fa-solid fa-phone" style="color:#10B981;"></i> ${user.phone || '+234 800 000 0000'}`;
+    if (locEl) locEl.innerHTML = `<i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${user.location || 'Worldwide'}, ${user.country || 'Global'}`;
+    if (memberIdEl) memberIdEl.innerText = user.member_id || `ID: MBR-BYR-${user.id || Math.floor(100 + Math.random() * 900)}`;
+
+    // 2. Fetch Buyer's Assisted Orders
+    const allRequests = await API.getBuyingRequests();
+    let myOrders = await API.getBuyerOrders(user);
+
+    // If fresh user has no orders yet, seed from active requests so portal is rich
+    if (myOrders.length === 0 && allRequests.length > 0) {
+        myOrders = allRequests.slice(0, 2);
+    }
+
+    const totalOrdersEl = document.getElementById('buyerTotalOrdersCount');
+    if (totalOrdersEl) totalOrdersEl.innerText = myOrders.length;
+
+    // 3. Render Orders Container
+    const ordersContainer = document.getElementById('buyerOrdersContainer');
+    if (ordersContainer) {
+        if (myOrders.length === 0) {
+            ordersContainer.innerHTML = `
+                <div style="text-align:center; padding:36px 16px; background:var(--bg-alt); border-radius:var(--radius-md); border:1px dashed var(--border);">
+                    <div style="width:48px; height:48px; border-radius:50%; background:var(--brand-green-soft); color:var(--brand-green); display:inline-flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:10px;">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+                    <h4 style="font-size:1rem; font-weight:800; color:var(--primary); margin:0 0 6px 0;">No Active Sourcing Orders</h4>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); max-width:380px; margin:0 auto 14px auto;">
+                        Need goods inspected, negotiated, and delivered from any city or country? Submit your first sourcing request!
+                    </p>
+                    <button class="btn btn-primary btn-sm" onclick="switchPage('assistance')">
+                        <i class="fa-solid fa-plus"></i> Request Buying Assistance
+                    </button>
+                </div>
+            `;
+        } else {
+            ordersContainer.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    ${myOrders.map(ord => {
+                        const cleanPhone = '2349090809080';
+                        const waMsg = encodeURIComponent(`Hello Market at Home Desk, I am inquiring about my Buying Assistance Order ${ord.tracking_code} (${ord.item_title}) for delivery to ${ord.target_city || ord.target_country || 'Worldwide'}.`);
+                        const waLink = `https://wa.me/${cleanPhone}?text=${waMsg}`;
+
+                        return `
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:14px 16px; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); transition:all 0.2s ease;">
+                                <div style="display:flex; align-items:flex-start; gap:12px;">
+                                    <div style="width:40px; height:40px; border-radius:10px; background:var(--brand-green-soft); color:var(--brand-green); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; margin-top:2px;">
+                                        <i class="fa-solid fa-box-open"></i>
+                                    </div>
+                                    <div>
+                                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                            <strong style="font-size:0.92rem; color:var(--primary);">${ord.item_title}</strong>
+                                            <span class="badge badge-verified" style="font-size:0.7rem;"><i class="fa-solid fa-clock"></i> ${ord.status || 'Sourcing Active'}</span>
+                                        </div>
+                                        <div style="font-size:0.76rem; color:var(--text-secondary); margin-top:4px;">
+                                            <span style="font-family:monospace; font-weight:700; color:var(--brand-green);">${ord.tracking_code}</span> &bull; 
+                                            <span>Destination: <strong>${ord.target_city || 'Worldwide'}, ${ord.target_country || 'Global'}</strong></span> &bull; 
+                                            <span>Service: ${ord.package_type || 'Full Assistance'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <a href="${waLink}" target="_blank" class="btn btn-whatsapp btn-sm" style="font-size:0.78rem; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+                                        <i class="fa-brands fa-whatsapp"></i> Chat Support
+                                    </a>
+                                    <button type="button" class="btn btn-outline btn-sm" style="font-size:0.78rem; padding:6px 12px;" onclick="trackSpecificOrder('${ord.tracking_code}')">
+                                        <i class="fa-solid fa-location-crosshairs"></i> Status
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+    }
+
+    // 4. Render Recommended Worldwide Products for Buyer
+    const allProducts = await API.getProducts();
+    const recGrid = document.getElementById('buyerRecommendedGrid');
+    if (recGrid) {
+        recGrid.innerHTML = renderProductsHtml(allProducts.slice(0, 4));
+    }
+}
+
+function trackSpecificOrder(code) {
+    const input = document.getElementById('buyerTrackingInput');
+    if (input) {
+        input.value = code;
+        handleBuyerTrackOrder();
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+async function handleBuyerTrackOrder() {
+    const code = (document.getElementById('buyerTrackingInput')?.value || '').trim().toUpperCase();
+    const resultBox = document.getElementById('buyerTrackingResultBox');
+    if (!resultBox) return;
+
+    if (!code) {
+        showToast('Please enter a tracking code (e.g. PBA-00101)', 'error');
+        return;
+    }
+
+    const allRequests = await API.getBuyingRequests();
+    const found = allRequests.find(r => r.tracking_code && r.tracking_code.toUpperCase() === code);
+
+    resultBox.style.display = 'block';
+
+    if (!found) {
+        resultBox.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px; color:#EF4444; font-size:0.85rem;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size:1.2rem;"></i>
+                <div>
+                    <strong>Order Not Found:</strong> No order matching tracking code <code>${code}</code>. Please double-check the code or contact support.
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    resultBox.innerHTML = `
+        <div style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+                <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Tracking Code</span>
+                <div style="font-size:1.1rem; font-weight:900; color:var(--brand-green); font-family:monospace;">${found.tracking_code}</div>
+            </div>
+            <span class="badge badge-verified" style="font-size:0.8rem; padding:6px 12px;"><i class="fa-solid fa-circle-check"></i> ${found.status || 'Sourcing Active'}</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.82rem; margin-bottom:14px;">
+            <div><strong>Item:</strong> ${found.item_title}</div>
+            <div><strong>Destination:</strong> ${found.target_city || 'Worldwide'}, ${found.target_country || 'Global'}</div>
+            <div><strong>Package:</strong> ${found.package_type || 'Full Assistance'}</div>
+            <div><strong>Agent:</strong> ${found.assigned_agent || 'Senior Sourcing Desk'}</div>
+        </div>
+
+        <!-- Milestones Step Tracker -->
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; text-align:center; font-size:0.72rem; margin-top:8px;">
+            <div style="padding:8px 4px; background:#ECFDF5; color:#059669; border-radius:8px; border:1px solid #A7F3D0; font-weight:700;">
+                <i class="fa-solid fa-check"></i> 1. Received
+            </div>
+            <div style="padding:8px 4px; background:#ECFDF5; color:#059669; border-radius:8px; border:1px solid #A7F3D0; font-weight:700;">
+                <i class="fa-solid fa-check"></i> 2. Sourcing Active
+            </div>
+            <div style="padding:8px 4px; background:#EFF6FF; color:#2563EB; border-radius:8px; border:1px solid #BFDBFE; font-weight:700;">
+                <i class="fa-solid fa-magnifying-glass"></i> 3. Inspection
+            </div>
+            <div style="padding:8px 4px; background:var(--bg-alt); color:var(--text-muted); border-radius:8px; border:1px solid var(--border); font-weight:600;">
+                <i class="fa-solid fa-plane"></i> 4. Delivered
+            </div>
+        </div>
+    `;
+}
+
+/* ==========================================================================
    ADMIN PORTAL (AUTHENTICATION & ACCESS CONTROL)
    ========================================================================== */
 function isAdminAuthenticated() {
@@ -1391,7 +1605,7 @@ function setupForms() {
     // 1. User Sign In Form
     const userLoginForm = document.getElementById('userLoginForm');
     if (userLoginForm) {
-        userLoginForm.addEventListener('submit', (e) => {
+        userLoginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const phoneEmail = document.getElementById('loginPhoneEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
@@ -1401,12 +1615,26 @@ function setupForms() {
                 return;
             }
 
-            // Authenticate user
-            const userName = phoneEmail.includes('@') ? phoneEmail.split('@')[0] : phoneEmail;
+            // Check if user is registered in buyers or sellers
+            const sellers = await API.getSellers();
+            const buyers = await API.getBuyers();
+            const cleanInput = phoneEmail.replace(/[^0-9]/g, '');
+
+            const matchedSeller = sellers.find(s => s.phone && (s.phone.replace(/[^0-9]/g, '') === cleanInput || s.full_name.toLowerCase() === phoneEmail.toLowerCase()));
+            const matchedBuyer = buyers.find(b => b.phone && (b.phone.replace(/[^0-9]/g, '') === cleanInput || b.full_name.toLowerCase() === phoneEmail.toLowerCase()));
+
+            const role = matchedSeller ? 'seller' : (matchedBuyer ? 'buyer' : (phoneEmail.toLowerCase().includes('seller') ? 'seller' : 'buyer'));
+            const matchedObj = matchedSeller || matchedBuyer;
+
+            const userName = matchedObj ? matchedObj.full_name : (phoneEmail.includes('@') ? phoneEmail.split('@')[0] : phoneEmail);
             const userSession = {
-                full_name: userName.charAt(0).toUpperCase() + userName.slice(1),
-                phone: phoneEmail,
-                role: 'seller' // Defaults to seller access
+                id: matchedObj ? matchedObj.id : Date.now(),
+                full_name: matchedObj ? matchedObj.full_name : (userName.charAt(0).toUpperCase() + userName.slice(1)),
+                phone: matchedObj ? matchedObj.phone : phoneEmail,
+                location: matchedObj ? (matchedObj.location || matchedObj.city) : 'Worldwide',
+                country: matchedObj ? (matchedObj.country || 'Nigeria') : 'Worldwide',
+                role: role,
+                store_name: matchedSeller ? matchedSeller.store_name : undefined
             };
 
             localStorage.setItem('globalbiz_user_session', JSON.stringify(userSession));
@@ -1414,6 +1642,12 @@ function setupForms() {
             closeModal('userAuthModal');
             showToast(`Welcome back, ${userSession.full_name}!`, 'success');
             userLoginForm.reset();
+
+            if (role === 'seller') {
+                switchPage('seller');
+            } else {
+                switchPage('buyer');
+            }
         });
     }
 
@@ -1430,6 +1664,7 @@ function setupForms() {
             const password = document.getElementById('regPassword').value.trim();
 
             const userSession = {
+                id: Date.now(),
                 full_name: fullName,
                 phone: phone,
                 country: country,
@@ -1470,8 +1705,8 @@ function setupForms() {
                 showToast(`Welcome Seller ${fullName}! Your global seller dashboard is ready.`, 'success');
                 switchPage('seller');
             } else {
-                showToast(`Welcome Buyer ${fullName}! You can now browse & order worldwide.`, 'success');
-                switchPage('marketplace');
+                showToast(`Welcome Buyer ${fullName}! Your buyer portal & activity hub is ready.`, 'success');
+                switchPage('buyer');
             }
         });
     }
@@ -1580,7 +1815,14 @@ function setupForms() {
             const res = await API.submitBuyingAssistance(payload);
             showToast(`Request submitted! Tracking Code: ${res.tracking_code}`, 'success');
             pbaForm.reset();
-            loadAdminPortal();
+            await loadBuyerDashboard();
+            await loadAdminPortal();
+            if (AppState.currentPage === 'assistance') {
+                setTimeout(() => {
+                    showToast('Viewing your order in Buyer Portal...', 'info');
+                    switchPage('buyer');
+                }, 1200);
+            }
         });
     }
 
