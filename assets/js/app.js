@@ -1850,6 +1850,9 @@ async function handleProductFormSubmit(event) {
     loadSellerProducts();
     loadMarketplaceProducts();
     loadHomeFeatured();
+    if (typeof loadBuyerGoods === 'function') {
+        loadBuyerGoods();
+    }
     if (typeof selectNigeriaState === 'function') {
         selectNigeriaState(state);
     }
