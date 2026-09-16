@@ -423,6 +423,89 @@
                     </div>
                 </div>
 
+                
+                <!-- 🎯 BUYER "WHAT DO YOU WANT TO DO?" ACTION HUB -->
+                <div class="portal-action-section">
+                    <div class="portal-action-title">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--brand-green);"></i> What would you like to do today?
+                    </div>
+                    <p class="portal-action-subtitle">Select an action below to manage your purchases, track packages, or explore products.</p>
+                    
+                    <div class="portal-action-grid">
+                        <div class="portal-action-card" onclick="switchPage('marketplace')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-green"><i class="fa-solid fa-store"></i></div>
+                                <div class="action-card-title">Browse Marketplace</div>
+                            </div>
+                            <div class="action-card-desc">Search verified goods across Abuja, Kano, Lagos & worldwide with AI.</div>
+                            <div class="action-card-btn-text">Open Catalog &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchBuyerTab('orders')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-blue"><i class="fa-solid fa-truck-fast"></i></div>
+                                <div class="action-card-title">Track My Orders</div>
+                            </div>
+                            <div class="action-card-desc">Check active shipments, dispatch progress, and delivery status.</div>
+                            <div class="action-card-btn-text">View Orders &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="openCartModal()">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-amber"><i class="fa-solid fa-cart-shopping"></i></div>
+                                <div class="action-card-title">Shopping Cart & Checkout</div>
+                            </div>
+                            <div class="action-card-desc">Review selected goods and checkout safely with escrow protection.</div>
+                            <div class="action-card-btn-text">Open Cart &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchBuyerTab('favorites')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-purple"><i class="fa-solid fa-heart"></i></div>
+                                <div class="action-card-title">Saved Wishlist</div>
+                            </div>
+                            <div class="action-card-desc">Access all your bookmarked items and contact sellers instantly.</div>
+                            <div class="action-card-btn-text">View Wishlist &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchPage('assistance')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-green"><i class="fa-solid fa-handshake-angle"></i></div>
+                                <div class="action-card-title">Request Sourcing Agent</div>
+                            </div>
+                            <div class="action-card-desc">Hire a concierge agent to physically inspect and negotiate items for you.</div>
+                            <div class="action-card-btn-text">Request Agent &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="toggleMarketAssistant()">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-blue"><i class="fa-solid fa-robot"></i></div>
+                                <div class="action-card-title">AI Shopping Bot</div>
+                            </div>
+                            <div class="action-card-desc">Ask AI for recommendations, budget deals, and regional trade items.</div>
+                            <div class="action-card-btn-text">Chat with AI &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="openReportComplaintModal()">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                <div class="action-card-title">File a Complaint</div>
+                            </div>
+                            <div class="action-card-desc">Report an issue with an order or merchant directly to Admin desk.</div>
+                            <div class="action-card-btn-text">Submit Report &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchBuyerTab('profile')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-purple"><i class="fa-solid fa-user-gear"></i></div>
+                                <div class="action-card-title">Profile & Address</div>
+                            </div>
+                            <div class="action-card-desc">Update your delivery address, phone number, and account settings.</div>
+                            <div class="action-card-btn-text">Edit Profile &rarr;</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 2. Buyer Navigation Sub-Tabs -->
                 <div class="sub-nav-tabs">
                     <button class="sub-tab-btn active" id="buyerTabBtn-dashboard" onclick="switchBuyerTab('dashboard')">
@@ -708,6 +791,89 @@
                             <button class="btn btn-sm btn-outline" style="color:#F87171; border-color:rgba(248,113,113,0.4);" onclick="handleUserLogout()">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- 🎯 SELLER "WHAT DO YOU WANT TO DO?" ACTION HUB -->
+                <div class="portal-action-section">
+                    <div class="portal-action-title">
+                        <i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Seller Operational Center
+                    </div>
+                    <p class="portal-action-subtitle">Manage your inventory, fulfill customer orders, chat with buyers, and grow your sales.</p>
+                    
+                    <div class="portal-action-grid">
+                        <div class="portal-action-card" onclick="openAddProductModal()">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-green"><i class="fa-solid fa-circle-plus"></i></div>
+                                <div class="action-card-title">Post New Good</div>
+                            </div>
+                            <div class="action-card-desc">Upload product photos, set price, state, phone & publish to buyers worldwide.</div>
+                            <div class="action-card-btn-text">Add Product Now &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchSellerTab('products')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-blue"><i class="fa-solid fa-boxes-stacked"></i></div>
+                                <div class="action-card-title">Manage Listed Products</div>
+                            </div>
+                            <div class="action-card-desc">View active catalog, adjust pricing, update stock, or remove listings.</div>
+                            <div class="action-card-btn-text">View Stock &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchSellerTab('orders')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-amber"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                                <div class="action-card-title">Customer Orders & Dispatch</div>
+                            </div>
+                            <div class="action-card-desc">Process incoming orders and update delivery status (Confirmed &rarr; Delivered).</div>
+                            <div class="action-card-btn-text">Manage Orders &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="showToast('Open WhatsApp to chat with your active customer leads', 'info')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-green"><i class="fa-brands fa-whatsapp"></i></div>
+                                <div class="action-card-title">Chat with Buyers</div>
+                            </div>
+                            <div class="action-card-desc">Communicate directly with verified buyers interested in your products.</div>
+                            <div class="action-card-btn-text">Open WhatsApp &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchSellerTab('analytics')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-purple"><i class="fa-solid fa-chart-line"></i></div>
+                                <div class="action-card-title">Sales & Store Insights</div>
+                            </div>
+                            <div class="action-card-desc">Track revenue, store visitors, top selling items, and trade stats.</div>
+                            <div class="action-card-btn-text">View Analytics &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="handleRequestSellerVerification()">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-blue"><i class="fa-solid fa-shield-halved"></i></div>
+                                <div class="action-card-title">Request Verified Badge</div>
+                            </div>
+                            <div class="action-card-desc">Get verified by Admin to increase buyer trust and ranking on the map.</div>
+                            <div class="action-card-btn-text">Get Verified &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchSellerTab('settings')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-amber"><i class="fa-solid fa-gear"></i></div>
+                                <div class="action-card-title">Store Settings</div>
+                            </div>
+                            <div class="action-card-desc">Update store name, contact phone, business address, and details.</div>
+                            <div class="action-card-btn-text">Edit Settings &rarr;</div>
+                        </div>
+
+                        <div class="portal-action-card" onclick="switchPage('marketplace')">
+                            <div class="action-card-top">
+                                <div class="action-card-icon icon-green"><i class="fa-solid fa-globe"></i></div>
+                                <div class="action-card-title">View Live Marketplace</div>
+                            </div>
+                            <div class="action-card-desc">See how your products appear to customers across the live site.</div>
+                            <div class="action-card-btn-text">View Live Site &rarr;</div>
                         </div>
                     </div>
                 </div>

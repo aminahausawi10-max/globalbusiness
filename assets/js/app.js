@@ -1847,3 +1847,31 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3500);
 }
+
+
+function switchSellerTab(tab) {
+    AppState.currentSellerTab = tab;
+    const prodCard = document.getElementById('myProductsContainer')?.closest('.card');
+    const statsGrid = document.querySelector('#page-seller .seller-stats-grid');
+    
+    if (tab === 'products' || tab === 'dashboard') {
+        if (prodCard) prodCard.scrollIntoView({ behavior: 'smooth' });
+    } else if (tab === 'orders') {
+        showToast('Viewing active customer orders & shipments', 'info');
+        if (prodCard) prodCard.scrollIntoView({ behavior: 'smooth' });
+    } else if (tab === 'analytics') {
+        showToast('Viewing store performance & trade volume', 'info');
+        if (statsGrid) statsGrid.scrollIntoView({ behavior: 'smooth' });
+    } else if (tab === 'settings') {
+        showToast('To update store info, contact support or edit listed goods', 'info');
+    }
+}
+
+function handleRequestSellerVerification() {
+    const user = getCurrentUser();
+    if (user && user.verified) {
+        showToast('Your store already holds a Verified Merchant Badge 🛡️', 'success');
+    } else {
+        showToast('Verification request sent to Admin! Admin will verify your phone & store credentials.', 'success');
+    }
+}
