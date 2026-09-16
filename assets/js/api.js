@@ -531,13 +531,14 @@ const API = {
                 const p = localStorage.getItem('globalbiz_products_store');
                 if (p) {
                     const parsed = JSON.parse(p);
-                    // Filter out unposted mock seed items (IDs 1 to 6) so ONLY products posted by actual sellers are displayed
-                    this.fallbackProducts = parsed.filter(item => (item.id > 1000) || (item.user_id && item.id > 6));
-                    localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
-                } else {
-                    this.fallbackProducts = [];
-                    localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        const userProducts = parsed.filter(item => item.id > 10000 || item.user_id);
+                        const existingIds = new Set(userProducts.map(x => x.id));
+                        const uniqueSeeds = this.fallbackProducts.filter(x => !existingIds.has(x.id));
+                        this.fallbackProducts = [...userProducts, ...uniqueSeeds];
+                    }
                 }
+                localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
             } catch (e) {
                 console.warn('Local storage sync notice', e);
             }
@@ -624,41 +625,171 @@ const API = {
         }
     ],
 
-    // Marketplace Products (Only items actually posted & published by sellers)
-    fallbackProducts: [],
-
-    fallbackBuyingRequests: [
+    // Marketplace Products (Worldwide Catalog)
+    fallbackProducts: [
         {
-            id: 1,
-            tracking_code: 'PBA-00101',
-            customer_name: 'Ibrahim Al-Rashid',
-            customer_phone: '+966551122334',
-            item_title: 'Looking for 200 bags of high-grade raw sesame & dried ginger from Northern Nigeria',
-            category: 'Agriculture & Produce',
-            specifications: 'Must be export standard with moisture below 7%, SGS certified inspection before loading.',
-            quantity: '200 Bags',
-            budget_min: 3000.0,
-            budget_max: 5000.0,
-            currency: 'USD',
-            target_country: 'Nigeria',
-            target_city: 'Kano',
-            delivery_date: '2026-10-15',
-            package_type: 'Business Procurement',
-            service_fee: 150.0,
-            status: 'Sourcing',
-            assigned_agent: 'Senior Sourcing Officer S. Bello',
-            notes: 'Verified 2 top commodity suppliers in Dawanau. Negotiating batch discount.'
+            id: 1001,
+            title: 'Authentic 6-Yards Premium Ankara Material (Holland Wax Grade)',
+            price: 9.68, // ~$15,000 NGN
+            category_id: 2,
+            category_name: 'Clothing & Fashion',
+            seller_name: 'Amina Luxury Ankara & Fabrics',
+            country: 'Nigeria',
+            state: 'Abuja (FCT)',
+            city: 'Abuja',
+            area: 'Wuse 2',
+            phone: '+234 803 456 7890',
+            whatsapp: '+2348034567890',
+            description: '100% Cotton, color-fast high density weave Dutch Holland wax print. Direct from importer with worldwide air cargo shipping.',
+            photo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Local delivery in Abuja/Nigeria & Worldwide DHL/FedEx shipping',
+            views: 245,
+            business_verified: 1
+        },
+        {
+            id: 1002,
+            title: 'Luxury Double Drawn Bone Straight Human Hair Wig (HD Lace Frontal)',
+            price: 77.42, // ~$120,000 NGN
+            category_id: 3,
+            category_name: 'Wigs & Beauty',
+            seller_name: 'London Glamour Wigs Ltd',
+            country: 'United Kingdom',
+            state: 'England (London)',
+            city: 'London',
+            area: 'Westminster',
+            phone: '+44 770 090 0123',
+            whatsapp: '+447700900123',
+            description: '100% Unprocessed Brazilian Virgin Hair, silky soft double drawn bone straight 28-inch with pre-plucked invisible Swiss HD lace.',
+            photo_url: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Next-day UK Royal Mail & Global International Air Delivery',
+            views: 412,
+            business_verified: 1
+        },
+        {
+            id: 1003,
+            title: 'Apple iPhone 15 Pro Max 256GB Factory Unlocked (Titanium Blue)',
+            price: 850.00,
+            category_id: 7,
+            category_name: 'Mobile Phones',
+            seller_name: 'Apex Global Tech USA',
+            country: 'United States',
+            state: 'California (Los Angeles/SF)',
+            city: 'Los Angeles',
+            area: 'Silicon Valley Depot',
+            phone: '+1 213 555 0199',
+            whatsapp: '+12135550199',
+            description: 'Brand new factory sealed US model with Apple 1-Year International Warranty. Works on all 5G networks worldwide with dual eSIM.',
+            photo_url: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Express Worldwide Courier (FedEx / DHL 3-5 days delivery)',
+            views: 580,
+            business_verified: 1
+        },
+        {
+            id: 1004,
+            title: 'Wholesale Benue Premium Export Grade White Yam (100 Tubers Bundle)',
+            price: 90.32, // ~$140,000 NGN
+            category_id: 10,
+            category_name: 'Agriculture & Produce',
+            seller_name: 'Kano Agro & Commodity Hub',
+            country: 'Nigeria',
+            state: 'Kano',
+            city: 'Kano',
+            area: 'Dawanau International Market',
+            phone: '+234 814 999 4455',
+            whatsapp: '+2348149994455',
+            description: 'Export standard dry tubers with long shelf-life. Ready for interstate distribution or international phytosanitary export container loading.',
+            photo_url: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Interstate haulage trucks & international sea/air freight available',
+            views: 310,
+            business_verified: 1
+        },
+        {
+            id: 1005,
+            title: 'Designer Luxury AMOLED Smartwatch with Bluetooth Call & Health Tracker',
+            price: 45.00,
+            category_id: 6,
+            category_name: 'Electronics & Gadgets',
+            seller_name: 'Gulf Express Trading LLC',
+            country: 'United Arab Emirates',
+            state: 'Dubai',
+            city: 'Dubai',
+            area: 'Deira Gold Souk & Tech Mart',
+            phone: '+971 50 123 4567',
+            whatsapp: '+971501234567',
+            description: 'Sleek stainless steel bezel with interchangeable leather and silicone straps, IP68 water resistance, sleep monitor, and 14-day battery.',
+            photo_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Gulf Express local dispatch & worldwide air express dispatch',
+            views: 198,
+            business_verified: 1
+        },
+        {
+            id: 1006,
+            title: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
+            price: 280.00,
+            category_id: 9,
+            category_name: 'Car Sales & Auto',
+            seller_name: 'Guangzhou Smart Mobility Co.',
+            country: 'China',
+            state: 'Guangdong (Guangzhou/Shenzhen)',
+            city: 'Guangzhou',
+            area: 'Tianhe District',
+            phone: '+86 138 0013 8000',
+            whatsapp: '+8613800138000',
+            description: 'Aircraft-grade aluminum alloy body, dual regenerative braking system, puncture-proof 10-inch pneumatic tires with 45km battery range per charge.',
+            photo_url: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Global door-to-door cargo logistics with tracking',
+            views: 340,
+            business_verified: 1
+        },
+        {
+            id: 1007,
+            title: 'Authentic Handwoven Ghanaian Royal Kente Fabric & Shawl Set',
+            price: 65.00,
+            category_id: 2,
+            category_name: 'Clothing & Fashion',
+            seller_name: 'Accra Heritage Crafts',
+            country: 'Ghana',
+            state: 'Greater Accra (Accra)',
+            city: 'Accra',
+            area: 'Osu Oxford Street',
+            phone: '+233 24 123 4567',
+            whatsapp: '+233241234567',
+            description: 'Masterfully woven cotton and silk blend royal ceremonial Kente for weddings, graduations, and cultural occasions.',
+            photo_url: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'West Africa express and global international shipping',
+            views: 165,
+            business_verified: 1
+        },
+        {
+            id: 1008,
+            title: 'Single-Origin Grade-AA Kenyan Arabica Roasted Coffee Beans (1kg)',
+            price: 22.50,
+            category_id: 1,
+            category_name: 'Food & Groceries',
+            seller_name: 'Mount Kenya Highland Roasters',
+            country: 'Kenya',
+            state: 'Nairobi',
+            city: 'Nairobi',
+            area: 'Westlands',
+            phone: '+254 712 345 678',
+            whatsapp: '+254712345678',
+            description: 'Freshly roasted whole beans featuring winey acidity, blackcurrant aroma, and complex chocolate finish from volcanic soil slopes.',
+            photo_url: 'https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Hermetically vacuum sealed for global freshness delivery',
+            views: 220,
+            business_verified: 1
         }
     ],
 
     filterFallbackProducts(params) {
         let results = [...this.fallbackProducts];
         if (params.q) {
-            const q = params.q.toLowerCase();
+            const q = params.q.toLowerCase().trim();
             results = results.filter(p => 
-                p.title.toLowerCase().includes(q) || 
-                p.description.toLowerCase().includes(q) ||
+                (p.title && p.title.toLowerCase().includes(q)) || 
+                (p.description && p.description.toLowerCase().includes(q)) ||
                 (p.city && p.city.toLowerCase().includes(q)) ||
+                (p.state && p.state.toLowerCase().includes(q)) ||
                 (p.country && p.country.toLowerCase().includes(q)) ||
                 (p.seller_name && p.seller_name.toLowerCase().includes(q))
             );
@@ -666,11 +797,22 @@ const API = {
         if (params.category_id) {
             results = results.filter(p => p.category_id == params.category_id);
         }
-        if (params.country) {
-            results = results.filter(p => p.country && p.country.toLowerCase() === params.country.toLowerCase());
+        if (params.country && params.country !== 'all' && params.country.trim() !== '') {
+            const c = params.country.toLowerCase().trim();
+            results = results.filter(p => p.country && (p.country.toLowerCase().includes(c) || c.includes(p.country.toLowerCase())));
         }
-        if (params.city) {
-            results = results.filter(p => p.city && p.city.toLowerCase() === params.city.toLowerCase());
+        if (params.state && params.state !== 'all' && params.state.trim() !== '') {
+            const s = params.state.toLowerCase().trim();
+            results = results.filter(p => 
+                (p.state && (p.state.toLowerCase().includes(s) || s.includes(p.state.toLowerCase()))) ||
+                (p.city && (p.city.toLowerCase().includes(s) || s.includes(p.city.toLowerCase())))
+            );
+        } else if (params.city && params.city !== 'all' && params.city.trim() !== '') {
+            const c = params.city.toLowerCase().trim();
+            results = results.filter(p => 
+                (p.city && p.city.toLowerCase().includes(c)) ||
+                (p.state && p.state.toLowerCase().includes(c))
+            );
         }
         if (params.max_price) {
             results = results.filter(p => p.price <= parseFloat(params.max_price));

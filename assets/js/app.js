@@ -1,23 +1,141 @@
 /**
- * GlobalBiz Marketplace & Seller Portal - Core Application
- * Mobile-First, Vibrant & Reactive Controller
+ * Market at Home — Buy & Sell Worldwide
+ * Mobile-First, Vibrant & Reactive Global Controller
  */
+
+const WORLD_LOCATIONS = {
+    'Nigeria': ['Abuja (FCT)', 'Lagos', 'Kano', 'Rivers (Port Harcourt)', 'Oyo (Ibadan)', 'Enugu', 'Kaduna', 'Delta', 'Anambra', 'Edo', 'Ogun', 'Plateau', 'Benue', 'Akwa Ibom', 'Ondo', 'Imo', 'Borno', 'Sokoto', 'Bauchi', 'Cross River', 'Kogi', 'Kwara', 'Nasarawa', 'Niger', 'Abia', 'Adamawa', 'Bayelsa', 'Ebonyi', 'Ekiti', 'Gombe', 'Jigawa', 'Kebbi', 'Katsina', 'Taraba', 'Yobe', 'Zamfara'],
+    'United States': ['California', 'Texas', 'New York', 'Florida', 'Illinois', 'Georgia', 'Pennsylvania', 'Ohio', 'North Carolina', 'Michigan', 'New Jersey', 'Virginia', 'Washington', 'Massachusetts', 'Arizona', 'Maryland', 'Indiana', 'Tennessee', 'Missouri', 'Wisconsin', 'Colorado', 'Minnesota', 'South Carolina', 'Alabama', 'Louisiana', 'Kentucky', 'Oregon', 'Oklahoma', 'Connecticut', 'Utah', 'Iowa', 'Nevada', 'Arkansas'],
+    'United Kingdom': ['London', 'Manchester', 'Birmingham', 'West Midlands', 'Greater Manchester', 'Leeds / West Yorkshire', 'Glasgow', 'Liverpool / Merseyside', 'Edinburgh', 'Bristol', 'Sheffield / South Yorkshire', 'Newcastle', 'Belfast', 'Cardiff', 'Nottingham', 'Southampton', 'Leicester'],
+    'Canada': ['Ontario (Toronto)', 'British Columbia (Vancouver)', 'Quebec (Montreal)', 'Alberta (Calgary / Edmonton)', 'Manitoba (Winnipeg)', 'Saskatchewan', 'Nova Scotia (Halifax)', 'New Brunswick', 'Newfoundland and Labrador'],
+    'United Arab Emirates': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain'],
+    'Ghana': ['Greater Accra (Accra)', 'Ashanti (Kumasi)', 'Western (Takoradi)', 'Central (Cape Coast)', 'Eastern (Koforidua)', 'Northern (Tamale)', 'Volta (Ho)'],
+    'China': ['Guangdong (Guangzhou / Shenzhen)', 'Zhejiang (Yiwu / Hangzhou)', 'Shanghai', 'Beijing', 'Jiangsu (Suzhou / Nanjing)', 'Shandong (Qingdao)', 'Fujian (Xiamen)', 'Hong Kong', 'Sichuan (Chengdu)', 'Hubei (Wuhan)'],
+    'Kenya': ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Machakos', 'Kilifi'],
+    'South Africa': ['Gauteng (Johannesburg / Pretoria)', 'Western Cape (Cape Town)', 'KwaZulu-Natal (Durban)', 'Eastern Cape (Gqeberha / Port Elizabeth)', 'Free State (Bloemfontein)', 'Mpumalanga', 'Limpopo'],
+    'Saudi Arabia': ['Riyadh', 'Makkah / Mecca', 'Jeddah', 'Madinah / Medina', 'Eastern Province (Dammam / Khobar)', 'Asir (Abha)', 'Tabuk', 'Qassim'],
+    'Germany': ['Berlin', 'Bavaria (Munich)', 'North Rhine-Westphalia (Cologne / Dusseldorf)', 'Baden-Württemberg (Stuttgart)', 'Hesse (Frankfurt)', 'Hamburg', 'Saxony (Leipzig / Dresden)'],
+    'France': ['Île-de-France (Paris)', 'Auvergne-Rhône-Alpes (Lyon)', 'Provence-Alpes-Côte d\'Azur (Marseille / Nice)', 'Occitanie (Toulouse)', 'Nouvelle-Aquitaine (Bordeaux)', 'Hauts-de-France (Lille)'],
+    'India': ['Maharashtra (Mumbai / Pune)', 'Delhi (NCR / New Delhi)', 'Karnataka (Bengaluru)', 'Tamil Nadu (Chennai)', 'Telangana (Hyderabad)', 'Gujarat (Ahmedabad / Surat)', 'West Bengal (Kolkata)', 'Kerala', 'Rajasthan (Jaipur)', 'Punjab'],
+    'Australia': ['New South Wales (Sydney)', 'Victoria (Melbourne)', 'Queensland (Brisbane)', 'Western Australia (Perth)', 'South Australia (Adelaide)', 'Australian Capital Territory (Canberra)'],
+    'Egypt': ['Cairo', 'Giza', 'Alexandria', 'Qalyubia', 'Port Said', 'Suez', 'Luxor', 'Aswan'],
+    'Turkey': ['Istanbul', 'Ankara', 'Izmir', 'Bursa', 'Antalya', 'Adana', 'Gaziantep', 'Konya']
+};
 
 const AppState = {
     currentPage: 'home',
-    currentCurrency: 'NGN',
+    currentCurrency: 'USD',
     currencyRates: {
-        NGN: { symbol: '₦', rate: 1550.0 },
         USD: { symbol: '$', rate: 1.0 },
-        SAR: { symbol: '﷼', rate: 3.75 },
+        NGN: { symbol: '₦', rate: 1550.0 },
+        GBP: { symbol: '£', rate: 0.78 },
         EUR: { symbol: '€', rate: 0.92 },
-        GBP: { symbol: '£', rate: 0.78 }
+        CAD: { symbol: 'CA$', rate: 1.36 },
+        AED: { symbol: 'AED ', rate: 3.67 },
+        SAR: { symbol: '﷼', rate: 3.75 },
+        CNY: { symbol: '¥', rate: 7.24 },
+        GHS: { symbol: 'GH₵', rate: 15.60 },
+        KES: { symbol: 'KSh ', rate: 129.50 },
+        ZAR: { symbol: 'R ', rate: 18.20 },
+        AUD: { symbol: 'A$', rate: 1.52 }
     },
     activeCategoryFilter: '',
-    activeCityFilter: '',
+    activeCountryFilter: '',
+    activeStateFilter: '',
     selectedAssistancePackage: 'Full Buying Assistance',
     selectedAssistanceFee: 60.00
 };
+
+// Location helpers
+function populateStateDropdown(selectEl, country, selectedState = '') {
+    if (!selectEl) return;
+    const states = WORLD_LOCATIONS[country] || [];
+    let html = '<option value="">All States / Regions</option>';
+    if (states.length > 0) {
+        html += states.map(st => `<option value="${st}" ${st === selectedState ? 'selected' : ''}>${st}</option>`).join('');
+    } else if (country) {
+        html += `<option value="Main Region" ${selectedState === 'Main Region' ? 'selected' : ''}>Main Region / Capital</option>`;
+    }
+    selectEl.innerHTML = html;
+}
+
+function handleHeroCountryChange(country) {
+    const stateSelect = document.getElementById('heroStateSelect');
+    populateStateDropdown(stateSelect, country);
+}
+
+function handleMarketCountryChange(country) {
+    const stateSelect = document.getElementById('marketStateFilter');
+    populateStateDropdown(stateSelect, country);
+    filterMarketplace();
+}
+
+function handleProductModalCountryChange(country, selectedState = '') {
+    const stateSelect = document.getElementById('sellerProdStateSelect');
+    populateStateDropdown(stateSelect, country, selectedState);
+    const locInput = document.getElementById('sellerProdLocation');
+    if (locInput && selectedState) {
+        locInput.value = selectedState;
+    } else if (locInput && country) {
+        locInput.value = (WORLD_LOCATIONS[country] && WORLD_LOCATIONS[country][0]) || country;
+    }
+}
+
+function syncSellerProdLocationInput(stateVal) {
+    const locInput = document.getElementById('sellerProdLocation');
+    if (locInput && stateVal) {
+        locInput.value = stateVal;
+    }
+}
+
+function handleRegCountryChange(country) {
+    const locInput = document.getElementById('regLocation');
+    if (locInput && !locInput.value) {
+        const topState = (WORLD_LOCATIONS[country] && WORLD_LOCATIONS[country][0]) || '';
+        if (topState) locInput.placeholder = `e.g. ${topState}`;
+    }
+}
+
+function filterByWorldwideLocation(country, state, el) {
+    document.querySelectorAll('.hero-loc-pill').forEach(p => p.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    switchPage('marketplace');
+    const countrySelect = document.getElementById('marketCountryFilter');
+    if (countrySelect) {
+        countrySelect.value = country || '';
+        handleMarketCountryChange(country || '');
+    }
+    const stateSelect = document.getElementById('marketStateFilter');
+    if (stateSelect && state) {
+        stateSelect.value = state;
+    }
+    filterMarketplace();
+    if (country && state) {
+        showToast(`Filtered listings in ${state}, ${country}`, 'info');
+    } else if (country) {
+        showToast(`Filtered listings in ${country}`, 'info');
+    } else {
+        showToast('Showing all worldwide listings', 'info');
+    }
+}
+
+function resetMarketplaceFilters() {
+    const sInput = document.getElementById('marketSearchFilter');
+    const cSelect = document.getElementById('marketCategoryFilter');
+    const countrySelect = document.getElementById('marketCountryFilter');
+    const stateSelect = document.getElementById('marketStateFilter');
+    if (sInput) sInput.value = '';
+    if (cSelect) cSelect.value = '';
+    if (countrySelect) {
+        countrySelect.value = '';
+        handleMarketCountryChange('');
+    }
+    if (stateSelect) stateSelect.value = '';
+    document.querySelectorAll('.hero-loc-pill').forEach(p => p.classList.remove('active'));
+    filterMarketplace();
+    showToast('Marketplace filters reset', 'info');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
@@ -224,7 +342,7 @@ function switchAuthTab(tab) {
         if (registerView) registerView.style.display = 'none';
         if (loginBtn) loginBtn.classList.add('active');
         if (registerBtn) registerBtn.classList.remove('active');
-        document.getElementById('userAuthModalTitle').innerText = 'Sign In to GlobalBiz';
+        document.getElementById('userAuthModalTitle').innerText = 'Sign In to Market at Home';
     } else {
         if (loginView) loginView.style.display = 'none';
         if (registerView) registerView.style.display = 'block';
@@ -434,12 +552,12 @@ function handleProtectedContact(type, link, sellerName, event) {
 function renderProductsHtml(products) {
     return products.map(p => {
         const cleanPhone = (p.whatsapp || p.phone || '').replace(/[^0-9]/g, '');
-        const waMsg = encodeURIComponent(`Hello ${p.seller_name || p.business_name || 'Seller'}, I am interested in buying "${p.title}" listed on GlobalBiz for ${formatPrice(p.price)}.`);
+        const waMsg = encodeURIComponent(`Hello ${p.seller_name || p.business_name || 'Seller'}, I am interested in buying "${p.title}" listed on Market at Home for ${formatPrice(p.price)}.`);
         const waLink = `https://wa.me/${cleanPhone}?text=${waMsg}`;
         const telLink = `tel:${p.phone || cleanPhone}`;
         const sellerName = p.seller_name || p.business_name || 'Verified Seller';
         const safeSellerName = sellerName.replace(/'/g, "\\'");
-        const locationCity = p.city || 'Nigeria';
+        const displayLoc = (p.state || p.city) ? `${p.state || p.city}, ${p.country || 'Worldwide'}` : (p.country || 'Worldwide');
 
         return `
             <div class="product-card" onclick="openProductDetail(${p.id})">
@@ -457,7 +575,7 @@ function renderProductsHtml(products) {
                     <div>
                         <div class="product-title">${p.title}</div>
                         <div class="product-location">
-                            <i class="fa-solid fa-location-dot"></i> ${locationCity}
+                            <i class="fa-solid fa-location-dot"></i> ${displayLoc}
                         </div>
                         <div class="product-seller-info">
                             <i class="fa-solid fa-store"></i> Seller: <strong>${sellerName}</strong>
@@ -496,10 +614,10 @@ async function loadFeaturedBusinesses() {
                     </div>
                 </div>
                 <p style="font-size:0.8rem; color:var(--text-secondary); line-height:1.45; margin-bottom:12px; flex:1;">
-                    ${b.description || 'Verified supplier providing quality goods with nationwide delivery.'}
+                    ${b.description || 'Verified global supplier providing quality goods with worldwide shipping.'}
                 </p>
                 <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
-                    <i class="fa-solid fa-location-dot" style="color:#FA5252;"></i> ${b.city}, ${b.country}
+                    <i class="fa-solid fa-location-dot" style="color:#FA5252;"></i> ${b.city ? b.city + ', ' : ''}${b.country || 'Worldwide'}
                 </div>
                 <div style="display:flex; gap:8px;">
                     <button type="button" class="btn btn-whatsapp btn-sm" style="flex:1;" onclick="handleProtectedContact('whatsapp', '${waLink}', '${safeName}', event)">
@@ -527,12 +645,12 @@ async function openProductDetail(productId) {
     if (title) title.innerText = p.title;
 
     const cleanPhone = (p.whatsapp || p.phone || p.seller_phone || '').replace(/[^0-9]/g, '');
-    const waMsg = encodeURIComponent(`Hello ${p.seller_name || p.business_name || 'Seller'}, I want to buy "${p.title}" listed on GlobalBiz for ${formatPrice(p.price)}. Please let me know how to proceed with payment and delivery to my location.`);
+    const waMsg = encodeURIComponent(`Hello ${p.seller_name || p.business_name || 'Seller'}, I want to buy "${p.title}" listed on Market at Home for ${formatPrice(p.price)}. Please let me know how to proceed with payment and delivery to my location.`);
     const waLink = `https://wa.me/${cleanPhone}?text=${waMsg}`;
     const telLink = `tel:${p.phone || p.seller_phone || cleanPhone}`;
     const sellerName = p.seller_name || p.business_name || 'Verified Seller';
     const safeSellerName = sellerName.replace(/'/g, "\\'");
-    const city = p.city || 'Nigeria';
+    const displayLoc = (p.state || p.city) ? `${p.state || p.city}, ${p.country || 'Worldwide'}` : (p.country || 'Worldwide');
 
     content.innerHTML = `
         <div style="position:relative; border-radius:14px; overflow:hidden; margin-bottom:16px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
@@ -551,10 +669,10 @@ async function openProductDetail(productId) {
 
         <div class="form-section-block" style="padding:12px 14px; margin-bottom:14px;">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.82rem;">
-                <div><i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> <strong>City:</strong> ${city}</div>
+                <div><i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> <strong>Location:</strong> ${displayLoc}</div>
                 <div><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> <strong>Seller:</strong> ${sellerName}</div>
                 <div><i class="fa-solid fa-shield-halved" style="color:#3B82F6;"></i> <strong>Trust:</strong> Direct Verified</div>
-                <div><i class="fa-solid fa-truck" style="color:var(--brand-green);"></i> <strong>Delivery:</strong> Nationwide</div>
+                <div><i class="fa-solid fa-truck-fast" style="color:var(--brand-green);"></i> <strong>Delivery:</strong> Worldwide / Local</div>
             </div>
         </div>
 
@@ -564,7 +682,7 @@ async function openProductDetail(productId) {
                 <span>Product Description</span>
             </div>
             <p style="font-size:0.84rem; color:#475569; line-height:1.55; margin:0;">
-                ${p.description || 'Authentic quality product listed directly by verified merchant on GlobalBiz.'}
+                ${p.description || 'Authentic quality product listed directly by verified merchant on Market at Home.'}
             </p>
         </div>
 
@@ -748,6 +866,13 @@ function openAddProductModal() {
     document.getElementById('sellerProdLocation').value = (user && user.location) || 'Abuja';
     document.getElementById('sellerProdPhone').value = (user && user.phone) || '+234 803 456 7890';
     
+    // Country & State initialization
+    const countrySelect = document.getElementById('sellerProdCountry');
+    if (countrySelect) {
+        countrySelect.value = (user && user.country) || 'Nigeria';
+        handleProductModalCountryChange(countrySelect.value, (user && (user.state || user.location)) || 'Abuja (FCT)');
+    }
+
     // Default preset image preview
     const defaultPhoto = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
     setProductImagePreview(defaultPhoto);
@@ -775,14 +900,21 @@ async function openEditProductModal(productId) {
     document.getElementById('editProductId').value = p.id;
     document.getElementById('sellerProdTitle').value = p.title;
     // convert base USD price back to input value
-    const curr = AppState.currencyRates[AppState.currentCurrency] || AppState.currencyRates['NGN'];
+    const curr = AppState.currencyRates[AppState.currentCurrency] || AppState.currencyRates['USD'];
     document.getElementById('sellerProdPrice').value = Math.round(p.price * curr.rate);
     document.getElementById('sellerProdCategory').value = p.category_id || 1;
     document.getElementById('sellerProdSellerName').value = p.seller_name || (user ? user.full_name : 'My Store');
-    document.getElementById('sellerProdLocation').value = p.city || 'Abuja';
+    document.getElementById('sellerProdLocation').value = p.city || p.state || 'Abuja';
     document.getElementById('sellerProdPhone').value = p.phone || (user ? user.phone : '+234 803 456 7890');
     document.getElementById('sellerProdDesc').value = p.description || '';
     
+    // Country & State initialization
+    const countrySelect = document.getElementById('sellerProdCountry');
+    if (countrySelect) {
+        countrySelect.value = p.country || 'Nigeria';
+        handleProductModalCountryChange(countrySelect.value, p.state || p.city || '');
+    }
+
     const photoUrl = p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
     setProductImagePreview(photoUrl);
 
@@ -1209,28 +1341,26 @@ function setupSearchEngine() {
         mainForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const q = (document.getElementById('mainSearchInput')?.value || '').trim();
+            const heroCountry = (document.getElementById('heroCountrySelect')?.value || '').trim();
+            const heroState = (document.getElementById('heroStateSelect')?.value || '').trim();
 
             switchPage('marketplace');
             const marketSearchInput = document.getElementById('marketSearchFilter');
             if (marketSearchInput) marketSearchInput.value = q;
+
+            const marketCountryFilter = document.getElementById('marketCountryFilter');
+            if (marketCountryFilter) {
+                marketCountryFilter.value = heroCountry;
+                handleMarketCountryChange(heroCountry);
+            }
+
+            const marketStateFilter = document.getElementById('marketStateFilter');
+            if (marketStateFilter && heroState) {
+                marketStateFilter.value = heroState;
+            }
+
             filterMarketplace();
         });
-    }
-}
-
-function filterByCity(cityName, el) {
-    document.querySelectorAll('.hero-loc-pill').forEach(p => p.classList.remove('active'));
-    if (el) el.classList.add('active');
-
-    switchPage('marketplace');
-    const cityInput = document.getElementById('marketCityFilter');
-    if (cityInput) cityInput.value = cityName;
-    filterMarketplace();
-
-    if (cityName) {
-        showToast(`Filtered listings in ${cityName}`, 'info');
-    } else {
-        showToast('Showing all verified listings across Nigeria', 'info');
     }
 }
 
@@ -1246,12 +1376,14 @@ function searchFor(keyword) {
 function filterMarketplace() {
     const q = (document.getElementById('marketSearchFilter')?.value || '').toLowerCase().trim();
     const cat = document.getElementById('marketCategoryFilter')?.value || '';
-    const city = (document.getElementById('marketCityFilter')?.value || '').toLowerCase().trim();
+    const country = document.getElementById('marketCountryFilter')?.value || '';
+    const state = document.getElementById('marketStateFilter')?.value || '';
 
     loadMarketplaceProducts({
         q: q,
         category_id: cat,
-        city: city
+        country: country,
+        state: state
     });
 }
 
@@ -1293,12 +1425,14 @@ function setupForms() {
             const role = document.querySelector('input[name="authRole"]:checked')?.value || 'buyer';
             const fullName = document.getElementById('regFullName').value.trim();
             const phone = document.getElementById('regPhone').value.trim();
-            const location = document.getElementById('regLocation').value.trim();
+            const country = document.getElementById('regCountry')?.value.trim() || 'Nigeria';
+            const location = document.getElementById('regLocation')?.value.trim() || 'Abuja';
             const password = document.getElementById('regPassword').value.trim();
 
             const userSession = {
                 full_name: fullName,
                 phone: phone,
+                country: country,
                 location: location,
                 role: role
             };
@@ -1311,6 +1445,7 @@ function setupForms() {
                 await API.registerSeller({
                     full_name: fullName,
                     phone: phone,
+                    country: country,
                     location: location,
                     store_name: storeName
                 });
@@ -1319,6 +1454,7 @@ function setupForms() {
                 await API.createBuyer({
                     full_name: fullName,
                     phone: phone,
+                    country: country,
                     location: location,
                     city: location
                 });
@@ -1331,10 +1467,10 @@ function setupForms() {
             loadAdminPortal();
 
             if (role === 'seller') {
-                showToast(`Welcome Seller ${fullName}! Your seller dashboard is ready.`, 'success');
+                showToast(`Welcome Seller ${fullName}! Your global seller dashboard is ready.`, 'success');
                 switchPage('seller');
             } else {
-                showToast(`Welcome Buyer ${fullName}! You can now browse & order.`, 'success');
+                showToast(`Welcome Buyer ${fullName}! You can now browse & order worldwide.`, 'success');
                 switchPage('marketplace');
             }
         });
@@ -1371,13 +1507,16 @@ function setupForms() {
             const editId = document.getElementById('editProductId').value;
             const inputPrice = parseFloat(document.getElementById('sellerProdPrice').value) || 0;
             // Convert to base USD for storage
-            const curr = AppState.currencyRates[AppState.currentCurrency] || AppState.currencyRates['NGN'];
+            const curr = AppState.currencyRates[AppState.currentCurrency] || AppState.currencyRates['USD'];
             const priceInUSD = inputPrice / curr.rate;
 
             const inputSellerName = document.getElementById('sellerProdSellerName').value.trim();
             const inputSellerPhone = document.getElementById('sellerProdPhone').value.trim();
             const sellerName = inputSellerName || (user && user.full_name) || 'Verified Seller';
             const sellerPhone = inputSellerPhone || (user && user.phone) || '+234 800 000 0000';
+            const country = document.getElementById('sellerProdCountry')?.value.trim() || 'Nigeria';
+            const stateVal = document.getElementById('sellerProdStateSelect')?.value.trim() || '';
+            const cityVal = document.getElementById('sellerProdLocation')?.value.trim() || stateVal || 'Abuja';
 
             const payload = {
                 title: document.getElementById('sellerProdTitle').value.trim(),
@@ -1387,7 +1526,9 @@ function setupForms() {
                 seller_phone: sellerPhone,
                 phone: sellerPhone,
                 whatsapp: sellerPhone,
-                city: document.getElementById('sellerProdLocation').value.trim() || 'Abuja',
+                country: country,
+                state: stateVal || cityVal,
+                city: cityVal,
                 description: document.getElementById('sellerProdDesc').value.trim(),
                 photo_url: document.getElementById('sellerProdPhoto').value.trim(),
                 user_id: user ? (user.id || user.phone) : (sellerPhone || Date.now())
@@ -1405,7 +1546,7 @@ function setupForms() {
                 showToast('Good updated and live on marketplace!', 'success');
             } else {
                 await API.createProduct(payload);
-                showToast('🎉 Good published! Buyers in search & marketplace can now view and buy it.', 'success');
+                showToast('🎉 Good published! Buyers worldwide in search & marketplace can now view and buy it.', 'success');
             }
 
             closeModal('addProductModal');
@@ -1423,9 +1564,12 @@ function setupForms() {
             if (!requireAuth('submit a buying assistance order')) {
                 return;
             }
+            const targetCountry = document.getElementById('mainPbaCountry')?.value.trim() || 'Nigeria';
+            const targetCity = document.getElementById('mainPbaCity')?.value.trim() || 'Lagos / Worldwide';
             const payload = {
                 item_title: document.getElementById('mainPbaItem').value.trim(),
-                target_city: document.getElementById('mainPbaCity').value.trim(),
+                target_country: targetCountry,
+                target_city: targetCity,
                 customer_name: document.getElementById('mainPbaName').value.trim(),
                 customer_phone: document.getElementById('mainPbaPhone').value.trim(),
                 specifications: document.getElementById('mainPbaSpecs').value.trim(),
@@ -1517,10 +1661,10 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
             .then(registration => {
-                console.log('✅ [GlobalBiz PWA] Service Worker registered successfully:', registration.scope);
+                console.log('✅ [Market at Home PWA] Service Worker registered successfully:', registration.scope);
             })
             .catch(error => {
-                console.warn('⚠️ [GlobalBiz PWA] Service Worker registration failed:', error);
+                console.warn('⚠️ [Market at Home PWA] Service Worker registration failed:', error);
             });
     });
 }
@@ -1563,7 +1707,7 @@ async function installPwaApp() {
         deferredPwaInstallPrompt.prompt();
         const { outcome } = await deferredPwaInstallPrompt.userChoice;
         if (outcome === 'accepted') {
-            showToast('🎉 Thank you for installing GlobalBiz!', 'success');
+            showToast('🎉 Thank you for installing Market at Home!', 'success');
         }
         deferredPwaInstallPrompt = null;
     } else {
@@ -1579,8 +1723,8 @@ async function installPwaApp() {
 
 // 4. Listen for successful PWA installation
 window.addEventListener('appinstalled', () => {
-    console.log('✅ [GlobalBiz PWA] App installed to user device');
-    showToast('🎉 GlobalBiz is now installed on your home screen!', 'success');
+    console.log('✅ [Market at Home PWA] App installed to user device');
+    showToast('🎉 Market at Home is now installed on your home screen!', 'success');
     const floatingPrompt = document.getElementById('pwaFloatingPrompt');
     if (floatingPrompt) floatingPrompt.style.display = 'none';
     deferredPwaInstallPrompt = null;

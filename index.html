@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GlobalBiz — Public Online Marketplace & Verified Seller Portal</title>
+    <title>Market at Home — Buy & Sell Worldwide</title>
     
     <!-- PWA & Mobile App Meta Tags -->
     <link rel="manifest" href="manifest.json">
@@ -11,7 +11,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="GlobalBiz">
+    <meta name="apple-mobile-web-app-title" content="Market at Home">
     <link rel="apple-touch-icon" href="assets/icons/icon.svg">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
     
@@ -21,8 +21,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Decent & Professional Stylesheet (v3.0 Cache Bust) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=3.0">
+    <!-- Decent & Professional Stylesheet (v3.1 Cache Bust) -->
+    <link rel="stylesheet" href="assets/css/style.css?v=3.1">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
     <div id="adminQuickActionsBar" style="display:none; background:#0F172A; color:#fff; padding:8px 16px; font-size:0.8rem; border-bottom:2px solid var(--brand-green); position:sticky; top:0; z-index:1100;">
         <div class="container" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
             <div style="display:flex; align-items:center; gap:8px;">
-                <span style="background:var(--brand-green); color:#fff; padding:2px 8px; border-radius:var(--radius-xs); font-size:0.7rem; font-weight:800; letter-spacing:0.04em;">ADMIN DESK</span>
+                <span style="background:var(--brand-green); color:#fff; padding:2px 8px; border-radius:var(--radius-xs); font-size:0.7rem; font-weight:800; letter-spacing:0.04em;">MARKET AT HOME DESK</span>
                 <span style="font-weight:700;">Welcome, <strong style="color:var(--brand-green-light);">Amina</strong></span>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
@@ -62,11 +62,11 @@
         <div class="container nav-container">
             <a href="#" class="nav-brand" onclick="switchPage('home'); return false;">
                 <div class="brand-logo-circle">
-                    <i class="fa-solid fa-store"></i>
+                    <i class="fa-solid fa-house-laptop"></i>
                 </div>
                 <div class="brand-text">
-                    <span class="brand-main">GLOBAL BIZ</span>
-                    <span class="brand-sub">Verified Marketplace</span>
+                    <span class="brand-main">MARKET AT HOME</span>
+                    <span class="brand-sub">Buy & Sell Worldwide</span>
                 </div>
             </a>
 
@@ -84,11 +84,17 @@
             <div class="nav-actions">
                 <div class="currency-wrapper">
                     <select id="currencySelector" class="currency-select" title="Change Currency">
-                        <option value="NGN" selected>₦ NGN</option>
                         <option value="USD">$ USD</option>
-                        <option value="SAR">﷼ SAR</option>
-                        <option value="EUR">€ EUR</option>
+                        <option value="NGN" selected>₦ NGN</option>
                         <option value="GBP">£ GBP</option>
+                        <option value="EUR">€ EUR</option>
+                        <option value="CAD">CA$ CAD</option>
+                        <option value="AED">AED</option>
+                        <option value="GHS">GH₵ GHS</option>
+                        <option value="KES">KSh KES</option>
+                        <option value="ZAR">R ZAR</option>
+                        <option value="SAR">﷼ SAR</option>
+                        <option value="CNY">¥ CNY</option>
                     </select>
                 </div>
 
@@ -145,7 +151,7 @@
         <div class="container" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
             <div style="display:flex; align-items:center; gap:8px;">
                 <i class="fa-solid fa-lock" style="color:#D97706; font-size:1.05rem;"></i>
-                <span><strong>Account Required:</strong> Sign in or register as a Buyer / Seller to chat with sellers, post items, or request purchase inspection.</span>
+                <span><strong>Account Required:</strong> Sign in or register as a Buyer / Seller to chat with sellers worldwide, post items, or request purchase inspection.</span>
             </div>
             <div style="display:flex; gap:8px;">
                 <button class="btn btn-sm btn-primary" onclick="openAuthModal('login')"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
@@ -166,40 +172,83 @@
             <section class="hero-section">
                 <div class="container hero-content">
                     <div class="hero-badge">
-                        <i class="fa-solid fa-shield-halved"></i> 100% Verified Sellers & Sourcing Platform
+                        <i class="fa-solid fa-earth-americas"></i> Worldwide Public Marketplace — Buy & Sell in Any Country
                     </div>
                     <h1 class="hero-title">
-                        Buy & Sell Directly Across <span class="text-highlight">Abuja, Kano, Kaduna & Nigeria</span>
+                        Market at Home: <span class="text-highlight">Buy & Sell Worldwide</span>
                     </h1>
                     <p class="hero-description">
-                        Connect with verified local sellers, browse genuine products (Ankara, Wigs, Phones, Agricultural Produce), or request our certified agents for purchase inspection & delivery.
+                        Connect with verified international & local sellers, trade genuine products across countries and states, or request certified agents for direct purchase inspection & global delivery.
                     </p>
 
-                    <!-- Modern Unified Search Bar -->
-                    <form id="mainSearchForm" class="hero-unified-search">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input type="text" id="mainSearchInput" placeholder="Search Ankara, Wigs, Phones, Benue Yam, Abuja..." autocomplete="off">
+                    <!-- Modern Unified Worldwide Search Bar -->
+                    <form id="mainSearchForm" class="hero-unified-search-worldwide">
+                        <div class="search-input-group">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="mainSearchInput" placeholder="What are you looking for? (e.g. Phone, Ankara, Car, Yam, Wigs...)" autocomplete="off">
+                        </div>
+                        <div class="search-select-divider"></div>
+                        <div class="search-select-group">
+                            <i class="fa-solid fa-globe search-field-icon"></i>
+                            <select id="heroCountrySelect" onchange="handleHeroCountryChange(this.value)" class="hero-field-select" title="Choose Country">
+                                <option value="">🌍 All Countries</option>
+                                <option value="Nigeria">🇳🇬 Nigeria</option>
+                                <option value="United States">🇺🇸 United States</option>
+                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                <option value="Canada">🇨🇦 Canada</option>
+                                <option value="Ghana">🇬🇭 Ghana</option>
+                                <option value="United Arab Emirates">🇦🇪 UAE (Dubai)</option>
+                                <option value="China">🇨🇳 China</option>
+                                <option value="Kenya">🇰🇪 Kenya</option>
+                                <option value="South Africa">🇿🇦 South Africa</option>
+                                <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                                <option value="Germany">🇩🇪 Germany</option>
+                                <option value="France">🇫🇷 France</option>
+                                <option value="India">🇮🇳 India</option>
+                                <option value="Australia">🇦🇺 Australia</option>
+                                <option value="Egypt">🇪🇬 Egypt</option>
+                            </select>
+                        </div>
+                        <div class="search-select-divider"></div>
+                        <div class="search-select-group">
+                            <i class="fa-solid fa-location-dot search-field-icon"></i>
+                            <select id="heroStateSelect" class="hero-field-select" title="Choose State / Region">
+                                <option value="">📍 All States / Regions</option>
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary search-action-btn">
-                            <i class="fa-solid fa-magnifying-glass"></i> <span>Search</span>
+                            <i class="fa-solid fa-magnifying-glass"></i> <span>Search Worldwide</span>
                         </button>
                     </form>
 
-                    <!-- Quick Location Filter Pills -->
+                    <!-- Quick Worldwide Country Filter Pills -->
                     <div class="hero-location-pills">
-                        <button type="button" class="hero-loc-pill active" onclick="filterByCity('', this)">
-                            <i class="fa-solid fa-globe" style="color:var(--brand-green);"></i> All Nigeria
+                        <button type="button" class="hero-loc-pill active" onclick="filterByWorldwideLocation('', '', this)">
+                            <i class="fa-solid fa-earth-americas" style="color:var(--brand-green);"></i> 🌍 Worldwide
                         </button>
-                        <button type="button" class="hero-loc-pill" onclick="filterByCity('Abuja', this)">
-                            <i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> Abuja
+                        <button type="button" class="hero-loc-pill" onclick="filterByWorldwideLocation('Nigeria', '', this)">
+                            🇳🇬 Nigeria
                         </button>
-                        <button type="button" class="hero-loc-pill" onclick="filterByCity('Kano', this)">
-                            <i class="fa-solid fa-location-dot" style="color:#D97706;"></i> Kano
+                        <button type="button" class="hero-loc-pill" onclick="filterByWorldwideLocation('United States', '', this)">
+                            🇺🇸 United States
                         </button>
-                        <button type="button" class="hero-loc-pill" onclick="filterByCity('Kaduna', this)">
-                            <i class="fa-solid fa-location-dot" style="color:#3B82F6;"></i> Kaduna
+                        <button type="button" class="hero-loc-pill" onclick="filterByWorldwideLocation('United Kingdom', '', this)">
+                            🇬🇧 United Kingdom
                         </button>
-                        <button type="button" class="hero-loc-pill" onclick="filterByCity('Lagos', this)">
-                            <i class="fa-solid fa-location-dot" style="color:#10B981;"></i> Lagos
+                        <button type="button" class="hero-loc-pill" onclick="filterByWorldwideLocation('Canada', '', this)">
+                            🇨🇦 Canada
+                        </button>
+                        <button type="button" class="hero-loc-pill" onclick="filterByWorldwideLocation('United Arab Emirates', '', this)">
+                            🇦🇪 UAE
+                        </button>
+                        <button type="button" class="hero-loc-pill" onclick="filterByWorldwideLocation('Ghana', '', this)">
+                            🇬🇭 Ghana
+                        </button>
+                        <button type="button" class="hero-loc-pill" onclick="filterByWorldwideLocation('China', '', this)">
+                            🇨🇳 China
+                        </button>
+                        <button type="button" class="hero-loc-pill" onclick="filterByWorldwideLocation('Kenya', '', this)">
+                            🇰🇪 Kenya
                         </button>
                     </div>
 
@@ -341,28 +390,59 @@
             <div class="container section">
                 <div class="section-header">
                     <div>
-                        <h2 class="section-title">🛍️ Explore Products & Listings</h2>
-                        <p class="section-subtitle">Search products, compare prices in ₦, and chat directly with sellers.</p>
+                        <h2 class="section-title">🛍️ Explore Worldwide Products & Listings</h2>
+                        <p class="section-subtitle">Search products across countries and states, compare prices in your currency, and chat directly with sellers.</p>
                     </div>
                     <button class="btn btn-primary btn-sm" onclick="openAddProductModal()">
                         <i class="fa-solid fa-plus"></i> Post An Item
                     </button>
                 </div>
 
-                <!-- Filter Controls -->
-                <div class="card" style="margin-bottom:16px; padding:12px;">
-                    <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                        <input type="text" id="marketSearchFilter" class="form-input" style="flex:2; min-width:160px;" placeholder="Search (e.g. Wig, Ankara, Shoes)..." oninput="filterMarketplace()">
-                        <select id="marketCategoryFilter" class="form-select" style="flex:1; min-width:130px;" onchange="filterMarketplace()">
-                            <option value="">All Categories</option>
-                        </select>
-                        <select id="marketCityFilter" class="form-select" style="flex:1; min-width:110px;" onchange="filterMarketplace()">
-                            <option value="">All Cities</option>
-                            <option value="Abuja">Abuja</option>
-                            <option value="Kano">Kano</option>
-                            <option value="Kaduna">Kaduna</option>
-                            <option value="Lagos">Lagos</option>
-                        </select>
+                <!-- Worldwide Filter Controls -->
+                <div class="card" style="margin-bottom:16px; padding:14px;">
+                    <div class="marketplace-filter-grid">
+                        <div class="filter-field-group" style="flex:2; min-width:180px;">
+                            <label class="filter-label"><i class="fa-solid fa-magnifying-glass"></i> Keyword</label>
+                            <input type="text" id="marketSearchFilter" class="form-input" placeholder="Search (e.g. Phone, Ankara, Car, Yam, Shoes)..." oninput="filterMarketplace()">
+                        </div>
+                        <div class="filter-field-group" style="flex:1.2; min-width:140px;">
+                            <label class="filter-label"><i class="fa-solid fa-layer-group"></i> Category</label>
+                            <select id="marketCategoryFilter" class="form-select" onchange="filterMarketplace()">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="filter-field-group" style="flex:1.3; min-width:140px;">
+                            <label class="filter-label"><i class="fa-solid fa-globe"></i> Country</label>
+                            <select id="marketCountryFilter" class="form-select" onchange="handleMarketCountryChange(this.value)">
+                                <option value="">🌍 All Countries</option>
+                                <option value="Nigeria">🇳🇬 Nigeria</option>
+                                <option value="United States">🇺🇸 United States</option>
+                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                <option value="Canada">🇨🇦 Canada</option>
+                                <option value="Ghana">🇬🇭 Ghana</option>
+                                <option value="United Arab Emirates">🇦🇪 UAE</option>
+                                <option value="China">🇨🇳 China</option>
+                                <option value="Kenya">🇰🇪 Kenya</option>
+                                <option value="South Africa">🇿🇦 South Africa</option>
+                                <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                                <option value="Germany">🇩🇪 Germany</option>
+                                <option value="France">🇫🇷 France</option>
+                                <option value="India">🇮🇳 India</option>
+                                <option value="Australia">🇦🇺 Australia</option>
+                                <option value="Egypt">🇪🇬 Egypt</option>
+                            </select>
+                        </div>
+                        <div class="filter-field-group" style="flex:1.3; min-width:140px;">
+                            <label class="filter-label"><i class="fa-solid fa-location-dot"></i> State / Region</label>
+                            <select id="marketStateFilter" class="form-select" onchange="filterMarketplace()">
+                                <option value="">📍 All States</option>
+                            </select>
+                        </div>
+                        <div class="filter-field-group" style="display:flex; align-items:flex-end;">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="resetMarketplaceFilters()" style="padding:9px 12px; height:38px; width:100%;" title="Reset Filters">
+                                <i class="fa-solid fa-arrow-rotate-left"></i> Reset
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -498,24 +578,40 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">What item do you want to buy? *</label>
-                                <input type="text" id="mainPbaItem" class="form-input" placeholder="e.g. 50 bags of Benue Yam, Bone Straight Wig" required>
+                                <label class="form-label">What item do you want to source / buy? *</label>
+                                <input type="text" id="mainPbaItem" class="form-input" placeholder="e.g. 50 bags of Yam, iPhone 15, Fabrics, Auto parts" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Target City / State *</label>
-                                <input type="text" id="mainPbaCity" class="form-input" placeholder="e.g. Abuja, Kano, Kaduna" required>
+                                <label class="form-label"><i class="fa-solid fa-globe"></i> Target Country *</label>
+                                <select id="mainPbaCountry" class="form-select" required>
+                                    <option value="Worldwide">🌍 Worldwide (Any Country)</option>
+                                    <option value="Nigeria" selected>🇳🇬 Nigeria</option>
+                                    <option value="China">🇨🇳 China</option>
+                                    <option value="United States">🇺🇸 United States</option>
+                                    <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                    <option value="United Arab Emirates">🇦🇪 UAE (Dubai)</option>
+                                    <option value="Ghana">🇬🇭 Ghana</option>
+                                    <option value="Kenya">🇰🇪 Kenya</option>
+                                    <option value="South Africa">🇿🇦 South Africa</option>
+                                    <option value="Germany">🇩🇪 Germany</option>
+                                </select>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
+                                <label class="form-label"><i class="fa-solid fa-location-dot"></i> Target State / City / Market *</label>
+                                <input type="text" id="mainPbaCity" class="form-input" placeholder="e.g. Kano, Abuja, Guangzhou, London, Texas" required>
+                            </div>
+                            <div class="form-group">
                                 <label class="form-label">Your Full Name *</label>
                                 <input type="text" id="mainPbaName" class="form-input" placeholder="e.g. Ahmed Yusuf" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">WhatsApp / Phone Number *</label>
-                                <input type="tel" id="mainPbaPhone" class="form-input" placeholder="+234 800 000 0000" required>
-                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">WhatsApp / Phone Number with Country Code *</label>
+                            <input type="tel" id="mainPbaPhone" class="form-input" placeholder="+234 800 000 0000 or +1 213 000 0000" required>
                         </div>
 
                         <div class="form-group">
@@ -914,7 +1010,7 @@
 
             <!-- Bottom Copyright Bar -->
             <div class="footer-bottom">
-                <div>© 2026 GlobalBiz Marketplace. All rights reserved.</div>
+                <div>© 2026 Market at Home — Buy & Sell Worldwide. All rights reserved.</div>
                 <div>
                     Developed with <i class="fa-solid fa-heart" style="color:#EF4444;"></i> by <strong>Amina Ahmed</strong> | 
                     <a href="https://wa.me/2349090809080" target="_blank" style="color:#25D366; text-decoration:none; font-weight:700;">
@@ -964,7 +1060,7 @@
                     </div>
                     <div class="modal-header-text">
                         <div class="modal-title" id="addProductModalTitle">Add New Good / Product</div>
-                        <p class="modal-subtitle">Publish your product to verified buyers across Nigeria & Diaspora</p>
+                        <p class="modal-subtitle">Publish your product to verified buyers worldwide</p>
                     </div>
                 </div>
                 <button class="modal-close-btn" onclick="closeModal('addProductModal')" title="Close Modal">
@@ -986,7 +1082,7 @@
                             <label class="form-label">Product Name / Title <span class="req-star">*</span></label>
                             <div class="input-with-icon">
                                 <i class="fa-solid fa-cube input-icon"></i>
-                                <input type="text" id="sellerProdTitle" class="form-input form-input-icon" placeholder="e.g. Authentic Senegalese Kaftan / Ankara Fabric" required>
+                                <input type="text" id="sellerProdTitle" class="form-input form-input-icon" placeholder="e.g. Authentic Senegalese Kaftan / iPhone / Ankara" required>
                             </div>
                         </div>
 
@@ -994,8 +1090,8 @@
                             <div class="form-group">
                                 <label class="form-label">Price <span class="req-star">*</span></label>
                                 <div class="input-with-icon">
-                                    <span class="input-currency-badge">₦ / $</span>
-                                    <input type="number" step="any" id="sellerProdPrice" class="form-input form-input-currency" placeholder="e.g. 25000" required>
+                                    <span class="input-currency-badge">Price</span>
+                                    <input type="number" step="any" id="sellerProdPrice" class="form-input form-input-currency" placeholder="e.g. 25000 or 150" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -1008,37 +1104,71 @@
                         </div>
                     </div>
 
-                    <!-- Section 2: Seller & Location Details -->
+                    <!-- Section 2: Seller & Worldwide Location Details -->
                     <div class="form-section-block">
                         <div class="form-section-title">
-                            <i class="fa-solid fa-user-shield" style="color:var(--brand-green);"></i>
-                            <span>Seller & Location Details</span>
+                            <i class="fa-solid fa-earth-americas" style="color:var(--brand-green);"></i>
+                            <span>Seller & Worldwide Location</span>
                         </div>
 
                         <div class="form-row form-row-2col">
                             <div class="form-group">
-                                <label class="form-label">Seller / Business Name <span class="req-star">*</span></label>
+                                <label class="form-label">Seller / Store Name <span class="req-star">*</span></label>
                                 <div class="input-with-icon">
                                     <i class="fa-solid fa-store input-icon"></i>
                                     <input type="text" id="sellerProdSellerName" class="form-input form-input-icon" placeholder="e.g. Amina Ventures" required>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Location (City / State) <span class="req-star">*</span></label>
+                                <label class="form-label">Country <span class="req-star">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-globe input-icon"></i>
+                                    <select id="sellerProdCountry" class="form-select form-input-icon" required onchange="handleProductModalCountryChange(this.value)">
+                                        <option value="Nigeria" selected>🇳🇬 Nigeria</option>
+                                        <option value="United States">🇺🇸 United States</option>
+                                        <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                        <option value="Canada">🇨🇦 Canada</option>
+                                        <option value="Ghana">🇬🇭 Ghana</option>
+                                        <option value="United Arab Emirates">🇦🇪 UAE</option>
+                                        <option value="China">🇨🇳 China</option>
+                                        <option value="Kenya">🇰🇪 Kenya</option>
+                                        <option value="South Africa">🇿🇦 South Africa</option>
+                                        <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                                        <option value="Germany">🇩🇪 Germany</option>
+                                        <option value="France">🇫🇷 France</option>
+                                        <option value="India">🇮🇳 India</option>
+                                        <option value="Australia">🇦🇺 Australia</option>
+                                        <option value="Egypt">🇪🇬 Egypt</option>
+                                        <option value="Other">🌍 Other Country</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row form-row-2col">
+                            <div class="form-group">
+                                <label class="form-label">State / Region <span class="req-star">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-map-location-dot input-icon"></i>
+                                    <select id="sellerProdStateSelect" class="form-select form-input-icon" onchange="syncSellerProdLocationInput(this.value)"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">City / Specific Area <span class="req-star">*</span></label>
                                 <div class="input-with-icon">
                                     <i class="fa-solid fa-location-dot input-icon" style="color:#EF4444;"></i>
-                                    <input type="text" id="sellerProdLocation" class="form-input form-input-icon" placeholder="e.g. Abuja / Kano / Lagos" required>
+                                    <input type="text" id="sellerProdLocation" class="form-input form-input-icon" placeholder="e.g. Abuja (Wuse 2), Texas, London" required>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">WhatsApp / Phone Number <span class="req-star">*</span></label>
+                            <label class="form-label">WhatsApp / Phone Number with Country Code <span class="req-star">*</span></label>
                             <div class="input-with-icon">
                                 <i class="fa-brands fa-whatsapp input-icon" style="color:#22C55E; font-size:1.1rem;"></i>
-                                <input type="tel" id="sellerProdPhone" class="form-input form-input-icon" placeholder="+234 803 456 7890" required>
+                                <input type="tel" id="sellerProdPhone" class="form-input form-input-icon" placeholder="+234 803 456 7890 or +1 213 555 0199" required>
                             </div>
-                            <span class="field-hint"><i class="fa-solid fa-circle-info"></i> Buyers can tap directly to message you on WhatsApp</span>
+                            <span class="field-hint"><i class="fa-solid fa-circle-info"></i> Buyers worldwide can tap directly to message or call you</span>
                         </div>
                     </div>
 
@@ -1203,13 +1333,35 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Location (City) *</label>
-                                <input type="text" id="regLocation" class="form-input" placeholder="e.g. Abuja / Kano / Kaduna" required>
+                                <label class="form-label"><i class="fa-solid fa-globe"></i> Country *</label>
+                                <select id="regCountry" class="form-select" required onchange="handleRegCountryChange(this.value)">
+                                    <option value="Nigeria" selected>🇳🇬 Nigeria</option>
+                                    <option value="United States">🇺🇸 United States</option>
+                                    <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                    <option value="Canada">🇨🇦 Canada</option>
+                                    <option value="Ghana">🇬🇭 Ghana</option>
+                                    <option value="United Arab Emirates">🇦🇪 UAE</option>
+                                    <option value="China">🇨🇳 China</option>
+                                    <option value="Kenya">🇰🇪 Kenya</option>
+                                    <option value="South Africa">🇿🇦 South Africa</option>
+                                    <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                                    <option value="Germany">🇩🇪 Germany</option>
+                                    <option value="France">🇫🇷 France</option>
+                                    <option value="India">🇮🇳 India</option>
+                                    <option value="Australia">🇦🇺 Australia</option>
+                                    <option value="Egypt">🇪🇬 Egypt</option>
+                                    <option value="Other">🌍 Other</option>
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Password *</label>
-                                <input type="password" id="regPassword" class="form-input" placeholder="Create password" required>
+                                <label class="form-label"><i class="fa-solid fa-location-dot"></i> State / City *</label>
+                                <input type="text" id="regLocation" class="form-input" placeholder="e.g. Abuja / London / New York" required>
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-lock"></i> Password *</label>
+                            <input type="password" id="regPassword" class="form-input" placeholder="Create password" required>
                         </div>
 
                         <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:10px;">
@@ -1264,10 +1416,6 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Phone / WhatsApp *</label>
-                            <input type="tel" id="adminSellerPhone" class="form-input" placeholder="+234 803 000 0000" required>
-                        </div>
-                        <div class="form-group">
                             <label class="form-label">Store Category *</label>
                             <select id="adminSellerCategory" class="form-select">
                                 <option value="Clothing & Fashion">Clothing & Fashion (Ankara)</option>
@@ -1276,6 +1424,10 @@
                                 <option value="Mobile Phones">Mobile Phones & Tech</option>
                                 <option value="General Marketplace">General Marketplace</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <input type="text" id="adminSellerCountry" class="form-input" value="Nigeria">
                         </div>
                     </div>
 
@@ -1344,8 +1496,8 @@
                 <i class="fa-solid fa-mobile-screen-button"></i>
             </div>
             <div class="pwa-floating-text">
-                <div class="pwa-floating-title">Install GlobalBiz App</div>
-                <div class="pwa-floating-desc">Fast browsing, instant access & offline catalog.</div>
+                <div class="pwa-floating-title">Install Market at Home App</div>
+                <div class="pwa-floating-desc">Fast browsing, instant worldwide access & offline catalog.</div>
             </div>
         </div>
         <div class="pwa-floating-actions">
@@ -1383,8 +1535,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with cache busting v=3.0 -->
-    <script src="assets/js/api.js?v=3.0"></script>
-    <script src="assets/js/app.js?v=3.0"></script>
+    <!-- Scripts with cache busting v=3.1 -->
+    <script src="assets/js/api.js?v=3.1"></script>
+    <script src="assets/js/app.js?v=3.1"></script>
 </body>
 </html>
