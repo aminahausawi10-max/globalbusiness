@@ -6,6 +6,16 @@
 const API = {
     baseUrl: 'api',
     _initialized: false,
+    _isSyncing: false,
+    _lastSyncTime: 0,
+
+    CLOUD_CONFIG: {
+        apiUrl: 'https://api.restful-api.dev/objects',
+        productsDocId: 'ff808181a09d98f701a0a9ec6ab51aa1',
+        usersDocId: 'ff808181a09d98f701a0a9ec6c391aa2',
+        requestsDocId: 'ff808181a09d98f701a0a9ec6dbf1aa3',
+        ordersDocId: 'ff808181a09d98f701a0a9ed35341aa9'
+    },
 
     // ==========================================
     // INITIALIZATION & PERSISTENCE
@@ -86,12 +96,154 @@ const API = {
         }
     },
 
-    
+    // ==========================================
+    // CLOUD SYNCHRONIZATION ENGINE (GLOBAL MULTI-DEVICE)
+    // ==========================================
+    async pullFromCloud() {
+        if (this._isSyncing) return this.fallbackProducts;
+        this._isSyncing = true;
+        this.initLocalData();
+        let changed = false;
+
+        try {
+            // 1. Fetch live products from Cloud Database
+            const res = await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.productsDocId}`, {
+                method: 'GET',
+                cache: 'no-store'
+            });
+            if (res.ok) {
+                const doc = await res.json();
+                if (doc && doc.data && Array.isArray(doc.data.items)) {
+                    const cloudItems = doc.data.items.filter(item => {
+                        const isDummyId = item && ((item.id >= 1000 && item.id <= 2006) || (item.id >= 1789554000000 && item.id <= 1789554000005));
+                        return !isDummyId && item && (item.title || item.name) && (item.seller_name || item.seller_phone || item.seller_id);
+                    });
+
+                    // Build merged list: cloud items + any unsynced local items
+                    const prodMap = new Map();
+                    cloudItems.forEach(p => prodMap.set(String(p.id), p));
+                    
+                    let needPush = false;
+                    (this.fallbackProducts || []).forEach(p => {
+                        if (p && p.id && !prodMap.has(String(p.id))) {
+                            prodMap.set(String(p.id), p);
+                            needPush = true;
+                            changed = true;
+                        }
+                    });
+
+                    const merged = Array.from(prodMap.values());
+                    if (merged.length !== (this.fallbackProducts || []).length || JSON.stringify(merged) !== JSON.stringify(this.fallbackProducts)) {
+                        this.fallbackProducts = merged;
+                        this.saveLocalData('products', this.fallbackProducts);
+                        changed = true;
+                    }
+
+                    if (needPush) {
+                        this.pushProductsToCloud();
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Cloud products pull notice:', e);
+        }
+
+        try {
+            // 2. Fetch live registered users from Cloud Database
+            const res = await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.usersDocId}`, {
+                method: 'GET',
+                cache: 'no-store'
+            });
+            if (res.ok) {
+                const doc = await res.json();
+                if (doc && doc.data) {
+                    let needUserPush = false;
+                    if (Array.isArray(doc.data.sellers)) {
+                        const sellerMap = new Map();
+                        doc.data.sellers.forEach(s => sellerMap.set(String(s.phone || s.id), s));
+                        (this.fallbackSellers || []).forEach(s => {
+                            if (!sellerMap.has(String(s.phone || s.id))) {
+                                sellerMap.set(String(s.phone || s.id), s);
+                                needUserPush = true;
+                            }
+                        });
+                        this.fallbackSellers = Array.from(sellerMap.values());
+                        this.saveLocalData('sellers', this.fallbackSellers);
+                    }
+                    if (Array.isArray(doc.data.buyers)) {
+                        const buyerMap = new Map();
+                        doc.data.buyers.forEach(b => buyerMap.set(String(b.phone || b.id), b));
+                        (this.fallbackBuyers || []).forEach(b => {
+                            if (!buyerMap.has(String(b.phone || b.id))) {
+                                buyerMap.set(String(b.phone || b.id), b);
+                                needUserPush = true;
+                            }
+                        });
+                        this.fallbackBuyers = Array.from(buyerMap.values());
+                        this.saveLocalData('buyers', this.fallbackBuyers);
+                    }
+                    if (needUserPush) {
+                        this.pushUsersToCloud();
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Cloud users pull notice:', e);
+        }
+
+        this._isSyncing = false;
+        this._lastSyncTime = Date.now();
+
+        if (changed && typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('globalbiz:cloud-synced', {
+                detail: { products: this.fallbackProducts, total: (this.fallbackProducts || []).length }
+            }));
+        }
+
+        return this.fallbackProducts;
+    },
+
+    async pushProductsToCloud() {
+        try {
+            await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.productsDocId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: 'market_at_home_products_v1',
+                    data: { items: this.fallbackProducts || [] }
+                })
+            });
+        } catch (e) {
+            console.warn('Cloud products push notice:', e);
+        }
+    },
+
+    async pushUsersToCloud() {
+        try {
+            await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.usersDocId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: 'market_at_home_users_v1',
+                    data: {
+                        sellers: this.fallbackSellers || [],
+                        buyers: this.fallbackBuyers || []
+                    }
+                })
+            });
+        } catch (e) {
+            console.warn('Cloud users push notice:', e);
+        }
+    },
+
     // ==========================================
     // UNIFIED USER AUTH & ROLE MANAGEMENT
     // ==========================================
     async getUsers(params = {}) {
         this.initLocalData();
+        if (!this._lastSyncTime || Date.now() - this._lastSyncTime > 15000) {
+            this.pullFromCloud();
+        }
         const sellers = (this.fallbackSellers || []).map(s => ({
             id: s.id,
             full_name: s.full_name,
@@ -151,6 +303,7 @@ const API = {
                 role: 'seller',
                 password: userPass
             };
+            this.pushUsersToCloud();
             return newUser;
         } else {
             const buyerRes = await this.createBuyer({
@@ -165,8 +318,10 @@ const API = {
                 role: 'buyer',
                 password: userPass
             };
+            this.pushUsersToCloud();
             return newUser;
         }
+    },
     },
 
     async toggleUserStatus(userId) {
@@ -255,6 +410,9 @@ const API = {
     // ==========================================
     async getProducts(params = {}) {
         this.initLocalData();
+        if (!this._lastSyncTime || Date.now() - this._lastSyncTime > 10000) {
+            this.pullFromCloud();
+        }
         return this.filterFallbackProducts(params);
     },
 
@@ -305,6 +463,7 @@ const API = {
         };
         this.fallbackProducts.unshift(newProd);
         this.saveLocalData('products', this.fallbackProducts);
+        this.pushProductsToCloud();
         return { status: 'success', id: newProd.id, data: newProd, message: 'Good listed on marketplace successfully!' };
     },
 
@@ -335,6 +494,7 @@ const API = {
                 updated_at: new Date().toISOString().split('T')[0]
             };
             this.saveLocalData('products', this.fallbackProducts);
+            this.pushProductsToCloud();
             return { status: 'success', data: this.fallbackProducts[idx], message: 'Product updated successfully!' };
         }
         return { status: 'error', message: 'Product not found' };
@@ -344,6 +504,7 @@ const API = {
         this.initLocalData();
         this.fallbackProducts = this.fallbackProducts.filter(x => x.id != id);
         this.saveLocalData('products', this.fallbackProducts);
+        this.pushProductsToCloud();
         return { status: 'success', message: 'Product removed successfully!' };
     },
 
@@ -353,6 +514,7 @@ const API = {
         if (prod) {
             prod.status = status;
             this.saveLocalData('products', this.fallbackProducts);
+            this.pushProductsToCloud();
             return { status: 'success', message: 'Product ' + (status === 'approved' ? 'approved' : 'rejected') };
         }
         return { status: 'error', message: 'Product not found' };
@@ -529,6 +691,7 @@ const API = {
         };
         this.fallbackSellers.unshift(newSeller);
         this.saveLocalData('sellers', this.fallbackSellers);
+        this.pushUsersToCloud();
         return { status: 'success', data: newSeller, message: 'Seller registered successfully!' };
     },
 
@@ -540,6 +703,7 @@ const API = {
             seller.verification_status = isVerified === 1 ? 'Approved' : (isVerified === -1 ? 'Rejected' : 'Pending Review');
             seller.verification_notes = notes;
             this.saveLocalData('sellers', this.fallbackSellers);
+            this.pushUsersToCloud();
             return { status: 'success', message: isVerified === 1 ? 'Seller verified with official badge!' : (isVerified === -1 ? 'Seller verification rejected' : 'Verification status updated') };
         }
         return { status: 'error', message: 'Seller not found' };
@@ -551,6 +715,7 @@ const API = {
         if (idx !== -1) {
             this.fallbackSellers[idx] = { ...this.fallbackSellers[idx], ...payload };
             this.saveLocalData('sellers', this.fallbackSellers);
+            this.pushUsersToCloud();
             return { status: 'success', data: this.fallbackSellers[idx], message: 'Seller updated successfully' };
         }
         return { status: 'error', message: 'Seller not found' };
@@ -560,6 +725,7 @@ const API = {
         this.initLocalData();
         this.fallbackSellers = this.fallbackSellers.filter(s => s.id != id);
         this.saveLocalData('sellers', this.fallbackSellers);
+        this.pushUsersToCloud();
         return { status: 'success', message: 'Seller removed successfully' };
     },
 
@@ -601,6 +767,7 @@ const API = {
         };
         this.fallbackBuyers.unshift(newBuyer);
         this.saveLocalData('buyers', this.fallbackBuyers);
+        this.pushUsersToCloud();
         return { status: 'success', data: newBuyer, message: 'Buyer registered successfully!' };
     },
 
@@ -610,6 +777,7 @@ const API = {
         if (idx !== -1) {
             this.fallbackBuyers[idx] = { ...this.fallbackBuyers[idx], ...payload };
             this.saveLocalData('buyers', this.fallbackBuyers);
+            this.pushUsersToCloud();
             return { status: 'success', data: this.fallbackBuyers[idx], message: 'Buyer updated successfully' };
         }
         return { status: 'error', message: 'Buyer not found' };
@@ -619,6 +787,7 @@ const API = {
         this.initLocalData();
         this.fallbackBuyers = this.fallbackBuyers.filter(b => b.id != id);
         this.saveLocalData('buyers', this.fallbackBuyers);
+        this.pushUsersToCloud();
         return { status: 'success', message: 'Buyer removed successfully' };
     },
 

@@ -75,6 +75,13 @@ async function initApp() {
     updateFavBadge();
     renderLiveAnnouncementBanner();
 
+    // Pull latest shared cloud products & users across all devices
+    try {
+        await API.pullFromCloud();
+    } catch (e) {
+        console.warn('Initial cloud pull notice:', e);
+    }
+
     // Populate Initial Catalogs
     await loadCategories();
     await loadHomeFeatured();
@@ -86,6 +93,41 @@ async function initApp() {
     // Default select Abuja on trade map
     selectNigeriaState('Abuja (FCT)');
     init3DTiltEffects();
+    initCloudSyncListeners();
+}
+
+function initCloudSyncListeners() {
+    window.addEventListener('globalbiz:cloud-synced', () => {
+        const page = AppState.activePage;
+        if (page === 'marketplace' || page === 'explore') {
+            if (typeof filterMarketplace === 'function') filterMarketplace();
+        } else if (page === 'home') {
+            if (typeof loadHomeFeatured === 'function') loadHomeFeatured();
+        } else if (page === 'buyer-portal') {
+            if (typeof loadBuyerGoods === 'function') loadBuyerGoods();
+        } else if (page === 'seller-portal') {
+            if (typeof loadSellerProducts === 'function') loadSellerProducts();
+        }
+    });
+
+    // Auto-poll cloud every 8 seconds so newly published goods immediately show on other devices/buyers
+    setInterval(() => {
+        if (typeof API !== 'undefined' && typeof API.pullFromCloud === 'function') {
+            API.pullFromCloud();
+        }
+    }, 8000);
+
+    // Refresh immediately when returning to tab or regaining connection
+    window.addEventListener('focus', () => {
+        if (typeof API !== 'undefined' && typeof API.pullFromCloud === 'function') {
+            API.pullFromCloud();
+        }
+    });
+    window.addEventListener('online', () => {
+        if (typeof API !== 'undefined' && typeof API.pullFromCloud === 'function') {
+            API.pullFromCloud();
+        }
+    });
 }
 
 // ==========================================
