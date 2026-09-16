@@ -64,6 +64,112 @@ const API = {
         }
     },
 
+    
+    // ==========================================
+    // UNIFIED USER AUTH & ROLE MANAGEMENT
+    // ==========================================
+    async getUsers(params = {}) {
+        this.initLocalData();
+        const sellers = (this.fallbackSellers || []).map(s => ({
+            id: s.id,
+            full_name: s.full_name,
+            phone: s.phone,
+            email: s.email,
+            location: s.location || s.city || 'Nigeria',
+            role: 'seller',
+            store_name: s.store_name,
+            verified: s.verified || 0,
+            status: s.status || 'active',
+            password: s.password || 'password123'
+        }));
+        const buyers = (this.fallbackBuyers || []).map(b => ({
+            id: b.id,
+            full_name: b.full_name,
+            phone: b.phone,
+            email: b.email,
+            location: b.location || b.city || 'Nigeria',
+            role: 'buyer',
+            verified: b.verified || 1,
+            status: b.status || 'active',
+            password: b.password || 'password123'
+        }));
+
+        let users = [...sellers, ...buyers];
+        if (params.role) {
+            users = users.filter(u => u.role === params.role);
+        }
+        if (params.search) {
+            const q = params.search.toLowerCase();
+            users = users.filter(u => 
+                (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+                (u.phone && u.phone.includes(q)) ||
+                (u.email && u.email.toLowerCase().includes(q)) ||
+                (u.store_name && u.store_name.toLowerCase().includes(q))
+            );
+        }
+        return users;
+    },
+
+    async registerUser(payload) {
+        this.initLocalData();
+        const isSeller = payload.role === 'seller';
+        if (isSeller) {
+            const sellerRes = await this.registerSeller({
+                full_name: payload.full_name,
+                phone: payload.phone,
+                email: payload.email,
+                location: payload.location || payload.city || 'Abuja, Nigeria',
+                store_name: payload.store_name || (payload.full_name + "'s Store"),
+                verified: payload.verified || 0
+            });
+            const newUser = {
+                ...sellerRes.data,
+                role: 'seller',
+                password: payload.password || 'password123'
+            };
+            return newUser;
+        } else {
+            const buyerRes = await this.createBuyer({
+                full_name: payload.full_name,
+                phone: payload.phone,
+                email: payload.email,
+                location: payload.location || payload.city || 'Abuja, Nigeria'
+            });
+            const newUser = {
+                ...buyerRes.data,
+                role: 'buyer',
+                password: payload.password || 'password123'
+            };
+            return newUser;
+        }
+    },
+
+    async toggleUserStatus(userId) {
+        this.initLocalData();
+        const s = this.fallbackSellers.find(x => x.id == userId);
+        if (s) {
+            s.status = s.status === 'suspended' ? 'active' : 'suspended';
+            this.saveLocalData('sellers', this.fallbackSellers);
+            return { status: 'success', user: s };
+        }
+        const b = this.fallbackBuyers.find(x => x.id == userId);
+        if (b) {
+            b.status = b.status === 'suspended' ? 'active' : 'suspended';
+            this.saveLocalData('buyers', this.fallbackBuyers);
+            return { status: 'success', user: b };
+        }
+        return { status: 'error', message: 'User not found' };
+    },
+
+    async deleteUser(userId) {
+        this.initLocalData();
+        this.fallbackSellers = this.fallbackSellers.filter(s => s.id != userId);
+        this.fallbackBuyers = this.fallbackBuyers.filter(b => b.id != userId);
+        this.saveLocalData('sellers', this.fallbackSellers);
+        this.saveLocalData('buyers', this.fallbackBuyers);
+        return { status: 'success', message: 'User removed successfully' };
+    },
+
     saveLocalData(type, data) {
         try {
             if (type === 'sellers') localStorage.setItem('globalbiz_sellers_store', JSON.stringify(data));
