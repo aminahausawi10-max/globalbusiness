@@ -410,6 +410,9 @@
                         </div>
 
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn btn-sm btn-white" style="font-weight:800; background:#FFFFFF; color:#0F172A;" onclick="openEditProfileModal()">
+                                <i class="fa-solid fa-user-pen"></i> Edit Profile
+                            </button>
                             <button class="btn btn-sm btn-primary" onclick="openCartModal()">
                                 <i class="fa-solid fa-cart-shopping"></i> My Cart (<span id="buyerHeaderCartCount">0</span>)
                             </button>
@@ -782,6 +785,9 @@
                         </div>
 
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn btn-sm btn-white" style="font-weight:800; background:#FFFFFF; color:#0F172A;" onclick="openEditProfileModal()">
+                                <i class="fa-solid fa-user-pen"></i> Edit Profile
+                            </button>
                             <button class="btn btn-sm btn-primary" onclick="openAddProductModal()">
                                 <i class="fa-solid fa-plus"></i> Post New Good
                             </button>
@@ -1730,6 +1736,67 @@
         </div>
     </div>
 
+    <!-- Edit User / Store Profile Modal -->
+    <div id="editProfileModal" class="modal-overlay">
+        <div class="modal-card modal-card-premium" style="max-width:560px;">
+            <div class="modal-header modal-header-modern">
+                <div class="modal-header-content">
+                    <div class="modal-badge-icon"><i class="fa-solid fa-user-pen"></i></div>
+                    <div class="modal-header-text">
+                        <div class="modal-title" id="editProfileModalTitle">Edit Profile & Account</div>
+                        <p class="modal-subtitle">Update your personal and business details</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('editProfileModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body modal-body-styled">
+                <form id="editProfileModalForm" onsubmit="handleSaveProfileModal(event)">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" id="editProfileFullName" class="form-input" required>
+                    </div>
+                    <div class="form-group" id="editProfileStoreNameGroup">
+                        <label class="form-label">Store / Brand Name</label>
+                        <input type="text" id="editProfileStoreName" class="form-input" placeholder="e.g. Amina Luxury Ankara & Fabrics">
+                    </div>
+                    <div class="form-row form-row-2col">
+                        <div class="form-group">
+                            <label class="form-label">WhatsApp Phone *</label>
+                            <input type="tel" id="editProfilePhone" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" id="editProfileEmail" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-row form-row-2col">
+                        <div class="form-group">
+                            <label class="form-label">Country *</label>
+                            <select id="editProfileCountry" class="form-select" required>
+                                <option value="Nigeria">🇳🇬 Nigeria</option>
+                                <option value="United States">🇺🇸 United States</option>
+                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                <option value="China">🇨🇳 China</option>
+                                <option value="United Arab Emirates">🇦🇪 UAE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City / State / Location *</label>
+                            <input type="text" id="editProfileLocation" class="form-input" placeholder="e.g. Abuja (Wuse 2)" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Delivery Street Address / Store Address</label>
+                        <input type="text" id="editProfileAddress" class="form-input" placeholder="Street address, Plaza, or Building location">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Shopping Cart Modal -->
     <div id="cartModal" class="modal-overlay">
         <div class="modal-card modal-card-premium" style="max-width:540px;">
@@ -1992,8 +2059,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with v=5.3 cache bust -->
-    <script src="assets/js/api.js?v=5.3"></script>
-    <script src="assets/js/app.js?v=5.3"></script>
+    <!-- Scripts with v=5.4 cache bust -->
+    <script src="assets/js/api.js?v=5.4"></script>
+    <script src="assets/js/app.js?v=5.4"></script>
 </body>
 </html>

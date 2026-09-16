@@ -2267,3 +2267,130 @@ function renderBottomNavDock() {
         </a>
     `;
 }
+
+// ==========================================
+// 17.1 👤 USER PROFILE EDITING CONTROLLERS
+// ==========================================
+function openEditProfileModal() {
+    const user = getCurrentUser() || {
+        full_name: 'Amina Ahmed',
+        store_name: 'Amina Global Emporium',
+        phone: '+234 803 456 7890',
+        email: 'amina@marketathome.com',
+        location: 'Abuja (Wuse 2)',
+        country: 'Nigeria',
+        delivery_address: 'Plot 42, Gana Street, Maitama, Abuja'
+    };
+
+    const isSeller = user.role === 'seller';
+    const titleEl = document.getElementById('editProfileModalTitle');
+    const storeGroup = document.getElementById('editProfileStoreNameGroup');
+
+    if (titleEl) titleEl.textContent = isSeller ? '✏️ Edit Seller Store Profile' : '✏️ Edit Buyer Profile & Address';
+    if (storeGroup) storeGroup.style.display = isSeller ? 'block' : 'none';
+
+    const nameInput = document.getElementById('editProfileFullName');
+    const storeInput = document.getElementById('editProfileStoreName');
+    const phoneInput = document.getElementById('editProfilePhone');
+    const emailInput = document.getElementById('editProfileEmail');
+    const countrySelect = document.getElementById('editProfileCountry');
+    const locInput = document.getElementById('editProfileLocation');
+    const addrInput = document.getElementById('editProfileAddress');
+
+    if (nameInput) nameInput.value = user.full_name || '';
+    if (storeInput) storeInput.value = user.store_name || user.full_name || '';
+    if (phoneInput) phoneInput.value = user.phone || '';
+    if (emailInput) emailInput.value = user.email || '';
+    if (countrySelect && user.country) countrySelect.value = user.country;
+    if (locInput) locInput.value = user.location || user.city || '';
+    if (addrInput) addrInput.value = user.delivery_address || user.address || user.location || '';
+
+    document.getElementById('editProfileModal')?.classList.add('active');
+}
+
+async function handleSaveProfileModal(event) {
+    if (event) event.preventDefault();
+    const currentUser = getCurrentUser() || {};
+
+    const fullName = (document.getElementById('editProfileFullName')?.value || '').trim();
+    const storeName = (document.getElementById('editProfileStoreName')?.value || '').trim();
+    const phone = (document.getElementById('editProfilePhone')?.value || '').trim();
+    const email = (document.getElementById('editProfileEmail')?.value || '').trim();
+    const country = document.getElementById('editProfileCountry')?.value || 'Nigeria';
+    const location = (document.getElementById('editProfileLocation')?.value || '').trim() || 'Abuja';
+    const address = (document.getElementById('editProfileAddress')?.value || '').trim() || location;
+
+    if (!fullName || !phone) {
+        showToast('Please enter your full name and phone number', 'error');
+        return;
+    }
+
+    const updatedUser = {
+        ...currentUser,
+        full_name: fullName,
+        store_name: storeName || fullName,
+        phone: phone,
+        email: email,
+        country: country,
+        location: location,
+        city: location,
+        delivery_address: address,
+        address: address
+    };
+
+    setCurrentUser(updatedUser);
+
+    if (currentUser.id) {
+        if (currentUser.role === 'seller' && API.updateSeller) {
+            await API.updateSeller(currentUser.id, updatedUser);
+        } else if (API.updateBuyer) {
+            await API.updateBuyer(currentUser.id, updatedUser);
+        }
+    }
+
+    closeModal('editProfileModal');
+    showToast('✅ Profile updated successfully!', 'success');
+
+    loadBuyerPortalData();
+    loadSellerPortalData();
+    updateNavAuthUI();
+}
+
+async function handleSaveBuyerProfile(event) {
+    if (event) event.preventDefault();
+    const currentUser = getCurrentUser() || {};
+
+    const fullName = (document.getElementById('buyerProfileName')?.value || '').trim();
+    const phone = (document.getElementById('buyerProfilePhone')?.value || '').trim();
+    const email = (document.getElementById('buyerProfileEmail')?.value || '').trim();
+    const address = (document.getElementById('buyerProfileAddress')?.value || '').trim();
+    const location = (document.getElementById('buyerProfileLocation')?.value || '').trim();
+    const country = (document.getElementById('buyerProfileCountry')?.value || '').trim();
+
+    if (!fullName || !phone) {
+        showToast('Please enter name and phone number', 'error');
+        return;
+    }
+
+    const updatedUser = {
+        ...currentUser,
+        full_name: fullName,
+        phone: phone,
+        email: email,
+        delivery_address: address,
+        address: address,
+        location: location,
+        city: location,
+        country: country
+    };
+
+    setCurrentUser(updatedUser);
+
+    if (currentUser.id && API.updateBuyer) {
+        await API.updateBuyer(currentUser.id, updatedUser);
+    }
+
+    showToast('✅ Buyer profile & delivery address saved!', 'success');
+    loadBuyerPortalData();
+    updateNavAuthUI();
+}
