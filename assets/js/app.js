@@ -710,6 +710,8 @@ function updateNavAuthUI() {
     } else {
         if (navAuthText) navAuthText.textContent = 'Sign In';
     }
+
+    renderBottomNavDock();
 }
 
 function openAuthModal(mode = 'login') {
@@ -940,6 +942,7 @@ function switchPage(pageId) {
     if (pageId === 'buyer') loadBuyerPortalData();
     if (pageId === 'seller') loadSellerPortalData();
     if (pageId === 'admin') loadAdminPortalData();
+    renderBottomNavDock();
 }
 
 function switchBuyerTab(tabId) {
@@ -1867,5 +1870,121 @@ function handleRequestSellerVerification() {
         showToast('Your store already holds a Verified Merchant Badge 🛡️', 'success');
     } else {
         showToast('Verification request sent to Admin! Admin will verify your phone & store credentials.', 'success');
+    }
+}
+
+
+// ==========================================
+// DYNAMIC ROLE-BASED BOTTOM NAVIGATION CONTROLLER
+// ==========================================
+function renderBottomNavDock() {
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (!bottomNav) return;
+
+    const user = getCurrentUser();
+    const isAdmin = isAdminAuthenticated();
+    const curPage = AppState.currentPage;
+
+    if (isAdmin) {
+        bottomNav.innerHTML = `
+            <a class="bottom-nav-item ${curPage === 'home' ? 'active' : ''}" data-page="home" onclick="switchPage('home')">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+            <a class="bottom-nav-item ${curPage === 'marketplace' ? 'active' : ''}" data-page="marketplace" onclick="switchPage('marketplace')">
+                <i class="fa-solid fa-store"></i>
+                <span>Market</span>
+            </a>
+            <a class="bottom-nav-item ${curPage === 'admin' ? 'active' : ''}" data-page="admin" onclick="switchPage('admin')">
+                <i class="fa-solid fa-shield-halved" style="color:#10B981;"></i>
+                <span>Admin Desk</span>
+            </a>
+            <a class="bottom-nav-item" onclick="toggleMarketAssistant()" title="AI Shopping Assistant">
+                <i class="fa-solid fa-robot" style="color:#38BDF8;"></i>
+                <span>AI Assist</span>
+            </a>
+            <a class="bottom-nav-item" onclick="handleAdminLogout()">
+                <i class="fa-solid fa-arrow-right-from-bracket" style="color:#EF4444;"></i>
+                <span>Logout</span>
+            </a>
+        `;
+        return;
+    }
+
+    if (!user) {
+        // Guest user (not signed in yet)
+        bottomNav.innerHTML = `
+            <a class="bottom-nav-item ${curPage === 'home' ? 'active' : ''}" data-page="home" onclick="switchPage('home')">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+            <a class="bottom-nav-item ${curPage === 'marketplace' ? 'active' : ''}" data-page="marketplace" onclick="switchPage('marketplace')">
+                <i class="fa-solid fa-store"></i>
+                <span>Market</span>
+            </a>
+            <a class="bottom-nav-item post-btn" onclick="handleBottomNavSellClick()" title="Sell a Product">
+                <i class="fa-solid fa-plus"></i>
+                <span>Sell</span>
+            </a>
+            <a class="bottom-nav-item" onclick="toggleMarketAssistant()" title="AI Shopping Assistant">
+                <i class="fa-solid fa-robot" style="color:#38BDF8;"></i>
+                <span>AI Assist</span>
+            </a>
+            <a class="bottom-nav-item" onclick="openAuthModal('login')">
+                <i class="fa-solid fa-user-circle"></i>
+                <span>Sign In</span>
+            </a>
+        `;
+        return;
+    }
+
+    if (user.role === 'seller') {
+        // Logged in as SELLER -> Direct Seller Portal & Sell tools
+        bottomNav.innerHTML = `
+            <a class="bottom-nav-item ${curPage === 'home' ? 'active' : ''}" data-page="home" onclick="switchPage('home')">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+            <a class="bottom-nav-item ${curPage === 'marketplace' ? 'active' : ''}" data-page="marketplace" onclick="switchPage('marketplace')">
+                <i class="fa-solid fa-store"></i>
+                <span>Market</span>
+            </a>
+            <a class="bottom-nav-item post-btn" onclick="openAddProductModal()" title="Post Product to Sell">
+                <i class="fa-solid fa-plus"></i>
+                <span>Sell (+)</span>
+            </a>
+            <a class="bottom-nav-item" onclick="toggleMarketAssistant()" title="AI Assistant">
+                <i class="fa-solid fa-robot" style="color:#38BDF8;"></i>
+                <span>AI Assist</span>
+            </a>
+            <a class="bottom-nav-item ${curPage === 'seller' ? 'active' : ''}" data-page="seller" onclick="switchPage('seller')">
+                <i class="fa-solid fa-store" style="color:#F59E0B;"></i>
+                <span>Seller Portal</span>
+            </a>
+        `;
+    } else {
+        // Logged in as BUYER -> Direct Buyer Portal & Order tools
+        bottomNav.innerHTML = `
+            <a class="bottom-nav-item ${curPage === 'home' ? 'active' : ''}" data-page="home" onclick="switchPage('home')">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+            <a class="bottom-nav-item ${curPage === 'marketplace' ? 'active' : ''}" data-page="marketplace" onclick="switchPage('marketplace')">
+                <i class="fa-solid fa-store"></i>
+                <span>Market</span>
+            </a>
+            <a class="bottom-nav-item ${curPage === 'buyer' && AppState.currentBuyerTab === 'orders' ? 'active' : ''}" onclick="switchPage('buyer'); switchBuyerTab('orders');" title="My Orders">
+                <i class="fa-solid fa-box" style="color:#38BDF8;"></i>
+                <span>My Orders</span>
+            </a>
+            <a class="bottom-nav-item" onclick="toggleMarketAssistant()" title="AI Shopping Assistant">
+                <i class="fa-solid fa-robot" style="color:#38BDF8;"></i>
+                <span>AI Assist</span>
+            </a>
+            <a class="bottom-nav-item ${curPage === 'buyer' ? 'active' : ''}" data-page="buyer" onclick="switchPage('buyer')">
+                <i class="fa-solid fa-bag-shopping" style="color:#10B981;"></i>
+                <span>Buyer Portal</span>
+            </a>
+        `;
     }
 }
