@@ -22,7 +22,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Advanced Design System (v4.0) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=4.0">
+    <link rel="stylesheet" href="assets/css/style.css?v=4.6">
 </head>
 <body>
 
@@ -1550,10 +1550,7 @@
     </main>
 
     <!-- 🤖 AI SHOPPING ASSISTANT FLOATING BOT TRIGGER -->
-    <div class="ai-bot-floating-trigger" id="marketAssistantTrigger" onclick="toggleMarketAssistant()">
-        <i class="fa-solid fa-robot" style="font-size:1.1rem;"></i>
-        <span>Market Assistant</span>
-    </div>
+    
 
     <!-- 🤖 AI SHOPPING ASSISTANT DRAWER WINDOW -->
     <div class="ai-assistant-drawer" id="marketAssistantDrawer">
@@ -1974,6 +1971,7 @@
 
     <!-- Bottom Dock Navigation Bar -->
         <!-- Bottom Dock Navigation Bar (Permanent 1-Click Access to All Hubs) -->
+        <!-- Bottom Dock Navigation Bar (Clean 4-Item Mobile Layout: Home, Market, Portal, AI Assist) -->
     <nav class="bottom-nav">
         <a class="bottom-nav-item active" data-page="home" onclick="switchPage('home')">
             <i class="fa-solid fa-house"></i>
@@ -1983,13 +1981,9 @@
             <i class="fa-solid fa-store"></i>
             <span>Market</span>
         </a>
-        <a class="bottom-nav-item" data-page="buyer" id="bottomNavBuyerBtn" onclick="switchPage('buyer')">
-            <i class="fa-solid fa-bag-shopping" style="color:#10B981;"></i>
-            <span>Buyer Hub</span>
-        </a>
-        <a class="bottom-nav-item" data-page="seller" id="bottomNavSellerBtn" onclick="switchPage('seller')">
-            <i class="fa-solid fa-shop" style="color:#F59E0B;"></i>
-            <span>Seller Hub</span>
+        <a class="bottom-nav-item" id="bottomNavPortalBtn" onclick="handleBottomNavPortalClick()">
+            <i class="fa-solid fa-user-shield" id="bottomNavPortalIcon"></i>
+            <span id="bottomNavPortalLabel">Portal</span>
         </a>
         <a class="bottom-nav-item" onclick="toggleMarketAssistant()" title="AI Shopping Assistant">
             <i class="fa-solid fa-robot" style="color:#38BDF8;"></i>
@@ -1998,7 +1992,7 @@
     </nav>
 
     <!-- Scripts with v=4.2 cache bust -->
-    <script src="assets/js/api.js?v=4.5"></script>
-    <script src="assets/js/app.js?v=4.5"></script>
+    <script src="assets/js/api.js?v=4.6"></script>
+    <script src="assets/js/app.js?v=4.6"></script>
 </body>
 </html>

@@ -3807,3 +3807,117 @@ html, body {
         font-size: 0.78rem;
     }
 }
+
+
+/* ==========================================================================
+   PERFECT 4-ITEM BOTTOM DOCK & MOBILE-OPTIMIZED ADMIN TABS (NO OVERLAP)
+   ========================================================================== */
+.bottom-nav {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    background: #0B132B !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+    padding: 8px 4px !important;
+    z-index: 1000 !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5) !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+}
+
+.bottom-nav-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    color: #94A3B8 !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    gap: 3px !important;
+    padding: 4px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+.bottom-nav-item i {
+    font-size: 1.25rem !important;
+}
+
+.bottom-nav-item.active {
+    color: #10B981 !important;
+}
+
+/* Hide floating AI pill since it's in the 4-item bottom dock */
+.ai-bot-floating-trigger {
+    display: none !important;
+}
+
+/* Mobile-first Admin Layout without overlap */
+.admin-layout-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-top: 16px;
+    position: relative;
+}
+
+.admin-sidebar-nav {
+    background: #1C2541 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 18px !important;
+    padding: 12px !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+@media (max-width: 900px) {
+    .admin-layout-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    .admin-sidebar-nav {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        gap: 8px !important;
+        padding: 10px !important;
+        border-radius: 14px !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .admin-sidebar-nav > div:first-child {
+        display: none !important;
+    }
+
+    .admin-sidebar-item {
+        flex: 0 0 auto !important;
+        padding: 8px 14px !important;
+        font-size: 0.8rem !important;
+        border-radius: 10px !important;
+        background: #0B132B !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        display: inline-flex !important;
+        gap: 8px !important;
+    }
+
+    .admin-sidebar-item.active {
+        background: #059669 !important;
+        border-color: #10B981 !important;
+        color: #FFFFFF !important;
+    }
+}
