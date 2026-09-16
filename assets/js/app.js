@@ -83,7 +83,6 @@ async function initApp() {
     }
 
     // Populate Initial Catalogs
-    await loadCategories();
     await loadHomeFeatured();
     await loadMarketplaceProducts();
     await loadBuyerPortalData();
@@ -439,7 +438,7 @@ async function openProductDetails(productId) {
             <div>
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                     <span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green); font-weight:800;">
-                        <i class="fa-solid fa-circle-check"></i> ${product.category || 'General Goods'}
+                        <i class="fa-solid fa-circle-check"></i> Verified Product
                     </span>
                     <span style="color:var(--gold); font-size:0.85rem; font-weight:700;">
                         <i class="fa-solid fa-star"></i> 4.9 (48 Verified Reviews)
@@ -1094,35 +1093,10 @@ function switchBuyerTab(tab) {
 // 15. CATALOG, CATEGORIES & MARKETPLACE
 // ==========================================
 async function loadCategories() {
-    const cats = await API.getCategories();
-    
-    // Render in Home Categories Grid
-    const homeCatGrid = document.getElementById('homeCategoriesGrid');
-    if (homeCatGrid) {
-        homeCatGrid.innerHTML = cats.map(c => `
-            <div class="category-card" onclick="filterMarketplaceByCategory('${c.name}')">
-                <div class="category-icon-circle"><i class="fa-solid ${c.icon || 'fa-tag'}"></i></div>
-                <h4 class="category-name">${c.name}</h4>
-                <div class="category-count">Explore &rarr;</div>
-            </div>
-        `).join('');
-    }
-
-    // Populate dropdowns
-    const dropdowns = ['marketCategoryFilter', 'sellerProdCategory'];
-    dropdowns.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.innerHTML = (id === 'marketCategoryFilter' ? '<option value="">All Categories</option>' : '') +
-                cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-        }
-    });
+    // Categories removed as requested
 }
 
 function filterMarketplaceByCategory(catName) {
-    AppState.activeCategoryFilter = catName;
-    const catSelect = document.getElementById('marketCategoryFilter');
-    if (catSelect) catSelect.value = catName;
     switchPage('marketplace');
     filterMarketplace();
 }
@@ -1167,24 +1141,20 @@ async function filterMarketplace() {
     if (!grid) return;
 
     const search = document.getElementById('marketSearchFilter')?.value.trim() || '';
-    const category = document.getElementById('marketCategoryFilter')?.value || AppState.activeCategoryFilter;
     const country = document.getElementById('marketCountryFilter')?.value || AppState.activeCountryFilter;
     const state = document.getElementById('marketStateFilter')?.value || AppState.activeStateFilter;
 
-    const products = await API.getProducts({ search, category, country, state });
+    const products = await API.getProducts({ search, country, state });
     renderProductsGrid(products, grid);
 }
 
 function resetMarketplaceFilters() {
-    AppState.activeCategoryFilter = '';
     AppState.activeCountryFilter = '';
     AppState.activeStateFilter = '';
     const s = document.getElementById('marketSearchFilter');
-    const c = document.getElementById('marketCategoryFilter');
     const co = document.getElementById('marketCountryFilter');
     const st = document.getElementById('marketStateFilter');
     if (s) s.value = '';
-    if (c) c.value = '';
     if (co) co.value = '';
     if (st) st.value = '';
     filterMarketplace();
@@ -1195,7 +1165,7 @@ function renderProductsGrid(products, grid) {
     if (!grid) return;
 
     if (!products || products.length === 0) {
-        const hasFilters = !!(document.getElementById('marketSearchFilter')?.value || document.getElementById('marketCategoryFilter')?.value || document.getElementById('marketCountryFilter')?.value || document.getElementById('marketStateFilter')?.value);
+        const hasFilters = !!(document.getElementById('marketSearchFilter')?.value || document.getElementById('marketCountryFilter')?.value || document.getElementById('marketStateFilter')?.value);
         if (hasFilters) {
             grid.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align:center; padding:50px 20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
@@ -1386,12 +1356,7 @@ async function loadBuyerPortalData() {
 }
 
 async function populateBuyerCategories() {
-    const select = document.getElementById('buyerCatalogCategorySelect');
-    if (!select || select.children.length > 1) return;
-
-    const cats = await API.getCategories();
-    select.innerHTML = '<option value="">All Categories</option>' +
-        cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    // Categories removed as requested
 }
 
 async function loadBuyerGoods() {
@@ -1407,9 +1372,7 @@ async function filterBuyerCatalog() {
     if (!grid) return;
 
     const search = document.getElementById('buyerCatalogSearchInput')?.value.trim() || '';
-    const category = document.getElementById('buyerCatalogCategorySelect')?.value || '';
-
-    const products = await API.getProducts({ search, category });
+    const products = await API.getProducts({ search });
     renderProductsGrid(products, grid);
 }
 
@@ -1664,8 +1627,8 @@ function renderSellerProductsGrid(products, grid) {
                 </div>
                 <div class="product-body" style="padding:14px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span class="badge" style="background:var(--bg-alt); color:var(--text-muted); font-size:0.72rem; padding:3px 8px;">${pCategory}</span>
                         <span style="font-size:0.75rem; color:var(--brand-green); font-weight:700;"><i class="fa-solid fa-box"></i> Stock: ${pQty}</span>
+                        <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-circle-check" style="color:var(--brand-green);"></i> Active</span>
                     </div>
                     <h3 class="product-title" style="font-size:0.95rem; font-weight:700; margin-bottom:6px; line-height:1.3;">${pTitle}</h3>
                     <div class="product-location" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">
@@ -1703,54 +1666,30 @@ function openAddProductModal() {
     const submitBtn = document.getElementById('sellerProductSubmitBtn');
     const prodIdInput = document.getElementById('sellerProdId');
 
-    if (titleEl) titleEl.textContent = 'Add New Good';
-    if (submitBtn) submitBtn.textContent = 'Save & Publish Product';
+    if (titleEl) titleEl.textContent = '➕ Add New Good';
+    if (submitBtn) submitBtn.textContent = 'Publish Product Now';
     if (prodIdInput) prodIdInput.value = '';
 
     const storeNameInput = document.getElementById('sellerProdSellerName');
-    const phoneInput = document.getElementById('sellerProdPhone');
     const countrySelect = document.getElementById('sellerProdCountry');
-    const locationInput = document.getElementById('sellerProdLocation');
-    const photoInput = document.getElementById('sellerProdPhoto');
-
-    if (storeNameInput && user) {
-        storeNameInput.value = user.store_name || user.full_name || '';
-    }
-    if (phoneInput && user) {
-        phoneInput.value = user.phone || '';
-    }
-    if (countrySelect && user?.country) {
-        countrySelect.value = user.country;
-    }
-    if (locationInput && user?.location) {
-        locationInput.value = user.location;
-    }
-    if (photoInput) {
-        photoInput.value = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
-    }
-
+    const phoneInput = document.getElementById('sellerProdPhone');
     const previewBox = document.getElementById('sellerProdPhotoPreview');
-    const previewImg = document.getElementById('sellerProdPhotoPreviewImg');
-    if (previewBox && previewImg) {
-        previewImg.src = '';
-        previewBox.style.display = 'none';
-    }
 
-    populateSellerStateDropdown(countrySelect ? countrySelect.value : 'Nigeria');
+    if (storeNameInput && user) storeNameInput.value = user.store_name || user.full_name || '';
+    if (phoneInput && user) phoneInput.value = user.phone || '';
+    if (countrySelect) {
+        countrySelect.value = user?.country || 'Nigeria';
+        populateSellerStateDropdown(countrySelect.value);
+    }
+    if (previewBox) previewBox.style.display = 'none';
+
     document.getElementById('addProductModal')?.classList.add('active');
 }
 
 async function openEditProductModal(productId) {
-    const user = getCurrentUser();
     const product = await API.getProductById(productId);
     if (!product) {
-        showToast('Product not found for editing', 'error');
-        return;
-    }
-
-    const isOwner = user && (isAdminAuthenticated() || (product.seller_id && (product.seller_id === user.id || product.seller_id == user.id)) || (product.phone && user.phone && product.phone.replace(/[^0-9]/g, '') === user.phone.replace(/[^0-9]/g, '')));
-    if (!isOwner) {
-        showToast('Access Denied: You can only edit items belonging to your store', 'error');
+        showToast('Product not found', 'error');
         return;
     }
 
@@ -1764,7 +1703,6 @@ async function openEditProductModal(productId) {
 
     const titleInput = document.getElementById('sellerProdTitle');
     const priceInput = document.getElementById('sellerProdPrice');
-    const categorySelect = document.getElementById('sellerProdCategory');
     const storeNameInput = document.getElementById('sellerProdSellerName');
     const countrySelect = document.getElementById('sellerProdCountry');
     const locationInput = document.getElementById('sellerProdLocation');
@@ -1774,9 +1712,6 @@ async function openEditProductModal(productId) {
 
     if (titleInput) titleInput.value = product.title || product.name || '';
     if (priceInput) priceInput.value = product.price || '';
-    if (categorySelect) {
-        categorySelect.value = product.category_name || product.category || categorySelect.value;
-    }
     if (storeNameInput) storeNameInput.value = product.seller_name || '';
     if (countrySelect && product.country) {
         countrySelect.value = product.country;
@@ -1848,8 +1783,6 @@ async function handleProductFormSubmit(event) {
 
     const title = (document.getElementById('sellerProdTitle')?.value || '').trim();
     const price = parseFloat(document.getElementById('sellerProdPrice')?.value || 0);
-    const categorySelect = document.getElementById('sellerProdCategory');
-    const category_name = categorySelect ? (categorySelect.options[categorySelect.selectedIndex]?.text || categorySelect.value) : 'General';
     const seller_name = (document.getElementById('sellerProdSellerName')?.value || '').trim() || user?.store_name || user?.full_name || 'Verified Merchant';
     const country = document.getElementById('sellerProdCountry')?.value || user?.country || 'Nigeria';
     const location = (document.getElementById('sellerProdLocation')?.value || '').trim() || 'Abuja';
@@ -1872,8 +1805,6 @@ async function handleProductFormSubmit(event) {
             title: title,
             name: title,
             price: price,
-            category: category_name,
-            category_name: category_name,
             seller_name: seller_name,
             country: country,
             state: state,
@@ -1892,8 +1823,6 @@ async function handleProductFormSubmit(event) {
             title: title,
             name: title,
             price: price,
-            category: category_name,
-            category_name: category_name,
             seller_name: seller_name,
             seller_id: sellerId,
             country: country,

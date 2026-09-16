@@ -271,25 +271,6 @@
                 </div>
             </section>
 
-            <!-- Product Categories Section -->
-            <section class="section">
-                <div class="container">
-                    <div class="section-header">
-                        <div>
-                            <span class="section-badge"><i class="fa-solid fa-layer-group"></i> Categories</span>
-                            <h2 class="section-title">Popular Marketplace Categories</h2>
-                        </div>
-                        <button class="btn btn-outline btn-sm" onclick="switchPage('marketplace')">
-                            View All <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </div>
-
-                    <div id="homeCategoriesGrid" class="categories-grid">
-                        <!-- Populated via JS -->
-                    </div>
-                </div>
-            </section>
-
             <!-- Featured 3D Products Grid -->
             <section class="section section-alt">
                 <div class="container">
@@ -344,12 +325,6 @@
                         <div>
                             <label class="form-label" style="font-size:0.75rem;"><i class="fa-solid fa-magnifying-glass"></i> Search</label>
                             <input type="text" id="marketSearchFilter" oninput="filterMarketplace()" class="form-input" placeholder="Search title, seller, specs...">
-                        </div>
-                        <div>
-                            <label class="form-label" style="font-size:0.75rem;"><i class="fa-solid fa-layer-group"></i> Category</label>
-                            <select id="marketCategoryFilter" onchange="filterMarketplace()" class="form-select">
-                                <option value="">All Categories</option>
-                            </select>
                         </div>
                         <div>
                             <label class="form-label" style="font-size:0.75rem;"><i class="fa-solid fa-globe"></i> Country</label>
@@ -574,10 +549,7 @@
 
                         <!-- Buyer Live Filter Controls -->
                         <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
-                            <input type="text" id="buyerCatalogSearchInput" class="form-input" placeholder="Search goods to buy (e.g. Ankara, iPhone, Yam)..." oninput="filterBuyerCatalog()" style="flex:2; min-width:200px;">
-                            <select id="buyerCatalogCategorySelect" class="form-select" onchange="filterBuyerCatalog()" style="flex:1; min-width:140px;">
-                                <option value="">All Categories</option>
-                            </select>
+                            <input type="text" id="buyerCatalogSearchInput" class="form-input" placeholder="Search goods to buy (e.g. Shoes, Phone, Yam)..." oninput="filterBuyerCatalog()" style="width:100%;">
                         </div>
 
                         <div id="buyerRecommendedGrid" class="products-grid">
@@ -1370,7 +1342,6 @@
                                             <i class="fa-solid fa-boxes-stacked" style="color:var(--brand-green);"></i> Product Management & Moderation
                                         </h3>
                                         <div style="display:flex; gap:8px;">
-                                            <button class="btn btn-sm btn-outline" onclick="openCategoryManagerModal()"><i class="fa-solid fa-layer-group"></i> Manage Categories</button>
                                             <button class="btn btn-sm btn-primary" onclick="openAddProductModal()"><i class="fa-solid fa-plus"></i> Post Product</button>
                                         </div>
                                     </div>
@@ -1541,12 +1512,7 @@
                                     </div>
 
                                     <div class="card" style="grid-column:1/-1;">
-                                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                                            <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;">Product Categories</h3>
-                                            <button class="btn btn-primary btn-sm" onclick="openCategoryManagerModal()"><i class="fa-solid fa-plus"></i> Add Category</button>
-                                        </div>
-                                        <div id="adminCategoriesList" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
-                                        <hr style="border:none; border-top:1px solid var(--border); margin:16px 0;">
+                                        <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0 0 14px 0;">Platform Data Management</h3>
                                         <div style="display:flex; gap:10px;">
                                             <button type="button" class="btn btn-outline btn-sm" onclick="handleExportPlatformData()"><i class="fa-solid fa-download"></i> Backup JSON</button>
                                             <button type="button" class="btn btn-outline btn-sm" style="color:#EF4444;" onclick="handleResetPlatformData()"><i class="fa-solid fa-trash-arrow-up"></i> Factory Reset</button>
@@ -1691,15 +1657,9 @@
                         <label class="form-label">Product Name / Title *</label>
                         <input type="text" id="sellerProdTitle" class="form-input" required>
                     </div>
-                    <div class="form-row form-row-2col">
-                        <div class="form-group">
-                            <label class="form-label">Price (USD) *</label>
-                            <input type="number" step="any" id="sellerProdPrice" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Category *</label>
-                            <select id="sellerProdCategory" class="form-select" required></select>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Price (USD) *</label>
+                        <input type="number" step="any" id="sellerProdPrice" class="form-input" required>
                     </div>
                     <div class="form-row form-row-2col">
                         <div class="form-group">
@@ -1969,25 +1929,6 @@
         </div>
     </div>
 
-    <!-- Admin Category Modal -->
-    <div id="adminCategoryModal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div class="modal-title"><i class="fa-solid fa-layer-group" style="color:var(--brand-green);"></i> Add Category</div>
-                <button class="modal-close-btn" onclick="closeModal('adminCategoryModal')"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="adminCategoryForm" onsubmit="handleAddCategory(event)">
-                    <div class="form-group">
-                        <label class="form-label">Category Name *</label>
-                        <input type="text" id="newCategoryName" class="form-input" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Add Category</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <!-- Admin Add Seller Modal -->
     <div id="adminAddSellerModal" class="modal-overlay">
         <div class="modal-card">
@@ -2071,8 +2012,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with v=7.0 Cloud Sync -->
-    <script src="assets/js/api.js?v=7.0"></script>
-    <script src="assets/js/app.js?v=7.0"></script>
+    <!-- Scripts with v=7.1 -->
+    <script src="assets/js/api.js?v=7.1"></script>
+    <script src="assets/js/app.js?v=7.1"></script>
 </body>
 </html>
