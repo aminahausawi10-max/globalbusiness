@@ -814,40 +814,39 @@ async function handleUserLogin(event) {
         return (phoneMatch || emailMatch || nameMatch);
     });
 
-    // If user not registered yet, auto-register them seamlessly on login
+    // Enforce that ONLY registered users can sign in
     if (!matched) {
-        const isLikelySeller = identifier.toLowerCase().includes('seller') || identifier.toLowerCase().includes('store');
-        matched = await API.registerUser({
-            full_name: identifier.includes('@') ? identifier.split('@')[0] : identifier,
-            phone: cleanInput || identifier,
-            email: identifier.includes('@') ? identifier : (identifier + '@marketathome.com'),
-            password: pass || 'password123',
-            role: isLikelySeller ? 'seller' : 'buyer'
-        });
+        showToast('Account not found. Please register first to sign in.', 'error');
+        switchAuthTab('register');
+        return;
     }
 
-    if (matched) {
-        if (matched.status === 'suspended') {
-            showToast('Account is suspended by administrator. Contact support: 09090809080', 'error');
-            return;
+    // Password verification for registered accounts
+    if (matched.password && pass && matched.password !== pass) {
+        showToast('Incorrect password. Please check your credentials.', 'error');
+        return;
+    }
+
+    if (matched.status === 'suspended') {
+        showToast('Account is suspended by administrator. Contact support: 09090809080', 'error');
+        return;
+    }
+
+    setCurrentUser(matched);
+    closeModal('userAuthModal');
+    
+    const isSeller = matched.role === 'seller';
+    showToast(`Welcome back, ${matched.full_name}! Redirecting to ${isSeller ? 'Seller Portal' : 'Buyer Portal'}...`, 'success');
+    
+    setTimeout(() => {
+        if (isSeller) {
+            switchPage('seller');
+            loadSellerPortalData();
+        } else {
+            switchPage('buyer');
+            loadBuyerPortalData();
         }
-
-        setCurrentUser(matched);
-        closeModal('userAuthModal');
-        
-        const isSeller = matched.role === 'seller';
-        showToast(`Welcome back, ${matched.full_name}! Redirecting to ${isSeller ? 'Seller Portal' : 'Buyer Portal'}...`, 'success');
-        
-        setTimeout(() => {
-            if (isSeller) {
-                switchPage('seller');
-                loadSellerPortalData();
-            } else {
-                switchPage('buyer');
-                loadBuyerPortalData();
-            }
-        }, 150);
-    }
+    }, 150);
 }
 
 async function handleUserRegister(event) {

@@ -507,6 +507,7 @@ const API = {
             email: payload.email || (payload.full_name.toLowerCase().replace(/\s+/g, '') + '@example.com'),
             id_number: payload.id_number || ('NIN-' + Math.floor(10000000000 + Math.random() * 90000000000)),
             phone: payload.phone,
+            password: payload.password || 'password123',
             location: payload.location,
             city: payload.city || payload.location,
             country: payload.country || 'Nigeria',
@@ -581,6 +582,7 @@ const API = {
             full_name: payload.full_name,
             email: payload.email || (payload.full_name.toLowerCase().replace(/\s+/g, '') + '@buyer.com'),
             phone: payload.phone,
+            password: payload.password || 'password123',
             location: payload.location || 'Abuja, Nigeria',
             city: payload.city || payload.location || 'Abuja',
             country: payload.country || 'Nigeria',
@@ -1178,38 +1180,72 @@ const API = {
     async aiAssistantChat(userMessage) {
         this.initLocalData();
         const parsed = this.parseNaturalLanguageQuery(userMessage);
-        const msg = userMessage.toLowerCase();
-        let products = await this.getProducts();
+        const rawMsg = (userMessage || '').trim();
+        const msg = rawMsg.toLowerCase();
+        let allProducts = await this.getProducts();
+        let products = [...allProducts];
 
         let reply = "";
         let recommendedProducts = [];
+
+        // 1. Keyword search across titles, descriptions, and categories
+        const searchWords = msg.split(/\s+/).filter(w => w.length > 2 && !['the', 'and', 'for', 'with', 'from', 'want', 'need', 'give', 'show', 'tell', 'help', 'can', 'you', 'please'].includes(w));
+        
+        let keywordMatches = [];
+        if (searchWords.length > 0) {
+            keywordMatches = allProducts.filter(p => {
+                const searchStr = `${p.name || ''} ${p.title || ''} ${p.description || ''} ${p.category_name || ''} ${p.city || ''} ${p.location || ''}`.toLowerCase();
+                return searchWords.some(w => searchStr.includes(w));
+            });
+        }
 
         if (parsed.category_id) {
             products = products.filter(p => p.category_id == parsed.category_id);
         }
         if (parsed.location) {
-            products = products.filter(p => p.city && p.city.toLowerCase().includes(parsed.location));
+            products = products.filter(p => (p.city && p.city.toLowerCase().includes(parsed.location)) || (p.location && p.location.toLowerCase().includes(parsed.location)));
         }
         if (parsed.max_price) {
             products = products.filter(p => p.price <= parsed.max_price);
         }
 
-        if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
-            reply = "Hello! 👋 I'm your Market Assistant. Tell me what you're looking for, your budget, or target location (e.g. 'I need premium Ankara under ₦20,000 in Abuja' or 'Wigs in Kano').";
-        } else if (msg.includes('gift') || msg.includes('sister') || msg.includes('birthday')) {
-            reply = "That's lovely! 🎁 Here are verified premium gift selections including Luxury Human Hair Wigs, AMOLED Smartwatches, and Authentic Ankara Fabrics:";
-            recommendedProducts = products.slice(0, 3);
+        // Merge keyword matches if category/location filtered to empty
+        if (products.length === 0 && keywordMatches.length > 0) {
+            products = keywordMatches;
+        }
+
+        // Conversational Intent Matching
+        if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey') || msg.includes('sannu') || msg.includes('assalamu')) {
+            reply = "Hello! 👋 I'm your Market at Home Shopping Assistant. I can help you find verified goods, connect with sellers, explain Escrow payments, or source products directly across Nigeria & worldwide.\n\nWhat are you looking to buy or inquire about today?";
+            if (allProducts.length > 0) {
+                recommendedProducts = allProducts.slice(0, 4);
+            }
+        } else if (msg.includes('how to sell') || msg.includes('add product') || msg.includes('post item') || msg.includes('seller portal')) {
+            reply = "🏪 **Selling on Market at Home is fast & easy:**\n1. Register or sign in with your **Seller** account.\n2. In your **Seller Portal**, click **'➕ Add New Product'**.\n3. Enter your product title, price, photo, and details to publish it instantly to all buyers!";
+        } else if (msg.includes('how to buy') || msg.includes('choose goods') || msg.includes('buyer portal') || msg.includes('catalog')) {
+            reply = "🛍️ **Buying Goods on Market at Home:**\n1. Browse our verified marketplace catalog or use the search bar.\n2. Click any item to inspect photos, details, and seller rating.\n3. Click **'Add to Cart'** or **'Buy with Escrow'** for 100% buyer protection until doorstep delivery!";
+            if (allProducts.length > 0) {
+                recommendedProducts = allProducts.slice(0, 4);
+            }
+        } else if (msg.includes('escrow') || msg.includes('payment') || msg.includes('safe') || msg.includes('guarantee')) {
+            reply = "🛡️ **100% Escrow Protection Guarantee:**\nWhen you purchase an item, your payment is securely held in our escrow vault. The seller only receives payment after you inspect and confirm receipt of your order in good condition.";
+        } else if (msg.includes('delivery') || msg.includes('shipping') || msg.includes('waybill') || msg.includes('logistics')) {
+            reply = "🚚 **Doorstep Delivery & Logistics:**\nWe partner with top logistics couriers across all 36 Nigerian states and global cargo partners in China, UAE, and Europe for fast, trackable waybills.";
+        } else if (msg.includes('gift') || msg.includes('sister') || msg.includes('birthday') || msg.includes('wedding')) {
+            reply = "🎁 **Curated Gift & Occasion Selections:**\nHere are top recommended verified goods for your special occasion:";
+            recommendedProducts = (products.length > 0 ? products : allProducts).slice(0, 4);
         } else if (products.length > 0) {
-            reply = `Found ${products.length} matching goods on Market at Home${parsed.category_name ? ' in ' + parsed.category_name : ''}${parsed.location ? ' from ' + parsed.location : ''}${parsed.max_price ? ' within your budget' : ''}:`;
-            recommendedProducts = products.slice(0, 3);
+            reply = `✨ I found ${products.length} matching verified listing${products.length > 1 ? 's' : ''}${parsed.category_name ? ' in ' + parsed.category_name : ''}${parsed.location ? ' from ' + parsed.location : ''}${parsed.max_price ? ' within your budget' : ''}:`;
+            recommendedProducts = products.slice(0, 4);
         } else {
-            reply = "I couldn't find an exact listing matching all those criteria, but our **Sourcing Concierge** can physically find, inspect, and negotiate it for you in Kano, Abuja, or Guangzhou!";
-            recommendedProducts = (await this.getProducts()).slice(0, 2);
+            reply = `🔍 I couldn't find an exact listing matching "${rawMsg}", but our **Sourcing Concierge Desk** can physically locate, inspect, and negotiate it for you in Kano, Abuja, Lagos, or Guangzhou!\n\nHere are some of our latest verified marketplace items:`;
+            recommendedProducts = allProducts.slice(0, 3);
         }
 
         return {
             reply: reply,
             products: recommendedProducts,
+            recommendedProducts: recommendedProducts,
             parsed: parsed
         };
     },
