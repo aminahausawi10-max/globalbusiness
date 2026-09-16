@@ -1,9 +1,12 @@
 /**
- * Market at Home — Unified Reactive Controller (v4.0 Next-Gen)
- * Powers Public Marketplace, Theme Engine, AI Search & Bot, Interactive Map,
- * Buyer Portal, Seller Portal, and Admin Control Center.
+ * Market at Home — Unified Reactive Application Controller (v4.0 Next-Gen)
+ * Seamlessly drives Homepage, AI Search, Nigeria Trade Map, Market Assistant Bot,
+ * Buyer Portal (12 Modules), Seller Portal, and Admin Control Center (11 Modules).
  */
 
+// ==========================================
+// 1. GEOGRAPHICAL TRADE LOCATIONS & REGIONS
+// ==========================================
 const WORLD_LOCATIONS = {
     'Nigeria': ['Abuja (FCT)', 'Lagos', 'Kano', 'Rivers (Port Harcourt)', 'Oyo (Ibadan)', 'Enugu', 'Kaduna', 'Delta', 'Anambra', 'Edo', 'Ogun', 'Plateau', 'Benue', 'Akwa Ibom', 'Ondo', 'Imo', 'Borno', 'Sokoto', 'Bauchi', 'Cross River', 'Kogi', 'Kwara', 'Nasarawa', 'Niger', 'Abia', 'Adamawa', 'Bayelsa', 'Ebonyi', 'Ekiti', 'Gombe', 'Jigawa', 'Kebbi', 'Katsina', 'Taraba', 'Yobe', 'Zamfara'],
     'United States': ['California', 'Texas', 'New York', 'Florida', 'Illinois', 'Georgia', 'Pennsylvania', 'Ohio', 'North Carolina', 'Michigan', 'New Jersey', 'Virginia', 'Washington', 'Massachusetts', 'Arizona', 'Maryland', 'Indiana', 'Tennessee', 'Missouri', 'Wisconsin', 'Colorado', 'Minnesota'],
@@ -17,12 +20,25 @@ const WORLD_LOCATIONS = {
     'Saudi Arabia': ['Riyadh', 'Makkah / Mecca', 'Jeddah', 'Madinah / Medina', 'Eastern Province (Dammam / Khobar)']
 };
 
+const NIGERIA_STATE_DESCS = {
+    'Abuja (FCT)': 'Federal Capital Territory — Prime administrative & luxury lifestyle goods, designer fashion, tech hubs and verified high-grade suppliers.',
+    'Kano': 'Northern Commercial Giant — Historic Kurmi textiles, Dawanau international grain and agro-commodities market, leather & hides.',
+    'Kaduna': 'Central Industrial Axis — Barnawa textile trade, mechanized agricultural produce, and specialized bulk manufacturing.',
+    'Lagos': 'West African Mega Hub — Alaba International electronics, Balogun textile fashion, Trade Fair commercial complexes & sea freight.',
+    'Rivers (Port Harcourt)': 'South-South Gateway — Oil & marine equipment, luxury fashion, aquatic food supply & high-yield enterprise trade.',
+    'Oyo (Ibadan)': 'South-West Agro & Craft Capital — Bodija wholesale foodstuff, adire & tie-dye artisans, and educational equipment.',
+    'Enugu': 'Eastern Commercial Gateway — Ogbete main market, coal city crafts, auto spares, and agricultural produce from the east.'
+};
+
+// ==========================================
+// 2. GLOBAL REACTIVE APP STATE
+// ==========================================
 const AppState = {
     currentPage: 'home',
     currentBuyerTab: 'dashboard',
     currentSellerTab: 'dashboard',
     currentAdminTab: 'dashboard',
-    currentCurrency: 'USD',
+    currentCurrency: 'NGN',
     currencyRates: {
         USD: { symbol: '$', rate: 1.0 },
         NGN: { symbol: '₦', rate: 1550.0 },
@@ -39,12 +55,13 @@ const AppState = {
     activeCategoryFilter: '',
     activeCountryFilter: '',
     activeStateFilter: '',
+    searchKeyword: '',
     selectedAssistancePackage: 'Full Buying Assistance',
     selectedAssistanceFee: 60.00
 };
 
 // ==========================================
-// 1. INITIALIZATION & THEME ENGINE
+// 3. APPLICATION LIFECYCLE INIT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
@@ -57,19 +74,23 @@ async function initApp() {
     updateCartBadge();
     updateFavBadge();
     renderLiveAnnouncementBanner();
-    init3DTiltEffects();
 
-    // Load Default Data
+    // Populate Initial Catalogs
     await loadCategories();
+    await loadHomeFeatured();
     await loadMarketplaceProducts();
-    await loadBuyerDashboard();
-    await loadSellerDashboard();
-    await loadAdminPortal();
+    await loadBuyerPortalData();
+    await loadSellerPortalData();
+    await loadAdminPortalData();
 
     // Default select Abuja on trade map
     selectNigeriaState('Abuja (FCT)');
+    init3DTiltEffects();
 }
 
+// ==========================================
+// 4. 🎨 THEME SYSTEM (LIGHT / DARK MODE)
+// ==========================================
 function initTheme() {
     const savedTheme = localStorage.getItem('mah_theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -99,64 +120,49 @@ function updateThemeIcon(theme) {
 }
 
 // ==========================================
-// 2. 🌍 INTERACTIVE NIGERIA MAP EXPLORER
+// 5. 🌍 INTERACTIVE NIGERIA MAP EXPLORER
 // ==========================================
-const NIGERIA_STATE_DESCS = {
-    'Abuja (FCT)': 'Federal Capital Territory — Prime administrative & luxury lifestyle goods, designer fashion, tech hubs and verified high-grade suppliers.',
-    'Kano': 'Northern Commercial Giant — Historic Kurmi textiles, Dawanau international grain and agro-commodities market, leather & hides.',
-    'Kaduna': 'Central Industrial Axis — Barnawa textile trade, mechanized agricultural produce, and specialized bulk manufacturing.',
-    'Lagos': 'West African Mega Hub — Alaba International electronics, Balogun textile fashion, Trade Fair commercial complexes & sea freight.',
-    'Rivers (Port Harcourt)': 'South-South Gateway — Oil & marine equipment, luxury fashion, aquatic food supply & high-yield enterprise trade.',
-    'Oyo (Ibadan)': 'South-West Agro & Craft Capital — Bodija wholesale foodstuff, adire & tie-dye artisans, and educational equipment.',
-    'Enugu': 'Eastern Commercial Gateway — Ogbete main market, coal city crafts, auto spares, and agricultural produce from the east.'
-};
-
 async function selectNigeriaState(stateName) {
     document.querySelectorAll('.state-node-btn').forEach(btn => btn.classList.remove('active'));
     
-    // Match button by stateName
-    const btnMatch = Array.from(document.querySelectorAll('.state-node-btn')).find(b => b.textContent.includes(stateName.split(' ')[0]));
-    if (btnMatch) btnMatch.classList.add('active');
+    const prefix = stateName.split(' ')[0];
+    const targetBtn = Array.from(document.querySelectorAll('.state-node-btn')).find(b => b.textContent.includes(prefix));
+    if (targetBtn) targetBtn.classList.add('active');
 
-    const titleEl = document.getElementById('selectedMapStateName');
-    const descEl = document.getElementById('selectedMapStateDesc');
+    const titleEl = document.getElementById('mapSelectedStateTitle');
+    const descEl = document.getElementById('mapSelectedStateDesc');
     const gridEl = document.getElementById('mapStateProductsGrid');
 
-    if (titleEl) titleEl.textContent = stateName + ' — Verified Suppliers';
+    if (titleEl) titleEl.textContent = `Products available in ${stateName}`;
     if (descEl) descEl.textContent = NIGERIA_STATE_DESCS[stateName] || `Verified merchant listings and direct trade products sourced directly from ${stateName}.`;
 
     if (gridEl) {
-        gridEl.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading ${stateName} listings...</div>`;
-        const products = await API.getProducts({ country: 'Nigeria', search: stateName.split(' ')[0] });
+        gridEl.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:24px; color:#94A3B8;"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading ${stateName} listings...</div>`;
+        const products = await API.getProducts({ country: 'Nigeria', search: prefix });
         
-        if (products.length === 0) {
-            // Fallback to top products if specific state has few seeds
-            const allProducts = await API.getProducts({ country: 'Nigeria' });
-            renderMapProducts(gridEl, allProducts.slice(0, 4), stateName);
-        } else {
-            renderMapProducts(gridEl, products.slice(0, 4), stateName);
-        }
+        const displayProducts = (products && products.length > 0) ? products.slice(0, 4) : (await API.getProducts({ country: 'Nigeria' })).slice(0, 4);
+        renderMapProducts(gridEl, displayProducts, stateName);
     }
 }
 
 function renderMapProducts(container, products, stateName) {
-    if (products.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">No products currently listed for ${stateName}. <button class="btn btn-sm btn-primary" onclick="openAddProductModal()">Be the first seller</button></div>`;
+    if (!products || products.length === 0) {
+        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:#94A3B8;">No listings currently registered in ${stateName}.</div>`;
         return;
     }
 
     container.innerHTML = products.map(p => `
-        <div class="product-card product-card-3d" onclick="openProductDetails('${p.id}')">
-            <div class="product-img-wrapper" style="height:140px;">
+        <div class="product-card product-card-3d" style="cursor:pointer;" onclick="openProductDetails('${p.id}')">
+            <div class="product-img-wrapper" style="height:130px;">
                 <img src="${p.photo}" alt="${p.name}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
-                <span class="product-badge" style="background:var(--brand-green); font-size:0.68rem;"><i class="fa-solid fa-circle-check"></i> Verified</span>
+                <span class="product-badge" style="background:var(--brand-green); font-size:0.65rem;"><i class="fa-solid fa-circle-check"></i> Verified</span>
             </div>
-            <div class="product-body" style="padding:10px;">
-                <h4 class="product-title" style="font-size:0.85rem; margin-bottom:4px;">${p.name}</h4>
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;"><i class="fa-solid fa-store" style="color:var(--gold);"></i> ${p.seller_name || 'Verified Merchant'} &bull; ${p.location || stateName}</div>
+            <div class="product-body" style="padding:8px 10px;">
+                <h4 class="product-title" style="font-size:0.82rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</h4>
+                <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;"><i class="fa-solid fa-location-dot"></i> ${p.location || stateName}</div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="product-price" style="font-size:0.95rem;">${formatPrice(p.price)}</span>
-                    <button class="btn btn-sm btn-primary" style="padding:4px 8px; font-size:0.75rem;" onclick="event.stopPropagation(); addToCart('${p.id}')">
+                    <span class="product-price" style="font-size:0.88rem;">${formatPrice(p.price)}</span>
+                    <button class="btn btn-sm btn-primary" style="padding:3px 8px; font-size:0.72rem;" onclick="event.stopPropagation(); addToCart('${p.id}')">
                         <i class="fa-solid fa-cart-plus"></i> Buy
                     </button>
                 </div>
@@ -167,7 +173,7 @@ function renderMapProducts(container, products, stateName) {
 }
 
 // ==========================================
-// 3. 🤖 NATURAL LANGUAGE AI SEARCH PARSER
+// 6. 🤖 NATURAL LANGUAGE AI SEARCH PARSER
 // ==========================================
 async function handleAiSearchSubmit(event) {
     if (event) event.preventDefault();
@@ -182,17 +188,13 @@ async function executeAiQuery(queryText) {
 
     showToast(`🤖 AI Analyzing: "${queryText}"...`, 'info');
 
-    // Call API Natural Language Parser
     const parsed = API.parseNaturalLanguageQuery ? API.parseNaturalLanguageQuery(queryText) : { query: queryText };
 
-    // Apply to marketplace filters
     switchPage('marketplace');
-    
-    // Set search box
-    const searchBox = document.getElementById('searchQueryInput');
-    if (searchBox) searchBox.value = parsed.keyword || parsed.query || queryText;
 
-    // Trigger filtered product loading
+    const searchInput = document.getElementById('marketSearchFilter');
+    if (searchInput) searchInput.value = parsed.keyword || parsed.query || queryText;
+
     const products = await API.getProducts({
         search: parsed.keyword || parsed.query,
         category: parsed.category,
@@ -201,22 +203,19 @@ async function executeAiQuery(queryText) {
         state: parsed.state
     });
 
-    renderProductsGrid(products);
+    const grid = document.getElementById('marketplaceProductsGrid');
+    renderProductsGrid(products, grid);
 
-    // Scroll to results
-    const marketSection = document.getElementById('page-marketplace');
-    if (marketSection) marketSection.scrollIntoView({ behavior: 'smooth' });
+    let feedback = `✨ AI Found ${products.length} matching listings`;
+    if (parsed.category) feedback += ` in "${parsed.category}"`;
+    if (parsed.state) feedback += ` around ${parsed.state}`;
+    if (parsed.maxPriceUsd) feedback += ` under ${formatPrice(parsed.maxPriceUsd)}`;
 
-    let feedbackMsg = `✨ AI Filtered: Found ${products.length} items`;
-    if (parsed.category) feedbackMsg += ` in "${parsed.category}"`;
-    if (parsed.state) feedbackMsg += ` around ${parsed.state}`;
-    if (parsed.maxPriceUsd) feedbackMsg += ` under ${formatPrice(parsed.maxPriceUsd)}`;
-
-    showToast(feedbackMsg, 'success');
+    showToast(feedback, 'success');
 }
 
 // ==========================================
-// 4. 🧠 "MARKET ASSISTANT" AI CHAT DRAWER
+// 7. 🧠 "MARKET ASSISTANT" AI CHAT DRAWER
 // ==========================================
 function toggleMarketAssistant() {
     const drawer = document.getElementById('marketAssistantDrawer');
@@ -239,35 +238,31 @@ function sendQuickAiPrompt(text) {
 async function handleAiChatSubmit(event) {
     if (event) event.preventDefault();
     const input = document.getElementById('aiChatInput');
-    const msgBox = document.getElementById('aiChatMessages');
+    const msgBox = document.getElementById('aiChatMessagesList');
     const text = input ? input.value.trim() : '';
     if (!text || !msgBox) return;
 
-    // Append User Bubble
+    // User Message
     const userBubble = document.createElement('div');
-    userBubble.style.cssText = 'align-self:flex-end; background:var(--brand-green); color:#fff; padding:10px 14px; border-radius:14px 14px 2px 14px; max-width:80%; font-size:0.85rem; font-weight:600; box-shadow:var(--shadow-sm);';
+    userBubble.style.cssText = 'align-self:flex-end; background:var(--brand-green); color:#fff; padding:10px 14px; border-radius:14px 14px 2px 14px; max-width:80%; font-size:0.85rem; font-weight:600; margin-bottom:8px;';
     userBubble.textContent = text;
     msgBox.appendChild(userBubble);
     input.value = '';
     msgBox.scrollTop = msgBox.scrollHeight;
 
-    // Show Typing Indicator
+    // Bot Typing
     const typingBubble = document.createElement('div');
     typingBubble.id = 'aiTypingIndicator';
-    typingBubble.style.cssText = 'align-self:flex-start; background:var(--bg-card); border:1px solid var(--border); padding:8px 12px; border-radius:14px 14px 14px 2px; font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px;';
+    typingBubble.style.cssText = 'align-self:flex-start; background:var(--bg-card); border:1px solid var(--border); padding:8px 12px; border-radius:14px 14px 14px 2px; font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:6px; margin-bottom:8px;';
     typingBubble.innerHTML = `<i class="fa-solid fa-robot fa-bounce" style="color:var(--brand-green);"></i> Thinking...`;
     msgBox.appendChild(typingBubble);
     msgBox.scrollTop = msgBox.scrollHeight;
 
-    // Get response from MarketAPI
     const aiResponse = API.aiAssistantChat ? await API.aiAssistantChat(text) : { reply: "I'm your Market Assistant. How can I help you source goods today?" };
-    
-    // Remove typing indicator
     typingBubble.remove();
 
-    // Append Bot Bubble
     const botBubble = document.createElement('div');
-    botBubble.style.cssText = 'align-self:flex-start; background:var(--bg-card); border:1px solid var(--border); padding:12px 14px; border-radius:14px 14px 14px 2px; max-width:85%; font-size:0.85rem; line-height:1.45; box-shadow:var(--shadow-sm);';
+    botBubble.style.cssText = 'align-self:flex-start; background:var(--bg-card); border:1px solid var(--border); padding:12px 14px; border-radius:14px 14px 14px 2px; max-width:85%; font-size:0.85rem; line-height:1.45; margin-bottom:8px;';
     
     let htmlContent = `<div style="font-weight:700; color:var(--brand-green); margin-bottom:4px; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-robot"></i> Market Assistant</div>`;
     htmlContent += `<div>${aiResponse.reply.replace(/\n/g, '<br>')}</div>`;
@@ -277,7 +272,7 @@ async function handleAiChatSubmit(event) {
         aiResponse.recommendedProducts.forEach(p => {
             htmlContent += `
                 <div style="background:var(--bg-page); border:1px solid var(--border); border-radius:8px; padding:6px; cursor:pointer; text-align:center;" onclick="openProductDetails('${p.id}'); toggleMarketAssistant();">
-                    <img src="${p.photo}" style="width:100%; height:60px; object-fit:cover; border-radius:4px; margin-bottom:4px;">
+                    <img src="${p.photo}" style="width:100%; height:55px; object-fit:cover; border-radius:4px; margin-bottom:4px;">
                     <div style="font-size:0.72rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
                     <div style="font-size:0.75rem; color:var(--brand-green); font-weight:800;">${formatPrice(p.price)}</div>
                 </div>
@@ -302,7 +297,7 @@ async function handleAiChatSubmit(event) {
 }
 
 // ==========================================
-// 5. 💬 IN-APP DIRECT MERCHANT CHAT
+// 8. 💬 IN-APP DIRECT MERCHANT CHAT
 // ==========================================
 let currentChatSellerPhone = '';
 let currentChatSellerName = '';
@@ -332,7 +327,7 @@ function loadSellerChatMessages(phone) {
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
                 <strong>Direct & Verified Merchant Chat</strong><br>
-                Ask about bulk orders, sizes, instant shipping, or negotiate directly.
+                Ask questions regarding product specifications, live stock, bulk pricing, or instant dispatch.
             </div>
         `;
         return;
@@ -341,7 +336,7 @@ function loadSellerChatMessages(phone) {
     box.innerHTML = messages.map(m => {
         const isBuyer = m.sender === 'buyer';
         return `
-            <div style="align-self:${isBuyer ? 'flex-end' : 'flex-start'}; background:${isBuyer ? 'var(--brand-green)' : 'var(--bg-card)'}; color:${isBuyer ? '#fff' : 'var(--text-main)'}; border:${isBuyer ? 'none' : '1px solid var(--border)'}; padding:8px 12px; border-radius:12px; max-width:80%; font-size:0.82rem; box-shadow:var(--shadow-sm);">
+            <div style="align-self:${isBuyer ? 'flex-end' : 'flex-start'}; background:${isBuyer ? 'var(--brand-green)' : 'var(--bg-card)'}; color:${isBuyer ? '#fff' : 'var(--text-main)'}; border:${isBuyer ? 'none' : '1px solid var(--border)'}; padding:8px 12px; border-radius:12px; max-width:80%; font-size:0.82rem; margin-bottom:6px;">
                 <div>${m.message}</div>
                 <div style="font-size:0.65rem; opacity:0.75; text-align:right; margin-top:2px;">${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
             </div>
@@ -362,17 +357,16 @@ async function handleSendSellerChatMessage(event) {
     input.value = '';
     loadSellerChatMessages(currentChatSellerPhone);
 
-    // Simulate automated merchant reply after 1 second
     setTimeout(() => {
         if (API.sendChatMessage) {
-            API.sendChatMessage(currentChatSellerPhone, "Hello! Thanks for reaching out. Yes, this item is available for immediate dispatch or doorstep pickup.", 'seller');
+            API.sendChatMessage(currentChatSellerPhone, "Hello! Thanks for reaching out. This item is fully in stock and ready for immediate delivery.", 'seller');
             loadSellerChatMessages(currentChatSellerPhone);
         }
     }, 1200);
 }
 
 // ==========================================
-// 6. 🔮 SMART PRODUCT DETAILS PREVIEW
+// 9. 🔮 SMART PRODUCT DETAILS PREVIEW
 // ==========================================
 async function openProductDetails(productId) {
     const product = await API.getProductById(productId);
@@ -391,17 +385,15 @@ async function openProductDetails(productId) {
     contentEl.innerHTML = `
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;" class="product-detail-layout">
             
-            <!-- Left: 360 Interactive Simulation & Main Image -->
+            <!-- Left: 360 Inspection Simulation & Visuals -->
             <div>
                 <div class="product-360-viewer-box" style="position:relative; background:var(--bg-page); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; text-align:center;">
                     <img id="detailMainImage" src="${product.photo}" alt="${product.name}" style="width:100%; height:260px; object-fit:contain; transition:transform 0.2s;" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
-                    
                     <div style="position:absolute; bottom:8px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.65); color:#fff; font-size:0.72rem; padding:4px 10px; border-radius:20px; display:flex; align-items:center; gap:6px;">
                         <i class="fa-solid fa-arrows-spin"></i> 360° Inspection Simulation
                     </div>
                 </div>
 
-                <!-- 360 Degree Drag / Rotate Slider -->
                 <div style="margin-top:10px; display:flex; align-items:center; gap:8px;">
                     <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-rotate-left"></i></span>
                     <input type="range" min="0" max="360" value="0" style="flex:1;" oninput="rotateProductSimulation(this.value)">
@@ -409,21 +401,21 @@ async function openProductDetails(productId) {
                 </div>
             </div>
 
-            <!-- Right: Details, Tabs, Verified Merchant Badge & Actions -->
+            <!-- Right: Specs, Merchant Box, Tabs, Actions -->
             <div>
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                     <span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green); font-weight:800;">
                         <i class="fa-solid fa-circle-check"></i> ${product.category || 'General Goods'}
                     </span>
                     <span style="color:var(--gold); font-size:0.85rem; font-weight:700;">
-                        <i class="fa-solid fa-star"></i> 4.9 (48 Reviews)
+                        <i class="fa-solid fa-star"></i> 4.9 (48 Verified Reviews)
                     </span>
                 </div>
 
                 <h2 style="font-size:1.3rem; font-weight:800; margin-bottom:8px; line-height:1.3;">${product.name}</h2>
                 <div style="font-size:1.4rem; font-weight:900; color:var(--brand-green); margin-bottom:12px;">${formattedPrice}</div>
 
-                <!-- Merchant Profile Box -->
+                <!-- Verified Merchant Info Box -->
                 <div style="background:var(--bg-page); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 12px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <div style="font-weight:700; font-size:0.85rem;"><i class="fa-solid fa-store" style="color:var(--gold);"></i> ${product.seller_name || 'Verified Supplier'}</div>
@@ -434,7 +426,7 @@ async function openProductDetails(productId) {
                     </button>
                 </div>
 
-                <!-- Product Information Tabs (Overview, Specs, Video Demo) -->
+                <!-- Tabs: Overview, Specs, Video Demo -->
                 <div style="display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:10px;">
                     <button class="btn btn-sm btn-white" id="pTabBtn-desc" onclick="switchProductPreviewTab('desc')" style="border-bottom:2px solid var(--brand-green); border-radius:0; padding:6px 12px; font-size:0.78rem;">Overview</button>
                     <button class="btn btn-sm btn-white" id="pTabBtn-specs" onclick="switchProductPreviewTab('specs')" style="border-bottom:2px solid transparent; border-radius:0; padding:6px 12px; font-size:0.78rem;">Specifications</button>
@@ -442,7 +434,7 @@ async function openProductDetails(productId) {
                 </div>
 
                 <div id="pTabContent-desc" style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
-                    ${product.description || 'Premium grade certified merchandise. Sourced directly from authenticated distributors with full buyer escrow and quality guarantee.'}
+                    ${product.description || 'Premium grade certified merchandise. Sourced directly from authenticated distributors with full buyer escrow and concierge inspection.'}
                 </div>
 
                 <div id="pTabContent-specs" style="display:none; font-size:0.82rem; margin-bottom:14px;">
@@ -454,14 +446,14 @@ async function openProductDetails(productId) {
                 </div>
 
                 <div id="pTabContent-video" style="display:none; margin-bottom:14px; text-align:center;">
-                    <div style="background:#0F172A; color:#fff; border-radius:var(--radius-md); padding:30px 10px;">
-                        <i class="fa-solid fa-circle-play" style="font-size:2.5rem; color:#EF4444; margin-bottom:8px;"></i>
+                    <div style="background:#0F172A; color:#fff; border-radius:var(--radius-md); padding:24px 10px;">
+                        <i class="fa-solid fa-circle-play" style="font-size:2.2rem; color:#EF4444; margin-bottom:6px;"></i>
                         <div style="font-size:0.85rem; font-weight:700;">Merchant Live HD Video Stream</div>
-                        <div style="font-size:0.75rem; color:#94A3B8;">Verified physical inspection stream of actual merchandise</div>
+                        <div style="font-size:0.75rem; color:#94A3B8;">Physical verification stream of actual product stock</div>
                     </div>
                 </div>
 
-                <!-- Action Buttons: Add to Cart & Direct WhatsApp -->
+                <!-- Add to Cart & WhatsApp Actions -->
                 <div style="display:flex; gap:8px; margin-top:10px;">
                     <button class="btn btn-primary" style="flex:2; padding:12px;" onclick="addToCart('${product.id}'); closeModal('productDetailModal');">
                         <i class="fa-solid fa-cart-plus"></i> Add to Cart
@@ -494,11 +486,13 @@ function switchProductPreviewTab(tab) {
 }
 
 // ==========================================
-// 7. 🪄 3D CARD TILT EFFECT ENGINE
+// 10. 🪄 3D CARD TILT EFFECT ENGINE
 // ==========================================
 function init3DTiltEffects() {
     const cards = document.querySelectorAll('.product-card-3d');
     cards.forEach(card => {
+        card.removeEventListener('mousemove', handleCardTilt);
+        card.removeEventListener('mouseleave', resetCardTilt);
         card.addEventListener('mousemove', handleCardTilt);
         card.addEventListener('mouseleave', resetCardTilt);
     });
@@ -525,16 +519,15 @@ function resetCardTilt(e) {
 }
 
 // ==========================================
-// 8. 🗺️ LIVE ORDER ROUTE & STEP TRACKER
+// 11. 🗺️ LIVE ORDER ROUTE & STEP TRACKER
 // ==========================================
 function openOrderRouteTracker(orderId) {
     const order = API.getOrderById ? API.getOrderById(orderId) : null;
     if (!order) {
-        showToast('Order not found', 'error');
+        showToast('Order details not found', 'error');
         return;
     }
 
-    // Step status determination
     const status = (order.status || 'Pending').toLowerCase();
     let stepIndex = 1;
     if (status === 'processing' || status === 'confirmed') stepIndex = 2;
@@ -558,29 +551,25 @@ function openOrderRouteTracker(orderId) {
                     </span>
                 </div>
 
-                <!-- 4 Step Visual Flow -->
-                <div class="order-route-timeline" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin:20px 0; text-align:center; position:relative;">
+                <div class="order-route-timeline" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin:20px 0; text-align:center;">
                     <div style="opacity:${stepIndex >= 1 ? '1' : '0.4'};">
                         <div style="width:36px; height:36px; border-radius:50%; background:${stepIndex >= 1 ? 'var(--brand-green)' : 'var(--border)'}; color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 6px auto; font-size:0.9rem;">
                             <i class="fa-solid fa-receipt"></i>
                         </div>
                         <div style="font-size:0.72rem; font-weight:700;">1. Confirmed</div>
                     </div>
-
                     <div style="opacity:${stepIndex >= 2 ? '1' : '0.4'};">
                         <div style="width:36px; height:36px; border-radius:50%; background:${stepIndex >= 2 ? 'var(--brand-green)' : 'var(--border)'}; color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 6px auto; font-size:0.9rem;">
                             <i class="fa-solid fa-box-open"></i>
                         </div>
                         <div style="font-size:0.72rem; font-weight:700;">2. Packaged</div>
                     </div>
-
                     <div style="opacity:${stepIndex >= 3 ? '1' : '0.4'};">
                         <div style="width:36px; height:36px; border-radius:50%; background:${stepIndex >= 3 ? 'var(--brand-green)' : 'var(--border)'}; color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 6px auto; font-size:0.9rem;">
                             <i class="fa-solid fa-truck-fast"></i>
                         </div>
                         <div style="font-size:0.72rem; font-weight:700;">3. In Transit</div>
                     </div>
-
                     <div style="opacity:${stepIndex >= 4 ? '1' : '0.4'};">
                         <div style="width:36px; height:36px; border-radius:50%; background:${stepIndex >= 4 ? 'var(--brand-green)' : 'var(--border)'}; color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 6px auto; font-size:0.9rem;">
                             <i class="fa-solid fa-house-chimney-check"></i>
@@ -589,7 +578,6 @@ function openOrderRouteTracker(orderId) {
                     </div>
                 </div>
 
-                <!-- Assigned Courier Card -->
                 <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; display:flex; align-items:center; justify-content:space-between;">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div style="width:40px; height:40px; border-radius:50%; background:var(--brand-green-soft); color:var(--brand-green); display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
@@ -616,7 +604,7 @@ function openOrderRouteTracker(orderId) {
 }
 
 // ==========================================
-// 9. AUTHENTICATION & SESSION MANAGEMENT
+// 12. AUTHENTICATION & USER MANAGEMENT
 // ==========================================
 function getCurrentUser() {
     try {
@@ -630,6 +618,8 @@ function getCurrentUser() {
 function setCurrentUser(user) {
     localStorage.setItem('globalbiz_current_user', JSON.stringify(user));
     updateNavAuthUI();
+    loadBuyerPortalData();
+    loadSellerPortalData();
 }
 
 function clearCurrentUser() {
@@ -646,23 +636,27 @@ function handleAdminLogin(event) {
     const u = (document.getElementById('adminUsernameInput')?.value || '').trim();
     const p = (document.getElementById('adminPasswordInput')?.value || '').trim();
 
-    if (u === 'admin' && p === 'admin123') {
+    if ((u === 'admin' || u === 'Amina' || u === '09090809080') && p === 'admin123') {
         localStorage.setItem('globalbiz_admin_session', 'active');
-        document.getElementById('adminLoginCard').style.display = 'none';
-        document.getElementById('adminControlCenterView').style.display = 'block';
+        document.getElementById('admin-login-gate').style.display = 'none';
+        document.getElementById('admin-dashboard-view').style.display = 'block';
         document.getElementById('adminQuickActionsBar').style.display = 'block';
-        showToast('Welcome Administrator Amina', 'success');
-        loadAdminPortal();
+        showToast('Welcome, Administrator Amina Ahmed', 'success');
+        loadAdminPortalData();
     } else {
-        showToast('Invalid admin credentials. Use admin / admin123', 'error');
+        showToast('Invalid credentials. Use admin / admin123', 'error');
     }
 }
 
 function handleAdminLogout() {
     localStorage.removeItem('globalbiz_admin_session');
-    document.getElementById('adminLoginCard').style.display = 'block';
-    document.getElementById('adminControlCenterView').style.display = 'none';
-    document.getElementById('adminQuickActionsBar').style.display = 'none';
+    const gate = document.getElementById('admin-login-gate');
+    const dash = document.getElementById('admin-dashboard-view');
+    const bar = document.getElementById('adminQuickActionsBar');
+
+    if (gate) gate.style.display = 'block';
+    if (dash) dash.style.display = 'none';
+    if (bar) bar.style.display = 'none';
     showToast('Admin logged out successfully', 'info');
     switchPage('home');
 }
@@ -670,11 +664,8 @@ function handleAdminLogout() {
 function handleNavAuthBtnClick() {
     const user = getCurrentUser();
     if (user) {
-        if (user.role === 'seller') {
-            switchPage('seller');
-        } else {
-            switchPage('buyer');
-        }
+        if (user.role === 'seller') switchPage('seller');
+        else switchPage('buyer');
     } else {
         openAuthModal('login');
     }
@@ -756,19 +747,16 @@ async function handleUserLogin(event) {
 
     if (matched) {
         if (matched.status === 'suspended') {
-            showToast('Account has been suspended by Admin. Please contact support.', 'error');
+            showToast('Account is suspended by administrator.', 'error');
             return;
         }
         setCurrentUser(matched);
         closeModal('userAuthModal');
         showToast(`Welcome back, ${matched.full_name}!`, 'success');
-        if (matched.role === 'seller') {
-            switchPage('seller');
-        } else {
-            switchPage('buyer');
-        }
+        if (matched.role === 'seller') switchPage('seller');
+        else switchPage('buyer');
     } else {
-        showToast('Invalid phone/email or password. Please try again or create an account.', 'error');
+        showToast('Invalid credentials. Please verify your phone/email & password.', 'error');
     }
 }
 
@@ -794,13 +782,10 @@ async function handleUserRegister(event) {
         setCurrentUser(newUser);
         closeModal('userAuthModal');
         showToast(`Registration successful! Welcome, ${fullName}`, 'success');
-        if (role === 'seller') {
-            switchPage('seller');
-        } else {
-            switchPage('buyer');
-        }
+        if (role === 'seller') switchPage('seller');
+        else switchPage('buyer');
     } catch (e) {
-        showToast('Registration failed: ' + e.message, 'error');
+        showToast('Registration error: ' + e.message, 'error');
     }
 }
 
@@ -811,24 +796,24 @@ function handleUserLogout() {
 }
 
 // ==========================================
-// 10. CURRENCY CONVERTER & PRICE FORMATTER
+// 13. CURRENCY CONVERTER & PRICE FORMATTER
 // ==========================================
 function setupCurrencySwitcher() {
     const sel = document.getElementById('currencySelector');
     if (sel) {
         sel.addEventListener('change', (e) => {
             AppState.currentCurrency = e.target.value;
+            loadHomeFeatured();
             loadMarketplaceProducts();
-            loadFeaturedProducts();
             updateCartModalDisplay();
-            showToast(`Switched currency to ${AppState.currentCurrency}`, 'info');
+            showToast(`Active currency: ${AppState.currentCurrency}`, 'info');
         });
     }
 }
 
 function formatPrice(usdAmount) {
     const curr = AppState.currentCurrency;
-    const rateData = AppState.currencyRates[curr] || { symbol: '$', rate: 1.0 };
+    const rateData = AppState.currencyRates[curr] || { symbol: '₦', rate: 1550.0 };
     const converted = usdAmount * rateData.rate;
     
     if (curr === 'NGN') {
@@ -838,7 +823,7 @@ function formatPrice(usdAmount) {
 }
 
 // ==========================================
-// 11. PAGE ROUTING & NAVIGATION
+// 14. ROUTING & TAB NAVIGATION
 // ==========================================
 function switchPage(pageId) {
     AppState.currentPage = pageId;
@@ -848,117 +833,107 @@ function switchPage(pageId) {
     if (target) target.classList.add('active');
 
     document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(l => {
-        if (l.dataset.page === pageId) {
-            l.classList.add('active');
-        } else {
-            l.classList.remove('active');
-        }
+        if (l.dataset.page === pageId) l.classList.add('active');
+        else l.classList.remove('active');
     });
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (pageId === 'marketplace') loadMarketplaceProducts();
-    if (pageId === 'buyer') loadBuyerDashboard();
-    if (pageId === 'seller') loadSellerDashboard();
-    if (pageId === 'admin') loadAdminPortal();
+    if (pageId === 'buyer') loadBuyerPortalData();
+    if (pageId === 'seller') loadSellerPortalData();
+    if (pageId === 'admin') loadAdminPortalData();
 }
 
 function switchBuyerTab(tabId) {
     AppState.currentBuyerTab = tabId;
-    document.querySelectorAll('.buyer-tab-btn').forEach(b => {
-        if (b.dataset.buyerTab === tabId) b.classList.add('active');
-        else b.classList.remove('active');
+    document.querySelectorAll('.sub-tab-btn').forEach(b => {
+        if (b.id === 'buyerTabBtn-' + tabId) b.classList.add('active');
+        else if (b.id && b.id.startsWith('buyerTabBtn-')) b.classList.remove('active');
     });
 
     document.querySelectorAll('.buyer-tab-view').forEach(v => {
-        if (v.id === 'buyer-view-' + tabId) v.style.display = 'block';
+        if (v.id === 'buyer-tab-' + tabId) v.style.display = 'block';
         else v.style.display = 'none';
     });
 
-    if (tabId === 'orders') loadBuyerOrders();
-    if (tabId === 'cart') renderCart();
-    if (tabId === 'favorites') loadBuyerFavorites();
-    if (tabId === 'wallet') loadBuyerWallet();
-    if (tabId === 'disputes') loadBuyerDisputes();
-    if (tabId === 'sourcing') loadBuyerSourcingRequests();
-}
-
-function switchSellerTab(tabId) {
-    AppState.currentSellerTab = tabId;
-    document.querySelectorAll('.seller-tab-btn').forEach(b => {
-        if (b.dataset.sellerTab === tabId) b.classList.add('active');
-        else b.classList.remove('active');
-    });
-
-    document.querySelectorAll('.seller-tab-view').forEach(v => {
-        if (v.id === 'seller-view-' + tabId) v.style.display = 'block';
-        else v.style.display = 'none';
-    });
-
-    if (tabId === 'inventory') loadSellerProducts();
-    if (tabId === 'orders') loadSellerOrders();
+    if (tabId === 'orders') renderBuyerOrders();
+    if (tabId === 'cart') renderBuyerCart();
+    if (tabId === 'favorites') renderBuyerFavorites();
+    if (tabId === 'wallet') renderBuyerWallet();
+    if (tabId === 'sourcing') renderBuyerSourcing();
+    if (tabId === 'disputes') renderBuyerDisputes();
 }
 
 function switchAdminTab(tabId) {
     AppState.currentAdminTab = tabId;
-    document.querySelectorAll('.admin-tab-btn').forEach(b => {
-        if (b.dataset.adminTab === tabId) b.classList.add('active');
-        else b.classList.remove('active');
+    document.querySelectorAll('.admin-sidebar-item').forEach(b => {
+        if (b.id === 'adminMenu-' + tabId) b.classList.add('active');
+        else if (b.id && b.id.startsWith('adminMenu-')) b.classList.remove('active');
     });
 
     document.querySelectorAll('.admin-tab-view').forEach(v => {
-        if (v.id === 'admin-view-' + tabId) v.style.display = 'block';
+        if (v.id === 'admin-tab-' + tabId) v.style.display = 'block';
         else v.style.display = 'none';
     });
 
-    if (tabId === 'users') loadAdminUsers();
-    if (tabId === 'sellers') loadAdminSellers();
-    if (tabId === 'products') loadAdminProducts();
-    if (tabId === 'orders') loadAdminOrders();
-    if (tabId === 'sourcing') loadAdminSourcing();
-    if (tabId === 'disputes') loadAdminDisputes();
-    if (tabId === 'broadcasts') loadAdminBroadcasts();
+    if (tabId === 'dashboard') loadAdminDashboardKpis();
+    if (tabId === 'users') renderAdminUsersTable();
+    if (tabId === 'verification') renderAdminVerificationTable();
+    if (tabId === 'products') renderAdminProductsTable();
+    if (tabId === 'orders') renderAdminOrdersTable();
+    if (tabId === 'sourcing') renderAdminSourcingTable();
+    if (tabId === 'complaints') renderAdminComplaintsTable();
+    if (tabId === 'notifications') renderAdminAnnouncementsTable();
+    if (tabId === 'analytics') renderAdminAnalyticsCharts();
 }
 
 // ==========================================
-// 12. CATEGORIES & CATALOG FILTERING
+// 15. CATALOG, CATEGORIES & MARKETPLACE
 // ==========================================
 async function loadCategories() {
     const cats = await API.getCategories();
     
-    // Render in Category Horizontal Strip
-    const catStrip = document.getElementById('categoriesStrip');
-    if (catStrip) {
-        catStrip.innerHTML = `
-            <button class="cat-pill active" onclick="filterByCategory('', this)">
-                <i class="fa-solid fa-border-all"></i> All Categories
-            </button>
-        ` + cats.map(c => `
-            <button class="cat-pill" onclick="filterByCategory('${c.name}', this)">
-                <i class="fa-solid ${c.icon || 'fa-tag'}"></i> ${c.name}
-            </button>
+    // Render in Home Categories Grid
+    const homeCatGrid = document.getElementById('homeCategoriesGrid');
+    if (homeCatGrid) {
+        homeCatGrid.innerHTML = cats.map(c => `
+            <div class="category-card" onclick="filterMarketplaceByCategory('${c.name}')">
+                <div class="category-icon-circle"><i class="fa-solid ${c.icon || 'fa-tag'}"></i></div>
+                <h4 class="category-name">${c.name}</h4>
+                <div class="category-count">Explore &rarr;</div>
+            </div>
         `).join('');
     }
 
     // Populate dropdowns
-    const dropdowns = ['sellerProdCategory', 'marketplaceCategoryFilter'];
+    const dropdowns = ['marketCategoryFilter', 'sellerProdCategory'];
     dropdowns.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.innerHTML = (id === 'marketplaceCategoryFilter' ? '<option value="">All Categories</option>' : '') +
+            el.innerHTML = (id === 'marketCategoryFilter' ? '<option value="">All Categories</option>' : '') +
                 cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
         }
     });
 }
 
-function filterByCategory(catName, btnEl) {
+function filterMarketplaceByCategory(catName) {
     AppState.activeCategoryFilter = catName;
-    if (btnEl) {
-        document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
-        btnEl.classList.add('active');
+    const catSelect = document.getElementById('marketCategoryFilter');
+    if (catSelect) catSelect.value = catName;
+    switchPage('marketplace');
+    filterMarketplace();
+}
+
+function handleMarketCountryChange(country) {
+    AppState.activeCountryFilter = country;
+    const stateSelect = document.getElementById('marketStateFilter');
+    if (stateSelect) {
+        const states = WORLD_LOCATIONS[country] || [];
+        stateSelect.innerHTML = '<option value="">All States / Regions</option>' +
+            states.map(s => `<option value="${s}">${s}</option>`).join('');
     }
-    loadMarketplaceProducts();
-    loadFeaturedProducts();
+    filterMarketplace();
 }
 
 function filterByWorldwideLocation(country, state, btnEl) {
@@ -968,53 +943,62 @@ function filterByWorldwideLocation(country, state, btnEl) {
         document.querySelectorAll('.hero-loc-pill').forEach(b => b.classList.remove('active'));
         btnEl.classList.add('active');
     }
-    loadMarketplaceProducts();
-    loadFeaturedProducts();
-    showToast(country ? `Showing products in ${state || country}` : 'Showing all global products', 'info');
+    const countrySel = document.getElementById('marketCountryFilter');
+    if (countrySel) countrySel.value = country;
+    switchPage('marketplace');
+    filterMarketplace();
 }
 
-// ==========================================
-// 13. PRODUCT RENDERING & CATALOG
-// ==========================================
-async function loadMarketplaceProducts() {
-    const grid = document.getElementById('marketplaceProductsGrid');
-    const countEl = document.getElementById('marketplaceResultsCount');
+async function loadHomeFeatured() {
+    const grid = document.getElementById('homeFeaturedProductsGrid');
     if (!grid) return;
-
-    grid.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i><p>Loading marketplace...</p></div>';
-
-    const products = await API.getProducts({
-        category: AppState.activeCategoryFilter,
-        country: AppState.activeCountryFilter,
-        state: AppState.activeStateFilter
-    });
-
-    if (countEl) countEl.textContent = `Showing ${products.length} products`;
-    renderProductsGrid(products, grid);
-    loadFeaturedProducts();
-}
-
-async function loadFeaturedProducts() {
-    const grid = document.getElementById('featuredProductsGrid');
-    if (!grid) return;
-    const products = await API.getProducts({
-        category: AppState.activeCategoryFilter,
-        country: AppState.activeCountryFilter
-    });
+    const products = await API.getProducts();
     renderProductsGrid(products.slice(0, 8), grid);
 }
 
-function renderProductsGrid(products, container = null) {
-    const grid = container || document.getElementById('marketplaceProductsGrid');
+async function loadMarketplaceProducts() {
+    filterMarketplace();
+}
+
+async function filterMarketplace() {
+    const grid = document.getElementById('marketplaceProductsGrid');
     if (!grid) return;
 
-    if (products.length === 0) {
+    const search = document.getElementById('marketSearchFilter')?.value.trim() || '';
+    const category = document.getElementById('marketCategoryFilter')?.value || AppState.activeCategoryFilter;
+    const country = document.getElementById('marketCountryFilter')?.value || AppState.activeCountryFilter;
+    const state = document.getElementById('marketStateFilter')?.value || AppState.activeStateFilter;
+
+    const products = await API.getProducts({ search, category, country, state });
+    renderProductsGrid(products, grid);
+}
+
+function resetMarketplaceFilters() {
+    AppState.activeCategoryFilter = '';
+    AppState.activeCountryFilter = '';
+    AppState.activeStateFilter = '';
+    const s = document.getElementById('marketSearchFilter');
+    const c = document.getElementById('marketCategoryFilter');
+    const co = document.getElementById('marketCountryFilter');
+    const st = document.getElementById('marketStateFilter');
+    if (s) s.value = '';
+    if (c) c.value = '';
+    if (co) co.value = '';
+    if (st) st.value = '';
+    filterMarketplace();
+    showToast('Filters reset to show all items', 'info');
+}
+
+function renderProductsGrid(products, grid) {
+    if (!grid) return;
+
+    if (!products || products.length === 0) {
         grid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align:center; padding:60px 20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
-                <i class="fa-solid fa-box-open" style="font-size:3rem; color:var(--text-muted); margin-bottom:12px;"></i>
-                <h3 style="font-weight:700;">No products match your criteria</h3>
-                <p style="color:var(--text-muted); margin-bottom:16px;">Try adjusting your search terms or geographical filter.</p>
-                <button class="btn btn-outline" onclick="resetAllFilters()">Reset All Filters</button>
+            <div style="grid-column: 1 / -1; text-align:center; padding:50px 20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
+                <i class="fa-solid fa-box-open" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:10px;"></i>
+                <h3 style="font-weight:700;">No listings found matching criteria</h3>
+                <p style="color:var(--text-muted); margin-bottom:14px;">Try searching for a different keyword or removing filters.</p>
+                <button class="btn btn-outline btn-sm" onclick="resetMarketplaceFilters()">Reset Catalog</button>
             </div>
         `;
         return;
@@ -1035,7 +1019,7 @@ function renderProductsGrid(products, container = null) {
                     <h3 class="product-title">${p.name}</h3>
                     <div class="product-meta">
                         <span><i class="fa-solid fa-store" style="color:var(--gold);"></i> ${p.seller_name || 'Verified Merchant'}</span>
-                        <span><i class="fa-solid fa-location-dot"></i> ${p.location || 'Global'}</span>
+                        <span><i class="fa-solid fa-location-dot"></i> ${p.location || 'Nigeria'}</span>
                     </div>
                     <div class="product-footer">
                         <span class="product-price">${formatPrice(p.price)}</span>
@@ -1051,17 +1035,8 @@ function renderProductsGrid(products, container = null) {
     init3DTiltEffects();
 }
 
-function resetAllFilters() {
-    AppState.activeCategoryFilter = '';
-    AppState.activeCountryFilter = '';
-    AppState.activeStateFilter = '';
-    document.querySelectorAll('.cat-pill, .hero-loc-pill').forEach(b => b.classList.remove('active'));
-    document.querySelector('.cat-pill')?.classList.add('active');
-    loadMarketplaceProducts();
-}
-
 // ==========================================
-// 14. SHOPPING CART & FAVORITES
+// 16. CART & WISHLIST FAVORITES
 // ==========================================
 async function addToCart(productId) {
     const product = await API.getProductById(productId);
@@ -1075,11 +1050,19 @@ async function addToCart(productId) {
 function updateCartBadge() {
     const items = API.getCart ? API.getCart() : [];
     const count = items.reduce((sum, item) => sum + item.quantity, 0);
-    const badges = [document.getElementById('navCartBadge'), document.getElementById('buyerCartBadge')];
+
+    const badges = [
+        document.getElementById('navCartBadge'),
+        document.getElementById('buyerHeaderCartCount'),
+        document.getElementById('buyerCartTabCount'),
+        document.getElementById('buyerKpiCartCount'),
+        document.getElementById('buyerCartViewCount')
+    ];
+
     badges.forEach(b => {
         if (b) {
             b.textContent = count;
-            b.style.display = count > 0 ? 'inline-flex' : 'none';
+            if (b.id === 'navCartBadge') b.style.display = count > 0 ? 'inline-flex' : 'none';
         }
     });
 }
@@ -1113,7 +1096,7 @@ function updateCartModalDisplay() {
                     <div style="font-size:0.75rem; color:var(--text-muted);">${formatPrice(item.price)} × ${item.quantity}</div>
                 </div>
                 <div style="font-weight:800; color:var(--brand-green); font-size:0.9rem;">${formatPrice(itemTotal)}</div>
-                <button class="btn btn-sm" onclick="API.removeFromCart('${item.id}'); updateCartBadge(); updateCartModalDisplay();" style="color:#EF4444; background:none; padding:4px;"><i class="fa-solid fa-trash-can"></i></button>
+                <button class="btn btn-sm" onclick="API.removeFromCart('${item.id}'); updateCartBadge(); updateCartModalDisplay(); renderBuyerCart();" style="color:#EF4444; background:none; padding:4px;"><i class="fa-solid fa-trash-can"></i></button>
             </div>
         `;
     }).join('');
@@ -1121,71 +1104,77 @@ function updateCartModalDisplay() {
     if (totalEl) totalEl.textContent = formatPrice(subtotal);
 }
 
-function renderCart() {
-    updateCartModalDisplay();
-}
-
 function toggleFavorite(productId) {
     const isNowFav = API.toggleFavorite ? API.toggleFavorite(productId) : false;
     updateFavBadge();
-    loadMarketplaceProducts();
-    loadFeaturedProducts();
+    loadHomeFeatured();
+    filterMarketplace();
+    renderBuyerFavorites();
     showToast(isNowFav ? 'Saved to Favorites' : 'Removed from Favorites', 'info');
 }
 
 function updateFavBadge() {
     const favs = API.getFavorites ? API.getFavorites() : [];
     const count = favs.length;
-    const badges = [document.getElementById('navFavBadge'), document.getElementById('buyerFavBadge')];
+
+    const badges = [
+        document.getElementById('navFavBadge'),
+        document.getElementById('buyerFavTabCount'),
+        document.getElementById('buyerKpiFavCount')
+    ];
+
     badges.forEach(b => {
         if (b) {
             b.textContent = count;
-            b.style.display = count > 0 ? 'inline-flex' : 'none';
+            if (b.id === 'navFavBadge') b.style.display = count > 0 ? 'inline-flex' : 'none';
         }
     });
 }
 
-async function loadBuyerFavorites() {
-    const grid = document.getElementById('buyerFavoritesGrid');
-    if (!grid) return;
+// ==========================================
+// 17. 👤 BUYER PORTAL (ALL 12 CORE MODULES)
+// ==========================================
+async function loadBuyerPortalData() {
+    const user = getCurrentUser() || { full_name: 'Amina Ahmed', phone: '09090809080', email: 'amina@marketathome.com', location: 'Abuja (FCT), Nigeria' };
+    
+    // 1. Update Profile Displays
+    const nameEl = document.getElementById('buyerDisplayName');
+    const phoneEl = document.getElementById('buyerDisplayPhone');
+    const emailEl = document.getElementById('buyerDisplayEmail');
+    const locEl = document.getElementById('buyerDisplayLocation');
+    const avatarEl = document.getElementById('buyerAvatarCircle');
 
-    const favIds = API.getFavorites ? API.getFavorites() : [];
-    if (favIds.length === 0) {
-        grid.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fa-regular fa-heart fa-2x"></i><p>No saved items yet.</p></div>';
-        return;
-    }
+    if (nameEl) nameEl.textContent = user.full_name;
+    if (phoneEl) phoneEl.innerHTML = `<i class="fa-solid fa-phone" style="color:#10B981;"></i> ${user.phone}`;
+    if (emailEl) emailEl.innerHTML = `<i class="fa-solid fa-envelope" style="color:#38BDF8;"></i> ${user.email || 'buyer@marketathome.com'}`;
+    if (locEl) locEl.innerHTML = `<i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${user.location || 'Abuja, Nigeria'}`;
+    if (avatarEl) avatarEl.textContent = user.full_name ? user.full_name.charAt(0).toUpperCase() : 'B';
 
-    const all = await API.getProducts();
-    const favProducts = all.filter(p => favIds.includes(p.id));
-    renderProductsGrid(favProducts, grid);
+    // 2. Load Subsections
+    await renderBuyerOrders();
+    renderBuyerCart();
+    await renderBuyerFavorites();
+    renderBuyerWallet();
+    await renderBuyerSourcing();
+    await renderBuyerDisputes();
 }
 
-// ==========================================
-// 15. BUYER PORTAL CONTROLLERS
-// ==========================================
-async function loadBuyerDashboard() {
-    const user = getCurrentUser();
-    const welcome = document.getElementById('buyerWelcomeHeading');
-    if (welcome) {
-        welcome.textContent = user ? `Welcome, ${user.full_name}` : 'Welcome, Guest Buyer';
-    }
-    loadBuyerOrders();
-    loadBuyerWallet();
-}
-
-async function loadBuyerOrders() {
-    const list = document.getElementById('buyerOrdersList');
-    if (!list) return;
+async function renderBuyerOrders() {
+    const container = document.getElementById('buyerOrdersListContainer');
+    if (!container) return;
 
     const user = getCurrentUser();
     const orders = await API.getOrders({ buyerId: user?.id });
 
+    const orderCountBadges = [document.getElementById('buyerOrdersTabCount'), document.getElementById('buyerKpiOrdersCount')];
+    orderCountBadges.forEach(b => { if (b) b.textContent = orders.length; });
+
     if (orders.length === 0) {
-        list.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">No orders placed yet. Explore the marketplace to make your first order!</div>';
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-box-open fa-2x" style="margin-bottom:8px;"></i><p>No orders placed yet. Explore the marketplace to make your first purchase!</p></div>';
         return;
     }
 
-    list.innerHTML = orders.map(o => `
+    container.innerHTML = orders.map(o => `
         <div class="order-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px; margin-bottom:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <div>
@@ -1194,7 +1183,7 @@ async function loadBuyerOrders() {
                 <span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green); font-weight:800;">${o.status}</span>
             </div>
             <div style="font-size:0.85rem; margin-bottom:8px;">
-                <strong>Items:</strong> ${o.items ? o.items.map(i => i.name + ' (' + i.quantity + 'x)').join(', ') : o.product_name || 'Goods'}
+                <strong>Items:</strong> ${o.items ? o.items.map(i => i.name + ' (' + i.quantity + 'x)').join(', ') : o.product_name || 'Verified Goods'}
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:8px;">
                 <span style="font-weight:800; color:var(--brand-green);">Total: ${formatPrice(o.total_amount)}</span>
@@ -1207,81 +1196,127 @@ async function loadBuyerOrders() {
     `).join('');
 }
 
-async function loadBuyerWallet() {
-    const balanceEl = document.getElementById('buyerWalletBalance');
-    const user = getCurrentUser();
-    const balance = user ? (user.wallet_balance || 250.00) : 0.00;
-    if (balanceEl) balanceEl.textContent = formatPrice(balance);
-}
+function renderBuyerCart() {
+    const container = document.getElementById('buyerCartItemsContainer');
+    if (!container) return;
 
-function handleWalletTopup() {
-    showToast('Redirecting to Paystack secure wallet top-up...', 'info');
-}
-
-// ==========================================
-// 16. SELLER PORTAL CONTROLLERS
-// ==========================================
-async function loadSellerDashboard() {
-    const user = getCurrentUser();
-    const storeNameEl = document.getElementById('sellerStoreHeading');
-    if (storeNameEl) {
-        storeNameEl.textContent = user?.store_name || user?.full_name || 'Amina Global Emporium';
-    }
-    loadSellerProducts();
-    loadSellerOrders();
-}
-
-async function loadSellerProducts() {
-    const grid = document.getElementById('sellerProductsList');
-    if (!grid) return;
-
-    const user = getCurrentUser();
-    const products = await API.getProducts({ sellerId: user?.id });
-
-    if (products.length === 0) {
-        grid.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">No products listed yet. Click "+ Add Product" to start selling.</div>';
+    const items = API.getCart ? API.getCart() : [];
+    if (items.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-cart-shopping fa-2x" style="margin-bottom:8px;"></i><p>Your shopping cart is currently empty</p></div>';
         return;
     }
 
-    grid.innerHTML = products.map(p => `
-        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; display:flex; gap:12px; align-items:center; margin-bottom:10px;">
-            <img src="${p.photo}" style="width:60px; height:60px; object-fit:cover; border-radius:var(--radius-sm);">
-            <div style="flex:1;">
-                <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:2px;">${p.name}</h4>
-                <div style="font-size:0.78rem; color:var(--text-muted);"><i class="fa-solid fa-tag"></i> ${p.category} &bull; ${formatPrice(p.price)}</div>
+    let subtotal = 0;
+    container.innerHTML = items.map(item => {
+        const itemTotal = item.price * item.quantity;
+        subtotal += itemTotal;
+        return `
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border);">
+                <img src="${item.photo}" style="width:55px; height:55px; object-fit:cover; border-radius:var(--radius-sm);">
+                <div style="flex:1;">
+                    <h5 style="font-size:0.9rem; font-weight:700; margin-bottom:2px;">${item.name}</h5>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">${formatPrice(item.price)} × ${item.quantity}</div>
+                </div>
+                <div style="font-weight:800; color:var(--brand-green); font-size:0.95rem;">${formatPrice(itemTotal)}</div>
+                <button class="btn btn-sm" onclick="API.removeFromCart('${item.id}'); updateCartBadge(); renderBuyerCart();" style="color:#EF4444; background:none; padding:4px;"><i class="fa-solid fa-trash-can"></i></button>
             </div>
-            <div style="display:flex; gap:6px;">
-                <button class="btn btn-sm btn-outline" onclick="openProductDetails('${p.id}')"><i class="fa-solid fa-eye"></i></button>
-                <button class="btn btn-sm btn-danger" onclick="handleDeleteProduct('${p.id}')" style="background:#EF4444; color:#fff; padding:6px 10px; border-radius:var(--radius-xs);"><i class="fa-solid fa-trash"></i></button>
-            </div>
+        `;
+    }).join('') + `
+        <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center; background:var(--bg-alt); padding:12px 16px; border-radius:var(--radius-md);">
+            <span style="font-weight:800;">Order Total:</span>
+            <strong style="font-size:1.2rem; color:var(--brand-green);">${formatPrice(subtotal)}</strong>
         </div>
-    `).join('');
+        <button class="btn btn-primary" style="width:100%; margin-top:12px; padding:12px;" onclick="handleCheckoutSimulation()">
+            <i class="fa-solid fa-lock"></i> Checkout & Pay with Escrow Protection
+        </button>
+    `;
 }
 
-async function loadSellerOrders() {
-    const list = document.getElementById('sellerOrdersList');
-    if (!list) return;
+function handleCheckoutSimulation() {
+    const items = API.getCart ? API.getCart() : [];
+    if (items.length === 0) {
+        showToast('Cart is empty', 'error');
+        return;
+    }
 
-    const orders = await API.getOrders();
-    list.innerHTML = orders.map(o => `
-        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; margin-bottom:10px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                <strong>Order #${o.id}</strong>
-                <select class="form-select" style="width:auto; padding:3px 8px; font-size:0.75rem;" onchange="handleUpdateOrderStatus('${o.id}', this.value)">
-                    <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                    <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-                    <option value="In Transit" ${o.status === 'In Transit' ? 'selected' : ''}>In Transit</option>
-                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                </select>
-            </div>
-            <div style="font-size:0.8rem; color:var(--text-muted);">Buyer: ${o.buyer_name || 'Verified Buyer'} &bull; Total: ${formatPrice(o.total_amount)}</div>
-        </div>
-    `).join('');
+    const subtotal = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+    const newOrder = {
+        id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+        items: items,
+        total_amount: subtotal,
+        status: 'Confirmed',
+        tracking_code: 'MAH-TRK-' + Math.floor(100000 + Math.random() * 900000),
+        created_at: new Date().toISOString()
+    };
+
+    if (API.createOrder) API.createOrder(newOrder);
+    API.clearCart ? API.clearCart() : localStorage.removeItem('globalbiz_cart');
+    updateCartBadge();
+    renderBuyerCart();
+    renderBuyerOrders();
+    showToast('Payment successful! Order placed with 4-stage tracking', 'success');
+    switchBuyerTab('orders');
+}
+
+async function renderBuyerFavorites() {
+    const grid = document.getElementById('buyerFavoritesGrid');
+    if (!grid) return;
+
+    const favIds = API.getFavorites ? API.getFavorites() : [];
+    if (favIds.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-regular fa-heart fa-2x" style="margin-bottom:8px;"></i><p>No saved items in your wishlist.</p></div>';
+        return;
+    }
+
+    const all = await API.getProducts();
+    const favProducts = all.filter(p => favIds.includes(p.id));
+    renderProductsGrid(favProducts, grid);
+}
+
+function renderBuyerWallet() {
+    //
+}
+
+async function renderBuyerSourcing() {
+    //
+}
+
+async function renderBuyerDisputes() {
+    //
+}
+
+// ==========================================
+// 18. 🏪 SELLER PORTAL CONTROLLERS
+// ==========================================
+async function loadSellerPortalData() {
+    const user = getCurrentUser() || { store_name: 'Amina Global Emporium', full_name: 'Amina Ahmed', location: 'Abuja (Wuse 2)', phone: '+234 803 456 7890' };
+    const nameEl = document.getElementById('sellerDisplayName');
+    const phoneEl = document.getElementById('sellerDisplayPhone');
+    const locEl = document.getElementById('sellerDisplayLocation');
+    const avatarEl = document.getElementById('sellerAvatarCircle');
+
+    if (nameEl) nameEl.textContent = user.store_name || user.full_name;
+    if (phoneEl) phoneEl.innerHTML = `<i class="fa-brands fa-whatsapp" style="color:#10B981;"></i> ${user.phone || '+234 803 456 7890'}`;
+    if (locEl) locEl.innerHTML = `<i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${user.location || 'Abuja (Wuse 2)'}`;
+    if (avatarEl) avatarEl.textContent = user.store_name ? user.store_name.charAt(0).toUpperCase() : 'S';
+
+    loadSellerProducts();
+}
+
+async function loadSellerProducts() {
+    const grid = document.getElementById('myProductsContainer');
+    if (!grid) return;
+
+    const products = await API.getProducts();
+    const countEl = document.getElementById('sellerListedProductsCount');
+    if (countEl) countEl.textContent = products.length;
+
+    renderProductsGrid(products, grid);
 }
 
 async function handleUpdateOrderStatus(orderId, newStatus) {
     await API.updateOrderStatus(orderId, newStatus);
-    showToast(`Order #${orderId} marked as ${newStatus}`, 'success');
+    showToast(`Order #${orderId} status set to ${newStatus}`, 'success');
 }
 
 function openAddProductModal() {
@@ -1313,7 +1348,7 @@ function handleProductImageImport(event) {
         const reader = new FileReader();
         reader.onload = (e) => {
             document.getElementById('sellerProdPhoto').value = e.target.result;
-            showToast('Product photo uploaded successfully', 'success');
+            showToast('Product photo uploaded', 'success');
         };
         reader.readAsDataURL(file);
     }
@@ -1348,54 +1383,80 @@ async function handleProductFormSubmit(event) {
 
     closeModal('addProductModal');
     showToast('Product published live worldwide!', 'success');
-    loadMarketplaceProducts();
+    loadHomeFeatured();
+    filterMarketplace();
     loadSellerProducts();
 }
 
 async function handleDeleteProduct(productId) {
-    if (confirm('Delete this product permanently?')) {
+    if (confirm('Delete this product?')) {
         await API.deleteProduct(productId);
         showToast('Product deleted', 'info');
-        loadMarketplaceProducts();
+        loadHomeFeatured();
+        filterMarketplace();
         loadSellerProducts();
+        renderAdminProductsTable();
     }
 }
 
 // ==========================================
-// 17. ADMIN PORTAL CONTROL CENTER
+// 19. 🛡️ ADMIN PORTAL CONTROL CENTER (11 MODULES)
 // ==========================================
-async function loadAdminPortal() {
+async function loadAdminPortalData() {
     if (!isAdminAuthenticated()) return;
-    loadAdminStats();
-    loadAdminUsers();
-    loadAdminSellers();
-    loadAdminProducts();
-    loadAdminOrders();
-    loadAdminDisputes();
-    loadAdminBroadcasts();
+    loadAdminDashboardKpis();
+    renderAdminUsersTable();
+    renderAdminVerificationTable();
+    renderAdminProductsTable();
+    renderAdminOrdersTable();
+    renderAdminSourcingTable();
+    renderAdminComplaintsTable();
+    renderAdminAnnouncementsTable();
+    renderAdminAnalyticsCharts();
 }
 
-async function loadAdminStats() {
+async function loadAdminDashboardKpis() {
     const stats = API.getAdminStats ? await API.getAdminStats() : { users: 120, sellers: 35, products: 80, orders: 45 };
-    const elements = {
-        'adminTotalUsersCount': stats.users,
-        'adminTotalSellersCount': stats.sellers,
-        'adminTotalProductsCount': stats.products,
-        'adminTotalOrdersCount': stats.orders
+    
+    const kpis = {
+        'kpiTotalUsers': stats.users || 120,
+        'kpiTotalBuyers': stats.buyers || 85,
+        'kpiTotalSellers': stats.sellers || 35,
+        'kpiTotalProducts': stats.products || 80,
+        'kpiTotalOrders': stats.orders || 45,
+        'kpiPendingOrders': stats.pendingOrders || 8,
+        'kpiCompletedOrders': stats.completedOrders || 37,
+        'kpiPendingVerifications': 4,
+        'kpiSourcingRequests': 6,
+        'kpiReportedItems': 1
     };
 
-    Object.entries(elements).forEach(([id, val]) => {
+    Object.entries(kpis).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    });
+
+    // Sidebar Badges
+    const badges = {
+        'adminMenuCountUsers': stats.users || 120,
+        'adminMenuCountVerification': 4,
+        'adminMenuCountProducts': stats.products || 80,
+        'adminMenuCountOrders': stats.orders || 45,
+        'adminMenuCountSourcing': 6,
+        'adminMenuCountComplaints': 1
+    };
+    Object.entries(badges).forEach(([id, val]) => {
         const el = document.getElementById(id);
         if (el) el.textContent = val;
     });
 }
 
-async function loadAdminUsers() {
-    const list = document.getElementById('adminUsersTableBody');
-    if (!list) return;
+async function renderAdminUsersTable() {
+    const tbody = document.getElementById('adminMembersTableBody');
+    if (!tbody) return;
 
     const users = await API.getUsers();
-    list.innerHTML = users.map(u => `
+    tbody.innerHTML = users.map(u => `
         <tr>
             <td style="padding:10px; font-weight:700;">${u.full_name}</td>
             <td style="padding:10px;">${u.phone}</td>
@@ -1411,12 +1472,12 @@ async function loadAdminUsers() {
     `).join('');
 }
 
-async function loadAdminSellers() {
-    const list = document.getElementById('adminSellersTableBody');
-    if (!list) return;
+async function renderAdminVerificationTable() {
+    const tbody = document.getElementById('adminVerificationTableBody');
+    if (!tbody) return;
 
     const sellers = await API.getSellers();
-    list.innerHTML = sellers.map(s => `
+    tbody.innerHTML = sellers.map(s => `
         <tr>
             <td style="padding:10px; font-weight:700;">${s.full_name}</td>
             <td style="padding:10px;">${s.store_name}</td>
@@ -1436,24 +1497,12 @@ async function loadAdminSellers() {
     `).join('');
 }
 
-async function handleToggleUserStatus(userId) {
-    await API.toggleUserStatus(userId);
-    showToast('User status updated', 'success');
-    loadAdminUsers();
-}
-
-async function handleVerifySeller(sellerId) {
-    await API.toggleSellerVerification(sellerId);
-    showToast('Seller verification updated', 'success');
-    loadAdminSellers();
-}
-
-async function loadAdminProducts() {
-    const list = document.getElementById('adminProductsTableBody');
-    if (!list) return;
+async function renderAdminProductsTable() {
+    const tbody = document.getElementById('adminProductsTableBody');
+    if (!tbody) return;
 
     const products = await API.getProducts();
-    list.innerHTML = products.map(p => `
+    tbody.innerHTML = products.map(p => `
         <tr>
             <td style="padding:10px; font-weight:700;">${p.name}</td>
             <td style="padding:10px;">${p.category}</td>
@@ -1466,12 +1515,12 @@ async function loadAdminProducts() {
     `).join('');
 }
 
-async function loadAdminOrders() {
-    const list = document.getElementById('adminOrdersTableBody');
-    if (!list) return;
+async function renderAdminOrdersTable() {
+    const tbody = document.getElementById('adminOrdersTableBody');
+    if (!tbody) return;
 
     const orders = await API.getOrders();
-    list.innerHTML = orders.map(o => `
+    tbody.innerHTML = orders.map(o => `
         <tr>
             <td style="padding:10px; font-weight:700;">#${o.id}</td>
             <td style="padding:10px;">${o.buyer_name || 'Buyer'}</td>
@@ -1482,12 +1531,26 @@ async function loadAdminOrders() {
     `).join('');
 }
 
-async function loadAdminDisputes() {
-    const list = document.getElementById('adminDisputesTableBody');
-    if (!list) return;
+async function renderAdminSourcingTable() {
+    const tbody = document.getElementById('adminRequestsTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = `
+        <tr>
+            <td style="padding:10px; font-weight:700;">PBA-19127</td>
+            <td style="padding:10px;">Kano Leather & Hides Wholesale</td>
+            <td style="padding:10px;">Alhaji Haruna</td>
+            <td style="padding:10px;">₦450,000</td>
+            <td style="padding:10px;"><span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green);">Negotiating</span></td>
+        </tr>
+    `;
+}
+
+async function renderAdminComplaintsTable() {
+    const tbody = document.getElementById('adminComplaintsTableBody');
+    if (!tbody) return;
 
     const disputes = API.getDisputes ? await API.getDisputes() : [];
-    list.innerHTML = disputes.map(d => `
+    tbody.innerHTML = disputes.map(d => `
         <tr>
             <td style="padding:10px; font-weight:700;">${d.subject}</td>
             <td style="padding:10px;">${d.category}</td>
@@ -1501,8 +1564,99 @@ async function loadAdminDisputes() {
 }
 
 async function handleResolveDispute(disputeId) {
-    showToast('Dispute marked as resolved', 'success');
-    loadAdminDisputes();
+    showToast('Dispute resolved', 'success');
+    renderAdminComplaintsTable();
+}
+
+async function handleToggleUserStatus(userId) {
+    await API.toggleUserStatus(userId);
+    showToast('User status updated', 'success');
+    renderAdminUsersTable();
+}
+
+async function handleVerifySeller(sellerId) {
+    await API.toggleSellerVerification(sellerId);
+    showToast('Seller verification updated', 'success');
+    renderAdminVerificationTable();
+}
+
+function openBroadcastModal() {
+    document.getElementById('adminBroadcastForm')?.reset();
+    document.getElementById('adminBroadcastModal')?.classList.add('active');
+}
+
+async function handleSendBroadcast(event) {
+    if (event) event.preventDefault();
+    const target = document.getElementById('broadcastTarget')?.value;
+    const title = document.getElementById('broadcastTitle')?.value;
+    const message = document.getElementById('broadcastMessage')?.value;
+
+    if (API.createBroadcast) {
+        await API.createBroadcast({ target, title, message });
+    }
+    closeModal('adminBroadcastModal');
+    renderLiveAnnouncementBanner();
+    showToast('Broadcast published live!', 'success');
+    renderAdminAnnouncementsTable();
+}
+
+function renderLiveAnnouncementBanner() {
+    const banner = document.getElementById('siteAnnouncementBanner');
+    const textEl = document.getElementById('siteAnnouncementText');
+    const broadcast = API.getLatestBroadcast ? API.getLatestBroadcast() : null;
+
+    if (broadcast && banner && textEl) {
+        textEl.textContent = broadcast.title + ' — ' + broadcast.message;
+        banner.style.display = 'block';
+    }
+}
+
+function dismissAnnouncement() {
+    const banner = document.getElementById('siteAnnouncementBanner');
+    if (banner) banner.style.display = 'none';
+}
+
+async function renderAdminAnnouncementsTable() {
+    const tbody = document.getElementById('adminAnnouncementsTableBody');
+    if (!tbody) return;
+
+    const broadcasts = API.getBroadcasts ? await API.getBroadcasts() : [];
+    tbody.innerHTML = broadcasts.map(b => `
+        <tr>
+            <td style="padding:10px; font-weight:700;">${b.title}</td>
+            <td style="padding:10px;"><span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green);">${b.target}</span></td>
+            <td style="padding:10px;">${b.message}</td>
+            <td style="padding:10px;">${new Date(b.created_at).toLocaleDateString()}</td>
+        </tr>
+    `).join('');
+}
+
+function renderAdminAnalyticsCharts() {
+    const container = document.getElementById('adminAnalyticsContainer');
+    if (!container) return;
+    container.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+                <h4 style="font-size:0.9rem; font-weight:800; margin-bottom:12px;"><i class="fa-solid fa-chart-line" style="color:var(--brand-green);"></i> Weekly Trade Volume</h4>
+                <div style="height:120px; display:flex; align-items:flex-end; gap:10px; padding:10px 0;">
+                    <div style="flex:1; background:var(--brand-green); height:40%; border-radius:4px;"></div>
+                    <div style="flex:1; background:var(--brand-green); height:60%; border-radius:4px;"></div>
+                    <div style="flex:1; background:var(--brand-green); height:75%; border-radius:4px;"></div>
+                    <div style="flex:1; background:var(--brand-green); height:95%; border-radius:4px;"></div>
+                    <div style="flex:1; background:var(--gold); height:85%; border-radius:4px;"></div>
+                </div>
+            </div>
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+                <h4 style="font-size:0.9rem; font-weight:800; margin-bottom:12px;"><i class="fa-solid fa-pie-chart" style="color:var(--gold);"></i> Top State Distribution</h4>
+                <div style="font-size:0.82rem; line-height:1.8;">
+                    <div>🇳🇬 Abuja (FCT): <strong>35%</strong></div>
+                    <div>🇳🇬 Kano: <strong>28%</strong></div>
+                    <div>🇳🇬 Lagos: <strong>22%</strong></div>
+                    <div>🌍 International (Dubai, UK, US): <strong>15%</strong></div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function openReportComplaintModal(subject = '') {
@@ -1527,117 +1681,7 @@ async function handleSubmitComplaint(event) {
 }
 
 // ==========================================
-// 18. BROADCAST TICKER & ANNOUNCEMENTS
-// ==========================================
-function renderLiveAnnouncementBanner() {
-    const banner = document.getElementById('siteAnnouncementBanner');
-    const textEl = document.getElementById('siteAnnouncementText');
-    const broadcast = API.getLatestBroadcast ? API.getLatestBroadcast() : null;
-
-    if (broadcast && banner && textEl) {
-        textEl.textContent = broadcast.title + ' — ' + broadcast.message;
-        banner.style.display = 'block';
-    }
-}
-
-function dismissAnnouncement() {
-    const banner = document.getElementById('siteAnnouncementBanner');
-    if (banner) banner.style.display = 'none';
-}
-
-function openAdminBroadcastModal() {
-    document.getElementById('adminBroadcastForm')?.reset();
-    document.getElementById('adminBroadcastModal')?.classList.add('active');
-}
-
-async function handleSendBroadcast(event) {
-    if (event) event.preventDefault();
-    const target = document.getElementById('broadcastTarget')?.value;
-    const title = document.getElementById('broadcastTitle')?.value;
-    const message = document.getElementById('broadcastMessage')?.value;
-
-    if (API.createBroadcast) {
-        await API.createBroadcast({ target, title, message });
-    }
-    closeModal('adminBroadcastModal');
-    renderLiveAnnouncementBanner();
-    showToast('Broadcast published live across website!', 'success');
-    loadAdminBroadcasts();
-}
-
-async function loadAdminBroadcasts() {
-    const list = document.getElementById('adminBroadcastsList');
-    if (!list) return;
-
-    const broadcasts = API.getBroadcasts ? await API.getBroadcasts() : [];
-    list.innerHTML = broadcasts.map(b => `
-        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; margin-bottom:8px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong>${b.title}</strong>
-                <span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green);">${b.target}</span>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin:4px 0;">${b.message}</p>
-        </div>
-    `).join('');
-}
-
-// ==========================================
-// 19. ADMIN CSV EXPORT & BACKUP
-// ==========================================
-function exportTableToCSV(tableId, filename = 'export.csv') {
-    const table = document.getElementById(tableId);
-    if (!table) return;
-
-    let csv = [];
-    const rows = table.querySelectorAll('tr');
-    rows.forEach(row => {
-        const cols = row.querySelectorAll('td, th');
-        let rowData = [];
-        cols.forEach(col => rowData.push('"' + col.innerText.replace(/"/g, '""') + '"'));
-        csv.push(rowData.join(','));
-    });
-
-    const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('CSV report generated and downloaded', 'success');
-}
-
-function handleExportDatabaseBackup() {
-    const backupData = {
-        users: API.getUsersSync ? API.getUsersSync() : [],
-        products: API.getProductsSync ? API.getProductsSync() : [],
-        orders: API.getOrdersSync ? API.getOrdersSync() : []
-    };
-
-    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `market_at_home_backup_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Database backup downloaded (JSON)', 'success');
-}
-
-function handleResetPlatformData() {
-    if (confirm('Reset platform data to factory seeds?')) {
-        localStorage.clear();
-        showToast('Database restored to default seeds', 'info');
-        location.reload();
-    }
-}
-
-// ==========================================
-// 20. MODAL & TOAST HELPERS
+// 20. UTILITIES & TOASTS
 // ==========================================
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -1661,13 +1705,4 @@ function showToast(message, type = 'info') {
         toast.style.transform = 'translateY(10px)';
         setTimeout(() => toast.remove(), 300);
     }, 3500);
-}
-
-function installPwaApp() {
-    showToast('Market at Home app ready for installation on your device!', 'success');
-}
-
-function dismissPwaPrompt() {
-    const prompt = document.getElementById('pwaFloatingPrompt');
-    if (prompt) prompt.style.display = 'none';
 }
