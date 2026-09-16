@@ -95,17 +95,24 @@ async function initApp() {
     initCloudSyncListeners();
 }
 
+function refreshAllProductViews() {
+    if (typeof loadHomeFeatured === 'function') loadHomeFeatured();
+    if (typeof loadMarketplaceProducts === 'function') loadMarketplaceProducts();
+    if (typeof filterMarketplace === 'function') filterMarketplace();
+    if (typeof loadBuyerGoods === 'function') loadBuyerGoods();
+    if (typeof loadSellerProducts === 'function') loadSellerProducts();
+    if (typeof renderAdminProductsTable === 'function') renderAdminProductsTable();
+    if (typeof loadAdminDashboardKpis === 'function') loadAdminDashboardKpis();
+}
+
 function initCloudSyncListeners() {
     window.addEventListener('globalbiz:cloud-synced', () => {
-        const page = AppState.activePage;
-        if (page === 'marketplace' || page === 'explore') {
-            if (typeof filterMarketplace === 'function') filterMarketplace();
-        } else if (page === 'home') {
-            if (typeof loadHomeFeatured === 'function') loadHomeFeatured();
-        } else if (page === 'buyer-portal') {
-            if (typeof loadBuyerGoods === 'function') loadBuyerGoods();
-        } else if (page === 'seller-portal') {
-            if (typeof loadSellerProducts === 'function') loadSellerProducts();
+        refreshAllProductViews();
+    });
+
+    window.addEventListener('storage', (e) => {
+        if (e.key && (e.key.startsWith('globalbiz_') || e.key.startsWith('mah_'))) {
+            refreshAllProductViews();
         }
     });
 
@@ -121,11 +128,13 @@ function initCloudSyncListeners() {
         if (typeof API !== 'undefined' && typeof API.pullFromCloud === 'function') {
             API.pullFromCloud();
         }
+        refreshAllProductViews();
     });
     window.addEventListener('online', () => {
         if (typeof API !== 'undefined' && typeof API.pullFromCloud === 'function') {
             API.pullFromCloud();
         }
+        refreshAllProductViews();
     });
 }
 
@@ -406,12 +415,17 @@ async function openProductDetails(productId) {
         return;
     }
 
+    const prodTitle = product.title || product.name || 'Product Details';
+    const prodPhoto = product.photo || product.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
+    const prodSeller = product.seller_name || product.seller_store || 'Verified Merchant';
+    const prodPhone = product.phone || product.seller_phone || '+234800000000';
+
     const titleEl = document.getElementById('detailModalTitle');
     const contentEl = document.getElementById('detailModalContent');
-    if (titleEl) titleEl.textContent = product.name;
+    if (titleEl) titleEl.textContent = prodTitle;
 
     const formattedPrice = formatPrice(product.price);
-    const sellerPhoneClean = (product.phone || '').replace(/[^0-9]/g, '');
+    const sellerPhoneClean = prodPhone.replace(/[^0-9]/g, '');
     const user = getCurrentUser();
     const isOwnerOrAdmin = user && (user.role === 'seller' || isAdminAuthenticated() || (product.seller_id && user.id == product.seller_id));
 
@@ -421,7 +435,7 @@ async function openProductDetails(productId) {
             <!-- Left: 360 Inspection Simulation & Visuals -->
             <div>
                 <div class="product-360-viewer-box" style="position:relative; background:var(--bg-page); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; text-align:center;">
-                    <img id="detailMainImage" src="${product.photo}" alt="${product.name}" style="width:100%; height:260px; object-fit:contain; transition:transform 0.2s;" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
+                    <img id="detailMainImage" src="${prodPhoto}" alt="${prodTitle}" style="width:100%; height:260px; object-fit:contain; transition:transform 0.2s;" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
                     <div style="position:absolute; bottom:8px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.65); color:#fff; font-size:0.72rem; padding:4px 10px; border-radius:20px; display:flex; align-items:center; gap:6px;">
                         <i class="fa-solid fa-arrows-spin"></i> 360° Inspection Simulation
                     </div>
@@ -445,16 +459,16 @@ async function openProductDetails(productId) {
                     </span>
                 </div>
 
-                <h2 style="font-size:1.3rem; font-weight:800; margin-bottom:8px; line-height:1.3;">${product.name}</h2>
+                <h2 style="font-size:1.3rem; font-weight:800; margin-bottom:8px; line-height:1.3;">${prodTitle}</h2>
                 <div style="font-size:1.4rem; font-weight:900; color:var(--brand-green); margin-bottom:12px;">${formattedPrice}</div>
 
                 <!-- Verified Merchant Info Box -->
                 <div style="background:var(--bg-page); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 12px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <div style="font-weight:700; font-size:0.85rem;"><i class="fa-solid fa-store" style="color:var(--gold);"></i> ${product.seller_name || 'Verified Supplier'}</div>
+                        <div style="font-weight:700; font-size:0.85rem;"><i class="fa-solid fa-store" style="color:var(--gold);"></i> ${prodSeller}</div>
                         <div style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${product.location || 'Nigeria'}</div>
                     </div>
-                    <button class="btn btn-sm btn-outline" onclick="openChatWithSeller('${product.phone}', '${product.seller_name}')" style="padding:4px 10px; font-size:0.75rem;">
+                    <button class="btn btn-sm btn-outline" onclick="openChatWithSeller('${prodPhone}', '${prodSeller}')" style="padding:4px 10px; font-size:0.75rem;">
                         <i class="fa-solid fa-comment-dots" style="color:var(--brand-green);"></i> Chat
                     </button>
                 </div>
@@ -2134,10 +2148,187 @@ async function renderAdminUsersTable() {
 }
 
 
-async function handleVerifySeller(sellerId) {
-    await API.toggleSellerVerification(sellerId);
-    showToast('Seller verification updated', 'success');
-    renderAdminVerificationTable();
+async function renderAdminVerificationTable() {
+    const tbody = document.getElementById('adminVerificationTableBody');
+    if (!tbody) return;
+
+    const users = await API.getUsers();
+    const sellers = users.filter(u => u.role === 'seller');
+
+    if (sellers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:#94A3B8;">No seller accounts awaiting review.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = sellers.map(s => {
+        const isVerified = s.verified === 1 || s.verified === true;
+        const cleanPhone = (s.phone || '').replace(/[^0-9+]/g, '');
+        return `
+            <tr>
+                <td style="padding:12px; font-weight:700;">
+                    <div>${s.store_name || s.full_name}</div>
+                    <small style="color:#94A3B8;">${s.full_name} &bull; <a href="https://wa.me/${cleanPhone}" target="_blank" style="color:#25D366; text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> ${s.phone}</a></small>
+                </td>
+                <td style="padding:12px; font-family:monospace; color:#CBD5E1;">${s.id_number || 'NIN-78904512398'}</td>
+                <td style="padding:12px; font-size:0.82rem; color:#CBD5E1;">${s.kin_name || 'Guarantor Verified'}</td>
+                <td style="padding:12px; font-size:0.82rem;">${s.location || 'Nigeria'}</td>
+                <td style="padding:12px;">
+                    <span class="badge" style="background:${isVerified ? 'rgba(16,185,129,0.2); color:#10B981' : 'rgba(245,158,11,0.2); color:#F59E0B'}">
+                        ${isVerified ? '<i class="fa-solid fa-circle-check"></i> Verified' : '<i class="fa-solid fa-clock"></i> Pending'}
+                    </span>
+                </td>
+                <td style="padding:12px;">
+                    <button class="btn btn-sm ${isVerified ? 'btn-outline' : 'btn-primary'}" onclick="handleVerifySeller('${s.id}')" style="padding:4px 10px; font-size:0.75rem;">
+                        ${isVerified ? 'Revoke Badge' : '✓ Grant Badge'}
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function renderAdminProductsTable() {
+    const tbody = document.getElementById('adminProductsTableBody');
+    if (!tbody) return;
+
+    const products = await API.getProducts();
+    if (!products || products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:#94A3B8;">No products currently listed.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = products.map(p => {
+        const img = p.photo_url || p.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
+        const title = p.title || p.name || 'Untitled Good';
+        const price = formatPrice(p.price);
+        const seller = p.seller_store || p.seller_name || p.phone || 'Merchant';
+        return `
+            <tr>
+                <td style="padding:12px; font-weight:700;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${img}" alt="${title}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid var(--border);" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80'">
+                        <div>
+                            <div>${title}</div>
+                            <small style="color:#94A3B8;">${p.category || p.category_name || 'General'} &bull; ${p.location || 'Global'}</small>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:12px; font-size:0.85rem; color:#CBD5E1;">${seller}</td>
+                <td style="padding:12px; font-weight:800; color:var(--brand-green);">${price}</td>
+                <td style="padding:12px; font-size:0.85rem;">${p.stock !== undefined ? p.stock : 25} in stock</td>
+                <td style="padding:12px;">
+                    <span class="badge" style="background:rgba(16,185,129,0.2); color:#10B981;">
+                        <i class="fa-solid fa-circle-check"></i> Published Live
+                    </span>
+                </td>
+                <td style="padding:12px;">
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-sm btn-outline" onclick="openProductDetails('${p.id}')" style="padding:4px 8px; font-size:0.75rem;" title="View Listing">
+                            <i class="fa-solid fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm" onclick="handleDeleteProduct('${p.id}')" style="background:#EF4444; color:#fff; padding:4px 8px; font-size:0.75rem; border-radius:var(--radius-xs);" title="Delete Product">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+let adminOrderFilterStatus = 'all';
+
+function handleAdminFilterOrders(status, btnEl) {
+    adminOrderFilterStatus = status;
+    if (btnEl) {
+        document.querySelectorAll('#admin-tab-orders .hero-loc-pill').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+    }
+    renderAdminOrdersTable();
+}
+
+async function renderAdminOrdersTable() {
+    const tbody = document.getElementById('adminOrdersTableBody');
+    if (!tbody) return;
+
+    let orders = await API.getOrders();
+    if (adminOrderFilterStatus !== 'all') {
+        orders = orders.filter(o => (o.status || '').toLowerCase() === adminOrderFilterStatus.toLowerCase());
+    }
+
+    if (!orders || orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:#94A3B8;">No orders found matching criteria.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = orders.map(o => {
+        const orderNum = o.order_number || ('ORD-' + o.id);
+        const buyer = o.buyer_name || 'Customer';
+        const total = formatPrice(o.total_amount || 0);
+        const status = o.status || 'Pending';
+        return `
+            <tr>
+                <td style="padding:12px; font-weight:700; font-family:monospace; color:var(--brand-green);">${orderNum}</td>
+                <td style="padding:12px;">
+                    <div>${buyer}</div>
+                    <small style="color:#94A3B8;">${o.buyer_phone || ''}</small>
+                </td>
+                <td style="padding:12px; font-size:0.85rem;">${o.item_name || 'Goods'} (${o.quantity || 1}x)</td>
+                <td style="padding:12px; font-weight:800;">${total}</td>
+                <td style="padding:12px; font-size:0.85rem; color:#CBD5E1;">${o.seller_name || 'Merchant'}</td>
+                <td style="padding:12px;">
+                    <span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green); font-weight:700;">${status}</span>
+                </td>
+                <td style="padding:12px;">
+                    <button class="btn btn-sm btn-outline" onclick="showToast('Order #${orderNum} status is ${status}', 'info')" style="padding:4px 8px; font-size:0.75rem;">
+                        Inspect
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function renderAdminSourcingTable() {
+    const tbody = document.getElementById('adminRequestsTableBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = `
+        <tr>
+            <td style="padding:12px; font-family:monospace; font-weight:700; color:var(--gold);">SRC-44910</td>
+            <td style="padding:12px;">Alhaji Mustapha<br><small style="color:#94A3B8;">Kano</small></td>
+            <td style="padding:12px;">Heavy Industrial Generator (50kVA)</td>
+            <td style="padding:12px;">Kano / Lagos</td>
+            <td style="padding:12px; color:var(--brand-green); font-weight:600;"><i class="fa-solid fa-user-check"></i> Agent Farouk</td>
+            <td style="padding:12px;"><span class="badge" style="background:rgba(245,158,11,0.2); color:#F59E0B;">In Progress</span></td>
+            <td style="padding:12px;"><button class="btn btn-sm btn-outline" onclick="showToast('Assigned to Procurement Officer Farouk', 'info')">Update</button></td>
+        </tr>
+        <tr>
+            <td style="padding:12px; font-family:monospace; font-weight:700; color:var(--gold);">SRC-88219</td>
+            <td style="padding:12px;">Grace Adebayo<br><small style="color:#94A3B8;">Abuja</small></td>
+            <td style="padding:12px;">Bulk Shea Butter Export (500kg)</td>
+            <td style="padding:12px;">Abuja / UK Port</td>
+            <td style="padding:12px; color:var(--brand-green); font-weight:600;"><i class="fa-solid fa-user-check"></i> Agent Amaka</td>
+            <td style="padding:12px;"><span class="badge" style="background:rgba(16,185,129,0.2); color:#10B981;">Quotations Ready</span></td>
+            <td style="padding:12px;"><button class="btn btn-sm btn-outline" onclick="showToast('Quotes sent to Grace via WhatsApp', 'success')">View Quotes</button></td>
+        </tr>
+    `;
+}
+
+async function renderAdminComplaintsTable() {
+    const tbody = document.getElementById('adminComplaintsTableBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = `
+        <tr>
+            <td style="padding:12px; font-family:monospace; font-weight:700; color:#EF4444;">TKT-1029</td>
+            <td style="padding:12px;">Emeka Okafor<br><small style="color:#94A3B8;">+234 812 345 6789</small></td>
+            <td style="padding:12px;">Delivery Delay</td>
+            <td style="padding:12px; font-size:0.85rem; color:#CBD5E1;">Customer requested delivery expedite for logistics from Lagos to Abuja.</td>
+            <td style="padding:12px;"><span class="badge" style="background:rgba(16,185,129,0.2); color:#10B981;">Resolved</span></td>
+            <td style="padding:12px;"><button class="btn btn-sm btn-outline" onclick="showToast('Dispute ticket marked as resolved', 'info')">Details</button></td>
+        </tr>
+    `;
 }
 
 function openBroadcastModal() {
@@ -2295,32 +2486,6 @@ function handleRequestSellerVerification() {
     }
 }
 
-
-// ==========================================
-// DYNAMIC ROLE-BASED BOTTOM NAVIGATION CONTROLLER
-// ==========================================
-// ==========================================
-// 4-ITEM DOCK CONTROLLER (Home, Market, Portal, AI Assist)
-// ==========================================
-function handleBottomNavPortalClick() {
-    if (isAdminAuthenticated()) {
-        switchPage('admin');
-        loadAdminPortalData();
-        return;
-    }
-    const user = getCurrentUser();
-    if (user) {
-        if (user.role === 'seller') {
-            switchPage('seller');
-            loadSellerPortalData();
-        } else {
-            switchPage('buyer');
-            loadBuyerPortalData();
-        }
-    } else {
-        openAuthModal('login');
-    }
-}
 
 // ==========================================
 // 4-ITEM DOCK CONTROLLER (Home, Market, Portal, AI Assist)

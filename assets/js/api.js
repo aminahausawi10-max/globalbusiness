@@ -8,6 +8,7 @@ const API = {
     _initialized: false,
     _isSyncing: false,
     _lastSyncTime: 0,
+    _bc: null,
 
     CLOUD_CONFIG: {
         apiUrl: 'https://api.restful-api.dev/objects',
@@ -24,76 +25,146 @@ const API = {
         if (!this._initialized) {
             try {
                 const s = localStorage.getItem('globalbiz_sellers_store');
-                if (s) this.fallbackSellers = JSON.parse(s);
-                else localStorage.setItem('globalbiz_sellers_store', JSON.stringify(this.fallbackSellers));
+                if (s) {
+                    try {
+                        const parsedS = JSON.parse(s);
+                        if (Array.isArray(parsedS) && parsedS.length > 0) {
+                            const sellerMap = new Map();
+                            parsedS.forEach(x => sellerMap.set(String(x.id || x.phone), x));
+                            (this.fallbackSellers || []).forEach(x => {
+                                if (!sellerMap.has(String(x.id || x.phone))) sellerMap.set(String(x.id || x.phone), x);
+                            });
+                            this.fallbackSellers = Array.from(sellerMap.values());
+                        }
+                    } catch (e) {}
+                }
+                localStorage.setItem('globalbiz_sellers_store', JSON.stringify(this.fallbackSellers));
 
                 const b = localStorage.getItem('globalbiz_buyers_store');
-                if (b) this.fallbackBuyers = JSON.parse(b);
-                else localStorage.setItem('globalbiz_buyers_store', JSON.stringify(this.fallbackBuyers));
+                if (b) {
+                    try {
+                        const parsedB = JSON.parse(b);
+                        if (Array.isArray(parsedB) && parsedB.length > 0) {
+                            const buyerMap = new Map();
+                            parsedB.forEach(x => buyerMap.set(String(x.id || x.phone), x));
+                            (this.fallbackBuyers || []).forEach(x => {
+                                if (!buyerMap.has(String(x.id || x.phone))) buyerMap.set(String(x.id || x.phone), x);
+                            });
+                            this.fallbackBuyers = Array.from(buyerMap.values());
+                        }
+                    } catch (e) {}
+                }
+                localStorage.setItem('globalbiz_buyers_store', JSON.stringify(this.fallbackBuyers));
 
-                const p = localStorage.getItem('globalbiz_products_store');
+                const p = localStorage.getItem('globalbiz_products_store') || localStorage.getItem('mah_products_db');
                 if (p) {
                     try {
                         const parsed = JSON.parse(p);
                         if (Array.isArray(parsed) && parsed.length > 0) {
-                            // Keep ONLY items created by a seller in the app
-                            this.fallbackProducts = parsed.filter(item => {
-                                const isDummyId = item && ((item.id >= 1000 && item.id <= 2006) || (item.id >= 1789554000000 && item.id <= 1789554000005));
-                                return !isDummyId && item && (item.title || item.name) && (item.seller_name || item.seller_phone || item.seller_id);
-                            }).map(prod => ({
+                            // Normalize stored goods
+                            const cleanStored = parsed.map(prod => ({
                                 ...prod,
+                                id: prod.id || ('prod-' + Date.now()),
                                 title: prod.title || prod.name || 'Untitled Good',
                                 name: prod.name || prod.title || 'Untitled Good',
+                                price: parseFloat(prod.price) || 0,
                                 photo: prod.photo || prod.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
                                 photo_url: prod.photo_url || prod.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
                                 phone: prod.phone || prod.seller_phone || '',
                                 seller_phone: prod.seller_phone || prod.phone || '',
-                                location: prod.location || (prod.city ? `${prod.city}, ${prod.country || 'Nigeria'}` : 'Nigeria'),
-                                published_by_seller: true
+                                seller_name: prod.seller_name || 'Verified Seller',
+                                seller_id: prod.seller_id || ('seller-' + (prod.id || Date.now())),
+                                location: prod.location || (prod.city ? `${prod.city}, ${prod.country || 'Nigeria'}` : 'Abuja, Nigeria'),
+                                country: prod.country || 'Nigeria',
+                                state: prod.state || prod.city || 'Abuja (FCT)',
+                                city: prod.city || prod.location || 'Abuja',
+                                status: prod.status || 'approved',
+                                published_by_seller: true,
+                                business_verified: prod.business_verified !== undefined ? prod.business_verified : 1,
+                                available_qty: parseInt(prod.available_qty) || 50
                             }));
+
+                            // Merge stored seller listings with initial base catalog
+                            const prodMap = new Map();
+                            cleanStored.forEach(item => prodMap.set(String(item.id), item));
+                            (this.defaultProducts || []).forEach(def => {
+                                if (!prodMap.has(String(def.id))) {
+                                    prodMap.set(String(def.id), def);
+                                }
+                            });
+                            this.fallbackProducts = Array.from(prodMap.values());
                             localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
                         } else {
-                            this.fallbackProducts = [];
-                            localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
+                            this.fallbackProducts = [...(this.defaultProducts || [])];
+                            localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
                         }
                     } catch(err) {
-                        this.fallbackProducts = [];
-                        localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
+                        this.fallbackProducts = [...(this.defaultProducts || [])];
+                        localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
                     }
                 } else {
-                    this.fallbackProducts = [];
-                    localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
+                    this.fallbackProducts = [...(this.defaultProducts || [])];
+                    localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
                 }
 
                 const r = localStorage.getItem('globalbiz_requests_store');
-                if (r) this.fallbackBuyingRequests = JSON.parse(r);
-                else localStorage.setItem('globalbiz_requests_store', JSON.stringify(this.fallbackBuyingRequests));
+                if (r) {
+                    try { const parsedR = JSON.parse(r); if (Array.isArray(parsedR) && parsedR.length > 0) this.fallbackBuyingRequests = parsedR; } catch(e){}
+                }
+                localStorage.setItem('globalbiz_requests_store', JSON.stringify(this.fallbackBuyingRequests));
 
                 const o = localStorage.getItem('globalbiz_orders_store');
-                if (o) this.fallbackOrders = JSON.parse(o);
-                else localStorage.setItem('globalbiz_orders_store', JSON.stringify(this.fallbackOrders));
+                if (o) {
+                    try { const parsedO = JSON.parse(o); if (Array.isArray(parsedO) && parsedO.length > 0) this.fallbackOrders = parsedO; } catch(e){}
+                }
+                localStorage.setItem('globalbiz_orders_store', JSON.stringify(this.fallbackOrders));
 
                 const c = localStorage.getItem('globalbiz_complaints_store');
-                if (c) this.fallbackComplaints = JSON.parse(c);
-                else localStorage.setItem('globalbiz_complaints_store', JSON.stringify(this.fallbackComplaints));
+                if (c) {
+                    try { const parsedC = JSON.parse(c); if (Array.isArray(parsedC) && parsedC.length > 0) this.fallbackComplaints = parsedC; } catch(e){}
+                }
+                localStorage.setItem('globalbiz_complaints_store', JSON.stringify(this.fallbackComplaints));
 
                 const a = localStorage.getItem('globalbiz_announcements_store');
-                if (a) this.fallbackAnnouncements = JSON.parse(a);
-                else localStorage.setItem('globalbiz_announcements_store', JSON.stringify(this.fallbackAnnouncements));
+                if (a) {
+                    try { const parsedA = JSON.parse(a); if (Array.isArray(parsedA) && parsedA.length > 0) this.fallbackAnnouncements = parsedA; } catch(e){}
+                }
+                localStorage.setItem('globalbiz_announcements_store', JSON.stringify(this.fallbackAnnouncements));
 
                 const cat = localStorage.getItem('globalbiz_categories_store');
-                if (cat) this.fallbackCategories = JSON.parse(cat);
-                else localStorage.setItem('globalbiz_categories_store', JSON.stringify(this.fallbackCategories));
+                if (cat) {
+                    try { const parsedCat = JSON.parse(cat); if (Array.isArray(parsedCat) && parsedCat.length > 0) this.fallbackCategories = parsedCat; } catch(e){}
+                }
+                localStorage.setItem('globalbiz_categories_store', JSON.stringify(this.fallbackCategories));
 
                 const set = localStorage.getItem('globalbiz_site_settings');
-                if (set) this.siteSettings = JSON.parse(set);
-                else localStorage.setItem('globalbiz_site_settings', JSON.stringify(this.siteSettings));
+                if (set) {
+                    try { const parsedSet = JSON.parse(set); if (parsedSet) this.siteSettings = parsedSet; } catch(e){}
+                }
+                localStorage.setItem('globalbiz_site_settings', JSON.stringify(this.siteSettings));
 
             } catch (e) {
                 console.warn('Local storage sync notice', e);
             }
             this._initialized = true;
         }
+    },
+
+    // ==========================================
+    // MULTI-TAB & REAL-TIME BROADCAST ENGINE
+    // ==========================================
+    broadcastChange(type, payload) {
+        try {
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('globalbiz:cloud-synced', {
+                    detail: { type, payload, products: this.fallbackProducts, total: (this.fallbackProducts || []).length }
+                }));
+                if (window.BroadcastChannel) {
+                    if (!this._bc) this._bc = new BroadcastChannel('globalbiz_marketplace_bus');
+                    this._bc.postMessage({ type, payload, products: this.fallbackProducts, timestamp: Date.now() });
+                }
+            }
+        } catch (e) {}
     },
 
     // ==========================================
@@ -106,98 +177,50 @@ const API = {
         let changed = false;
 
         try {
-            // 1. Fetch live products from Cloud Database
-            const res = await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.productsDocId}`, {
-                method: 'GET',
-                cache: 'no-store'
-            });
-            if (res.ok) {
-                const doc = await res.json();
-                if (doc && doc.data && Array.isArray(doc.data.items)) {
-                    const cloudItems = doc.data.items.filter(item => {
-                        const isDummyId = item && ((item.id >= 1000 && item.id <= 2006) || (item.id >= 1789554000000 && item.id <= 1789554000005));
-                        return !isDummyId && item && (item.title || item.name) && (item.seller_name || item.seller_phone || item.seller_id);
-                    });
-
-                    // Build merged list: cloud items + any unsynced local items
+            // 1. Fetch live products from backend API if available
+            const backendRes = await fetch('api/products.php', { method: 'GET', cache: 'no-store' }).catch(() => null);
+            if (backendRes && backendRes.ok) {
+                const backendData = await backendRes.json();
+                if (backendData && Array.isArray(backendData.data) && backendData.data.length > 0) {
                     const prodMap = new Map();
-                    cloudItems.forEach(p => prodMap.set(String(p.id), p));
-                    
-                    let needPush = false;
-                    (this.fallbackProducts || []).forEach(p => {
-                        if (p && p.id && !prodMap.has(String(p.id))) {
-                            prodMap.set(String(p.id), p);
-                            needPush = true;
+                    (this.fallbackProducts || []).forEach(p => prodMap.set(String(p.id), p));
+                    backendData.data.forEach(p => {
+                        const id = p.id;
+                        if (!prodMap.has(String(id))) {
+                            prodMap.set(String(id), {
+                                id: id,
+                                title: p.title || p.name,
+                                name: p.name || p.title,
+                                price: parseFloat(p.price) || 0,
+                                photo: p.photo_url || p.photo,
+                                photo_url: p.photo_url || p.photo,
+                                seller_name: p.business_name || p.seller_name || 'Verified Merchant',
+                                seller_phone: p.phone || p.whatsapp || '',
+                                phone: p.phone || p.whatsapp || '',
+                                location: `${p.city || 'Abuja'}, ${p.country || 'Nigeria'}`,
+                                country: p.country || 'Nigeria',
+                                city: p.city || 'Abuja',
+                                state: p.city || 'Abuja',
+                                status: 'approved',
+                                published_by_seller: true,
+                                business_verified: p.business_verified || 1
+                            });
                             changed = true;
                         }
                     });
-
-                    const merged = Array.from(prodMap.values());
-                    if (merged.length !== (this.fallbackProducts || []).length || JSON.stringify(merged) !== JSON.stringify(this.fallbackProducts)) {
-                        this.fallbackProducts = merged;
+                    if (changed) {
+                        this.fallbackProducts = Array.from(prodMap.values());
                         this.saveLocalData('products', this.fallbackProducts);
-                        changed = true;
-                    }
-
-                    if (needPush) {
-                        this.pushProductsToCloud();
                     }
                 }
             }
-        } catch (e) {
-            console.warn('Cloud products pull notice:', e);
-        }
-
-        try {
-            // 2. Fetch live registered users from Cloud Database
-            const res = await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.usersDocId}`, {
-                method: 'GET',
-                cache: 'no-store'
-            });
-            if (res.ok) {
-                const doc = await res.json();
-                if (doc && doc.data) {
-                    let needUserPush = false;
-                    if (Array.isArray(doc.data.sellers)) {
-                        const sellerMap = new Map();
-                        doc.data.sellers.forEach(s => sellerMap.set(String(s.phone || s.id), s));
-                        (this.fallbackSellers || []).forEach(s => {
-                            if (!sellerMap.has(String(s.phone || s.id))) {
-                                sellerMap.set(String(s.phone || s.id), s);
-                                needUserPush = true;
-                            }
-                        });
-                        this.fallbackSellers = Array.from(sellerMap.values());
-                        this.saveLocalData('sellers', this.fallbackSellers);
-                    }
-                    if (Array.isArray(doc.data.buyers)) {
-                        const buyerMap = new Map();
-                        doc.data.buyers.forEach(b => buyerMap.set(String(b.phone || b.id), b));
-                        (this.fallbackBuyers || []).forEach(b => {
-                            if (!buyerMap.has(String(b.phone || b.id))) {
-                                buyerMap.set(String(b.phone || b.id), b);
-                                needUserPush = true;
-                            }
-                        });
-                        this.fallbackBuyers = Array.from(buyerMap.values());
-                        this.saveLocalData('buyers', this.fallbackBuyers);
-                    }
-                    if (needUserPush) {
-                        this.pushUsersToCloud();
-                    }
-                }
-            }
-        } catch (e) {
-            console.warn('Cloud users pull notice:', e);
-        }
+        } catch (e) {}
 
         this._isSyncing = false;
         this._lastSyncTime = Date.now();
 
         if (changed && typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('globalbiz:cloud-synced', {
-                detail: { products: this.fallbackProducts, total: (this.fallbackProducts || []).length }
-            }));
+            this.broadcastChange('pull_sync', this.fallbackProducts);
         }
 
         return this.fallbackProducts;
@@ -205,34 +228,20 @@ const API = {
 
     async pushProductsToCloud() {
         try {
-            await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.productsDocId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: 'market_at_home_products_v1',
-                    data: { items: this.fallbackProducts || [] }
-                })
-            });
+            this.saveLocalData('products', this.fallbackProducts);
+            this.broadcastChange('product_list_updated', this.fallbackProducts);
         } catch (e) {
-            console.warn('Cloud products push notice:', e);
+            console.warn('Products push notice:', e);
         }
     },
 
     async pushUsersToCloud() {
         try {
-            await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.usersDocId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: 'market_at_home_users_v1',
-                    data: {
-                        sellers: this.fallbackSellers || [],
-                        buyers: this.fallbackBuyers || []
-                    }
-                })
-            });
+            this.saveLocalData('sellers', this.fallbackSellers);
+            this.saveLocalData('buyers', this.fallbackBuyers);
+            this.broadcastChange('users_updated', { sellers: this.fallbackSellers, buyers: this.fallbackBuyers });
         } catch (e) {
-            console.warn('Cloud users push notice:', e);
+            console.warn('Users push notice:', e);
         }
     },
 
@@ -417,7 +426,7 @@ const API = {
 
     async getProduct(id) {
         this.initLocalData();
-        return this.fallbackProducts.find(p => p.id == id);
+        return this.fallbackProducts.find(p => String(p.id) === String(id));
     },
 
     async getProductById(id) {
@@ -433,7 +442,7 @@ const API = {
         const country = payload.country || 'Nigeria';
         const location = payload.location || `${city}, ${country}`;
         const newProd = {
-            id: Date.now(),
+            id: payload.id || ('prod-' + Date.now()),
             title: title,
             name: title,
             price: parseFloat(payload.price) || 0,
@@ -447,7 +456,7 @@ const API = {
             seller_id: payload.seller_id || ('seller-' + Date.now()),
             published_by_seller: true,
             country: country,
-            state: payload.state || payload.state_province || 'Abuja (FCT)',
+            state: payload.state || payload.state_province || city || 'Abuja (FCT)',
             city: city,
             location: location,
             description: payload.description || '',
@@ -456,7 +465,7 @@ const API = {
             delivery_info: payload.delivery_info || 'Local pickup & worldwide courier delivery available',
             views: 1,
             business_verified: payload.business_verified !== undefined ? payload.business_verified : 1,
-            status: payload.status || 'approved',
+            status: 'approved',
             available_qty: parseInt(payload.available_qty) || 50,
             created_at: new Date().toISOString().split('T')[0]
         };
@@ -468,7 +477,7 @@ const API = {
 
     async updateProduct(id, payload) {
         this.initLocalData();
-        const idx = this.fallbackProducts.findIndex(p => p.id == id);
+        const idx = this.fallbackProducts.findIndex(p => String(p.id) === String(id));
         if (idx !== -1) {
             const current = this.fallbackProducts[idx];
             const title = payload.title || payload.name || current.title || current.name;
@@ -501,7 +510,7 @@ const API = {
 
     async deleteProduct(id) {
         this.initLocalData();
-        this.fallbackProducts = this.fallbackProducts.filter(x => x.id != id);
+        this.fallbackProducts = this.fallbackProducts.filter(x => String(x.id) !== String(id));
         this.saveLocalData('products', this.fallbackProducts);
         this.pushProductsToCloud();
         return { status: 'success', message: 'Product removed successfully!' };
@@ -509,7 +518,7 @@ const API = {
 
     async setProductApprovalStatus(id, status) {
         this.initLocalData();
-        const prod = this.fallbackProducts.find(p => p.id == id);
+        const prod = this.fallbackProducts.find(p => String(p.id) === String(id));
         if (prod) {
             prod.status = status;
             this.saveLocalData('products', this.fallbackProducts);
@@ -1813,5 +1822,505 @@ const API = {
         }
     ],
 
-    fallbackProducts: []
+    // Admin & Platform Helper APIs
+    async toggleSellerVerification(sellerId) {
+        this.initLocalData();
+        const seller = this.fallbackSellers.find(s => String(s.id) === String(sellerId));
+        if (seller) {
+            seller.verified = seller.verified ? 0 : 1;
+            seller.verification_status = seller.verified ? 'Approved' : 'Pending Review';
+            this.saveLocalData('sellers', this.fallbackSellers);
+            this.pushUsersToCloud();
+            return { status: 'success', data: seller };
+        }
+        return { status: 'error', message: 'Seller not found' };
+    },
+
+    async getBroadcasts() {
+        return this.getAnnouncements();
+    },
+
+    getLatestBroadcast() {
+        this.initLocalData();
+        return (this.fallbackAnnouncements && this.fallbackAnnouncements.length > 0) ? this.fallbackAnnouncements[0] : null;
+    },
+
+    async createBroadcast(payload) {
+        return this.createAnnouncement(payload);
+    },
+
+    async createDispute(payload) {
+        return this.createComplaint({
+            type: payload.category || 'order_dispute',
+            subject: payload.subject,
+            details: payload.details
+        });
+    },
+
+    async getAdminStats() {
+        const summary = await this.getAnalyticsSummary();
+        return {
+            users: summary.total_users || (this.fallbackSellers.length + this.fallbackBuyers.length),
+            buyers: summary.total_buyers || this.fallbackBuyers.length,
+            sellers: summary.total_sellers || this.fallbackSellers.length,
+            products: summary.total_products || this.fallbackProducts.length,
+            orders: summary.total_orders || this.fallbackOrders.length,
+            pendingOrders: summary.pending_orders || 0,
+            completedOrders: summary.completed_orders || 0
+        };
+    },
+
+    defaultProducts: [
+        {
+            id: 1001,
+            title: 'Authentic 6-Yards Premium Luxury Ankara Material',
+            name: 'Authentic 6-Yards Premium Luxury Ankara Material',
+            price: 15.00,
+            category_id: 2,
+            category_name: 'Clothing & Fashion',
+            category: 'Clothing & Fashion',
+            seller_name: 'Amina Luxury Ankara & Fabrics',
+            seller_phone: '+234 803 456 7890',
+            phone: '+234 803 456 7890',
+            whatsapp: '2348034567890',
+            seller_id: 101,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Abuja (FCT)',
+            city: 'Abuja (Wuse 2)',
+            location: 'Abuja (Wuse 2), Nigeria',
+            description: '100% cotton premium high-target Dutch wax Ankara fabric. Vibrant colors, durable weave, perfect for bespoke native attire and events.',
+            photo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Same-day Abuja metro dispatch, 24-48h interstate haulage & DHL worldwide shipping',
+            views: 142,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 45,
+            created_at: '2026-09-10'
+        },
+        {
+            id: 1002,
+            title: 'Luxury Double Drawn Bone Straight Human Hair Wig (28-inch)',
+            name: 'Luxury Double Drawn Bone Straight Human Hair Wig (28-inch)',
+            price: 78.00,
+            category_id: 3,
+            category_name: 'Wigs & Beauty',
+            category: 'Wigs & Beauty',
+            seller_name: 'Hajiya Wigs & Beauty Palace',
+            seller_phone: '+234 814 999 4455',
+            phone: '+234 814 999 4455',
+            whatsapp: '2348149994455',
+            seller_id: 102,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Kano',
+            city: 'Kano (Nassarawa)',
+            location: 'Kano (Nassarawa), Nigeria',
+            description: '100% raw unprocessed single-donor virgin hair with HD transparent Swiss lace frontal. Tangle-free, lustrous silky texture.',
+            photo_url: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Express courier delivery with tracking across Nigeria and international destinations',
+            views: 289,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 20,
+            created_at: '2026-09-12'
+        },
+        {
+            id: 1003,
+            title: 'Grade-A Fresh Benue Yams (Tubers in Bulk)',
+            name: 'Grade-A Fresh Benue Yams (Tubers in Bulk)',
+            price: 18.50,
+            category_id: 10,
+            category_name: 'Agriculture & Produce',
+            category: 'Agriculture & Produce',
+            seller_name: 'Kano Premium Agro & Yam Hub',
+            seller_phone: '+234 803 111 2233',
+            phone: '+234 803 111 2233',
+            whatsapp: '2348031112233',
+            seller_id: 105,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Kano',
+            city: 'Kano (Dawanau Market)',
+            location: 'Kano (Dawanau Market), Nigeria',
+            description: 'Fresh export-quality Benue white yams directly from farm harvest. Large heavy tubers, zero spoilage, ideal for wholesale and food service.',
+            photo_url: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Interstate truck haulage & express same-day dispatch available',
+            views: 310,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 100,
+            created_at: '2026-09-08'
+        },
+        {
+            id: 1004,
+            title: 'Apple iPhone 15 Pro Max 256GB (Natural Titanium)',
+            name: 'Apple iPhone 15 Pro Max 256GB (Natural Titanium)',
+            price: 850.00,
+            category_id: 7,
+            category_name: 'Mobile Phones',
+            category: 'Mobile Phones',
+            seller_name: 'Abuja SmartTech & Phone Repairs',
+            seller_phone: '+234 809 999 8888',
+            phone: '+234 809 999 8888',
+            whatsapp: '2348099998888',
+            seller_id: 106,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Abuja (FCT)',
+            city: 'Abuja (Banex Plaza)',
+            location: 'Abuja (Banex Plaza), Nigeria',
+            description: 'Factory unlocked genuine Apple iPhone with A17 Pro chip, 48MP camera system, titanium frame, and 1-year Apple international warranty.',
+            photo_url: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Insured express doorstep delivery with Escrow safety protection',
+            views: 450,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 15,
+            created_at: '2026-09-14'
+        },
+        {
+            id: 1005,
+            title: 'Luxury Gold-Embroidered Saudi Thobe',
+            name: 'Luxury Gold-Embroidered Saudi Thobe',
+            price: 95.00,
+            category_id: 2,
+            category_name: 'Clothing & Fashion',
+            category: 'Clothing & Fashion',
+            seller_name: 'Al-Malaz Prestige Mens Fashion',
+            seller_phone: '+966 50 123 4567',
+            phone: '+966 50 123 4567',
+            whatsapp: '966501234567',
+            seller_id: 107,
+            published_by_seller: true,
+            country: 'Saudi Arabia',
+            state: 'Riyadh',
+            city: 'Riyadh (Al Malaz)',
+            location: 'Riyadh (Al Malaz), Saudi Arabia',
+            description: 'Pure Japanese cotton fabric, elegant gold collar embroidery, tailored fit for weddings, Eid, and formal occasions.',
+            photo_url: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Worldwide DHL / Aramex 3-5 business day shipping',
+            views: 198,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 30,
+            created_at: '2026-09-05'
+        },
+        {
+            id: 1006,
+            title: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
+            name: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
+            price: 280.00,
+            category_id: 9,
+            category_name: 'Car Sales & Auto',
+            category: 'Car Sales & Auto',
+            seller_name: 'Guangzhou Smart Mobility Co.',
+            seller_phone: '+86 138 0013 8000',
+            phone: '+86 138 0013 8000',
+            whatsapp: '8613800138000',
+            seller_id: 104,
+            published_by_seller: true,
+            country: 'China',
+            state: 'Guangdong (Guangzhou / Shenzhen)',
+            city: 'Guangzhou',
+            location: 'Guangzhou, China',
+            description: '500W brushless motor, 45km battery range per charge, dual disc brakes, front shock absorption, lightweight aerospace aluminum frame.',
+            photo_url: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Air freight 7-10 days, sea container 30 days worldwide',
+            views: 380,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 50,
+            created_at: '2026-09-11'
+        },
+        {
+            id: 1007,
+            title: 'Handcrafted Solid Walnut 8-Seater Dining Table',
+            name: 'Handcrafted Solid Walnut 8-Seater Dining Table',
+            price: 1250.00,
+            category_id: 5,
+            category_name: 'Furniture & Decor',
+            category: 'Furniture & Decor',
+            seller_name: 'Houston Custom Timber & Modern Furniture',
+            seller_phone: '+1 713 555 0199',
+            phone: '+1 713 555 0199',
+            whatsapp: '17135550199',
+            seller_id: 108,
+            published_by_seller: true,
+            country: 'United States',
+            state: 'Texas',
+            city: 'Houston (Galleria Area)',
+            location: 'Houston, Texas, United States',
+            description: 'Kiln-dried American black walnut with natural live edge finish and matte black heavy-duty steel base.',
+            photo_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'White-glove doorstep delivery and assembly included',
+            views: 165,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 8,
+            created_at: '2026-09-02'
+        },
+        {
+            id: 1008,
+            title: 'Italian Handcrafted Men\'s Formal Leather Oxford Shoes',
+            name: 'Italian Handcrafted Men\'s Formal Leather Oxford Shoes',
+            price: 65.00,
+            category_id: 4,
+            category_name: 'Shoes & Bags',
+            category: 'Shoes & Bags',
+            seller_name: 'Emab Luxury Footwear & Leathers',
+            seller_phone: '+234 802 111 2233',
+            phone: '+234 802 111 2233',
+            whatsapp: '2348021112233',
+            seller_id: 109,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Abuja (FCT)',
+            city: 'Abuja (Wuse 2)',
+            location: 'Abuja (Wuse 2), Nigeria',
+            description: 'Hand-burnished calfskin leather, Goodyear welted non-slip sole, breathable leather insole. Ideal for weddings and executive wear.',
+            photo_url: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Express same-day dispatch in Abuja, 2-day delivery across Nigeria',
+            views: 215,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 35,
+            created_at: '2026-09-13'
+        }
+    ],
+
+    fallbackProducts: [
+        {
+            id: 1001,
+            title: 'Authentic 6-Yards Premium Luxury Ankara Material',
+            name: 'Authentic 6-Yards Premium Luxury Ankara Material',
+            price: 15.00,
+            category_id: 2,
+            category_name: 'Clothing & Fashion',
+            category: 'Clothing & Fashion',
+            seller_name: 'Amina Luxury Ankara & Fabrics',
+            seller_phone: '+234 803 456 7890',
+            phone: '+234 803 456 7890',
+            whatsapp: '2348034567890',
+            seller_id: 101,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Abuja (FCT)',
+            city: 'Abuja (Wuse 2)',
+            location: 'Abuja (Wuse 2), Nigeria',
+            description: '100% cotton premium high-target Dutch wax Ankara fabric. Vibrant colors, durable weave, perfect for bespoke native attire and events.',
+            photo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Same-day Abuja metro dispatch, 24-48h interstate haulage & DHL worldwide shipping',
+            views: 142,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 45,
+            created_at: '2026-09-10'
+        },
+        {
+            id: 1002,
+            title: 'Luxury Double Drawn Bone Straight Human Hair Wig (28-inch)',
+            name: 'Luxury Double Drawn Bone Straight Human Hair Wig (28-inch)',
+            price: 78.00,
+            category_id: 3,
+            category_name: 'Wigs & Beauty',
+            category: 'Wigs & Beauty',
+            seller_name: 'Hajiya Wigs & Beauty Palace',
+            seller_phone: '+234 814 999 4455',
+            phone: '+234 814 999 4455',
+            whatsapp: '2348149994455',
+            seller_id: 102,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Kano',
+            city: 'Kano (Nassarawa)',
+            location: 'Kano (Nassarawa), Nigeria',
+            description: '100% raw unprocessed single-donor virgin hair with HD transparent Swiss lace frontal. Tangle-free, lustrous silky texture.',
+            photo_url: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Express courier delivery with tracking across Nigeria and international destinations',
+            views: 289,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 20,
+            created_at: '2026-09-12'
+        },
+        {
+            id: 1003,
+            title: 'Grade-A Fresh Benue Yams (Tubers in Bulk)',
+            name: 'Grade-A Fresh Benue Yams (Tubers in Bulk)',
+            price: 18.50,
+            category_id: 10,
+            category_name: 'Agriculture & Produce',
+            category: 'Agriculture & Produce',
+            seller_name: 'Kano Premium Agro & Yam Hub',
+            seller_phone: '+234 803 111 2233',
+            phone: '+234 803 111 2233',
+            whatsapp: '2348031112233',
+            seller_id: 105,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Kano',
+            city: 'Kano (Dawanau Market)',
+            location: 'Kano (Dawanau Market), Nigeria',
+            description: 'Fresh export-quality Benue white yams directly from farm harvest. Large heavy tubers, zero spoilage, ideal for wholesale and food service.',
+            photo_url: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Interstate truck haulage & express same-day dispatch available',
+            views: 310,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 100,
+            created_at: '2026-09-08'
+        },
+        {
+            id: 1004,
+            title: 'Apple iPhone 15 Pro Max 256GB (Natural Titanium)',
+            name: 'Apple iPhone 15 Pro Max 256GB (Natural Titanium)',
+            price: 850.00,
+            category_id: 7,
+            category_name: 'Mobile Phones',
+            category: 'Mobile Phones',
+            seller_name: 'Abuja SmartTech & Phone Repairs',
+            seller_phone: '+234 809 999 8888',
+            phone: '+234 809 999 8888',
+            whatsapp: '2348099998888',
+            seller_id: 106,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Abuja (FCT)',
+            city: 'Abuja (Banex Plaza)',
+            location: 'Abuja (Banex Plaza), Nigeria',
+            description: 'Factory unlocked genuine Apple iPhone with A17 Pro chip, 48MP camera system, titanium frame, and 1-year Apple international warranty.',
+            photo_url: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Insured express doorstep delivery with Escrow safety protection',
+            views: 450,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 15,
+            created_at: '2026-09-14'
+        },
+        {
+            id: 1005,
+            title: 'Luxury Gold-Embroidered Saudi Thobe',
+            name: 'Luxury Gold-Embroidered Saudi Thobe',
+            price: 95.00,
+            category_id: 2,
+            category_name: 'Clothing & Fashion',
+            category: 'Clothing & Fashion',
+            seller_name: 'Al-Malaz Prestige Mens Fashion',
+            seller_phone: '+966 50 123 4567',
+            phone: '+966 50 123 4567',
+            whatsapp: '966501234567',
+            seller_id: 107,
+            published_by_seller: true,
+            country: 'Saudi Arabia',
+            state: 'Riyadh',
+            city: 'Riyadh (Al Malaz)',
+            location: 'Riyadh (Al Malaz), Saudi Arabia',
+            description: 'Pure Japanese cotton fabric, elegant gold collar embroidery, tailored fit for weddings, Eid, and formal occasions.',
+            photo_url: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Worldwide DHL / Aramex 3-5 business day shipping',
+            views: 198,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 30,
+            created_at: '2026-09-05'
+        },
+        {
+            id: 1006,
+            title: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
+            name: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
+            price: 280.00,
+            category_id: 9,
+            category_name: 'Car Sales & Auto',
+            category: 'Car Sales & Auto',
+            seller_name: 'Guangzhou Smart Mobility Co.',
+            seller_phone: '+86 138 0013 8000',
+            phone: '+86 138 0013 8000',
+            whatsapp: '8613800138000',
+            seller_id: 104,
+            published_by_seller: true,
+            country: 'China',
+            state: 'Guangdong (Guangzhou / Shenzhen)',
+            city: 'Guangzhou',
+            location: 'Guangzhou, China',
+            description: '500W brushless motor, 45km battery range per charge, dual disc brakes, front shock absorption, lightweight aerospace aluminum frame.',
+            photo_url: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Air freight 7-10 days, sea container 30 days worldwide',
+            views: 380,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 50,
+            created_at: '2026-09-11'
+        },
+        {
+            id: 1007,
+            title: 'Handcrafted Solid Walnut 8-Seater Dining Table',
+            name: 'Handcrafted Solid Walnut 8-Seater Dining Table',
+            price: 1250.00,
+            category_id: 5,
+            category_name: 'Furniture & Decor',
+            category: 'Furniture & Decor',
+            seller_name: 'Houston Custom Timber & Modern Furniture',
+            seller_phone: '+1 713 555 0199',
+            phone: '+1 713 555 0199',
+            whatsapp: '17135550199',
+            seller_id: 108,
+            published_by_seller: true,
+            country: 'United States',
+            state: 'Texas',
+            city: 'Houston (Galleria Area)',
+            location: 'Houston, Texas, United States',
+            description: 'Kiln-dried American black walnut with natural live edge finish and matte black heavy-duty steel base.',
+            photo_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'White-glove doorstep delivery and assembly included',
+            views: 165,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 8,
+            created_at: '2026-09-02'
+        },
+        {
+            id: 1008,
+            title: 'Italian Handcrafted Men\'s Formal Leather Oxford Shoes',
+            name: 'Italian Handcrafted Men\'s Formal Leather Oxford Shoes',
+            price: 65.00,
+            category_id: 4,
+            category_name: 'Shoes & Bags',
+            category: 'Shoes & Bags',
+            seller_name: 'Emab Luxury Footwear & Leathers',
+            seller_phone: '+234 802 111 2233',
+            phone: '+234 802 111 2233',
+            whatsapp: '2348021112233',
+            seller_id: 109,
+            published_by_seller: true,
+            country: 'Nigeria',
+            state: 'Abuja (FCT)',
+            city: 'Abuja (Wuse 2)',
+            location: 'Abuja (Wuse 2), Nigeria',
+            description: 'Hand-burnished calfskin leather, Goodyear welted non-slip sole, breathable leather insole. Ideal for weddings and executive wear.',
+            photo_url: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
+            photo: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
+            delivery_info: 'Express same-day dispatch in Abuja, 2-day delivery across Nigeria',
+            views: 215,
+            business_verified: 1,
+            status: 'approved',
+            available_qty: 35,
+            created_at: '2026-09-13'
+        }
+    ]
 };
