@@ -186,42 +186,109 @@ const API = {
         this.initLocalData();
         let changed = false;
 
-        try {
-            // 1. Fetch live products from Neon PostgreSQL Cloud API
-            const res = await fetch('/api/products', { method: 'GET', cache: 'no-store' })
-                .catch(() => fetch('api/products.php', { method: 'GET', cache: 'no-store' }))
-                .catch(() => null);
+        const endpoints = [
+            '/api/products',
+            'https://globalbusiness-cyan.vercel.app/api/products'
+        ];
 
-            if (res && res.ok) {
-                const json = await res.json().catch(() => null);
-                if (json && Array.isArray(json.data)) {
-                    this.fallbackProducts = json.data.map(p => ({
-                        id: p.id,
-                        title: p.title || p.name,
-                        name: p.name || p.title,
-                        price: parseFloat(p.price) || 0,
-                        photo: p.photo_url || p.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
-                        photo_url: p.photo_url || p.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
-                        seller_name: p.seller_name || 'Verified Merchant',
-                        seller_phone: p.seller_phone || p.phone || '',
-                        phone: p.phone || p.seller_phone || '',
-                        seller_id: p.seller_id,
-                        country: p.country || 'Nigeria',
-                        state: p.state || 'Abuja (FCT)',
-                        city: p.city || 'Abuja',
-                        location: p.location || `${p.city || 'Abuja'}, ${p.country || 'Nigeria'}`,
-                        description: p.description || '',
-                        status: p.status || 'approved',
-                        business_verified: p.business_verified !== undefined ? p.business_verified : 1,
-                        available_qty: parseInt(p.available_qty) || 50,
-                        published_by_seller: true
-                    }));
-                    this.saveLocalData('products', this.fallbackProducts);
-                    changed = true;
+        for (const ep of endpoints) {
+            try {
+                const res = await fetch(ep, { method: 'GET', cache: 'no-store' });
+                if (res && res.ok) {
+                    const json = await res.json().catch(() => null);
+                    if (json && Array.isArray(json.data) && json.data.length > 0) {
+                        this.fallbackProducts = json.data.map(p => ({
+                            id: p.id,
+                            title: p.title || p.name || 'Untitled Good',
+                            name: p.name || p.title || 'Untitled Good',
+                            price: parseFloat(p.price) || 0,
+                            photo: p.photo_url || p.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
+                            photo_url: p.photo_url || p.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
+                            seller_name: p.seller_name || 'Verified Merchant',
+                            seller_phone: p.seller_phone || p.phone || '',
+                            phone: p.phone || p.seller_phone || '',
+                            seller_id: p.seller_id,
+                            country: p.country || 'Nigeria',
+                            state: p.state || 'Abuja (FCT)',
+                            city: p.city || 'Abuja',
+                            location: p.location || `${p.city || 'Abuja'}, ${p.country || 'Nigeria'}`,
+                            description: p.description || '',
+                            status: p.status || 'approved',
+                            business_verified: p.business_verified !== undefined ? p.business_verified : 1,
+                            available_qty: parseInt(p.available_qty) || 50,
+                            published_by_seller: true,
+                            category: p.category_name || p.category || 'General',
+                            category_name: p.category_name || p.category || 'General'
+                        }));
+                        this.saveLocalData('products', this.fallbackProducts);
+                        changed = true;
+                        break;
+                    }
                 }
-            }
-        } catch (e) {
-            console.warn('Cloud sync notice:', e);
+            } catch (e) {}
+        }
+
+        // Secondary resilient fallback to Global Cloud Document Store
+        if (!changed || !this.fallbackProducts || this.fallbackProducts.length === 0) {
+            try {
+                const restRes = await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.productsDocId}`, { cache: 'no-store' });
+                if (restRes && restRes.ok) {
+                    const doc = await restRes.json().catch(() => null);
+                    if (doc && doc.data && Array.isArray(doc.data.products) && doc.data.products.length > 0) {
+                        this.fallbackProducts = doc.data.products;
+                        this.saveLocalData('products', this.fallbackProducts);
+                        changed = true;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // Pull users too
+        const userEndpoints = [
+            '/api/users',
+            'https://globalbusiness-cyan.vercel.app/api/users'
+        ];
+        let usersFound = false;
+        for (const ep of userEndpoints) {
+            try {
+                const res = await fetch(ep, { method: 'GET', cache: 'no-store' });
+                if (res && res.ok) {
+                    const json = await res.json().catch(() => null);
+                    if (json && Array.isArray(json.data) && json.data.length > 0) {
+                        const sellers = json.data.filter(u => u.role === 'seller');
+                        const buyers = json.data.filter(u => u.role === 'buyer');
+                        if (sellers.length > 0) {
+                            this.fallbackSellers = sellers;
+                            this.saveLocalData('sellers', this.fallbackSellers);
+                        }
+                        if (buyers.length > 0) {
+                            this.fallbackBuyers = buyers;
+                            this.saveLocalData('buyers', this.fallbackBuyers);
+                        }
+                        usersFound = true;
+                        break;
+                    }
+                }
+            } catch(e) {}
+        }
+
+        if (!usersFound) {
+            try {
+                const uRes = await fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.usersDocId}`, { cache: 'no-store' });
+                if (uRes && uRes.ok) {
+                    const doc = await uRes.json().catch(() => null);
+                    if (doc && doc.data) {
+                        if (Array.isArray(doc.data.sellers) && doc.data.sellers.length > 0) {
+                            this.fallbackSellers = doc.data.sellers;
+                            this.saveLocalData('sellers', this.fallbackSellers);
+                        }
+                        if (Array.isArray(doc.data.buyers) && doc.data.buyers.length > 0) {
+                            this.fallbackBuyers = doc.data.buyers;
+                            this.saveLocalData('buyers', this.fallbackBuyers);
+                        }
+                    }
+                }
+            } catch (e) {}
         }
 
         this._isSyncing = false;
@@ -238,6 +305,18 @@ const API = {
         try {
             this.saveLocalData('products', this.fallbackProducts);
             this.broadcastChange('product_list_updated', this.fallbackProducts);
+
+            fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.productsDocId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: 'GlobalBusiness Products Store',
+                    data: {
+                        products: this.fallbackProducts,
+                        updated_at: new Date().toISOString()
+                    }
+                })
+            }).catch(() => {});
         } catch (e) {
             console.warn('Products push notice:', e);
         }
@@ -248,6 +327,19 @@ const API = {
             this.saveLocalData('sellers', this.fallbackSellers);
             this.saveLocalData('buyers', this.fallbackBuyers);
             this.broadcastChange('users_updated', { sellers: this.fallbackSellers, buyers: this.fallbackBuyers });
+
+            fetch(`${this.CLOUD_CONFIG.apiUrl}/${this.CLOUD_CONFIG.usersDocId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: 'GlobalBusiness Users Store',
+                    data: {
+                        sellers: this.fallbackSellers,
+                        buyers: this.fallbackBuyers,
+                        updated_at: new Date().toISOString()
+                    }
+                })
+            }).catch(() => {});
         } catch (e) {
             console.warn('Users push notice:', e);
         }
@@ -258,8 +350,8 @@ const API = {
     // ==========================================
     async getUsers(params = {}) {
         this.initLocalData();
-        if (!this._lastSyncTime || Date.now() - this._lastSyncTime > 15000) {
-            this.pullFromCloud();
+        if (!this._lastSyncTime || (this.fallbackSellers.length === 0 && this.fallbackBuyers.length === 0) || Date.now() - this._lastSyncTime > 15000) {
+            await this.pullFromCloud();
         }
         const sellers = (this.fallbackSellers || []).map(s => ({
             id: s.id,
@@ -426,15 +518,20 @@ const API = {
     // ==========================================
     async getProducts(params = {}) {
         this.initLocalData();
-        if (!this._lastSyncTime || Date.now() - this._lastSyncTime > 10000) {
-            this.pullFromCloud();
+        if (!this._lastSyncTime || !this.fallbackProducts || this.fallbackProducts.length === 0 || Date.now() - this._lastSyncTime > 4000) {
+            await this.pullFromCloud();
         }
         return this.filterFallbackProducts(params);
     },
 
     async getProduct(id) {
         this.initLocalData();
-        return this.fallbackProducts.find(p => String(p.id) === String(id));
+        let prod = this.fallbackProducts.find(p => String(p.id) === String(id));
+        if (!prod) {
+            await this.pullFromCloud();
+            prod = this.fallbackProducts.find(p => String(p.id) === String(id));
+        }
+        return prod;
     },
 
     async getProductById(id) {
@@ -478,15 +575,26 @@ const API = {
             created_at: new Date().toISOString().split('T')[0]
         };
 
-        this.fallbackProducts.unshift(newProd);
+        const existingIdx = this.fallbackProducts.findIndex(p => String(p.id) === String(newProd.id));
+        if (existingIdx >= 0) {
+            this.fallbackProducts[existingIdx] = newProd;
+        } else {
+            this.fallbackProducts.unshift(newProd);
+        }
         this.saveLocalData('products', this.fallbackProducts);
 
         // Save directly to Neon PostgreSQL Cloud Database
-        fetch('/api/products', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newProd)
-        }).catch(err => console.warn('Cloud DB save notice:', err));
+        const postUrls = ['/api/products', 'https://globalbusiness-cyan.vercel.app/api/products'];
+        for (const url of postUrls) {
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newProd)
+                });
+                if (res && res.ok) break;
+            } catch (err) {}
+        }
 
         this.pushProductsToCloud();
         return { status: 'success', id: newProd.id, data: newProd, message: 'Good listed on marketplace successfully!' };
@@ -520,11 +628,17 @@ const API = {
             };
             this.saveLocalData('products', this.fallbackProducts);
 
-            fetch('/api/products', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.fallbackProducts[idx])
-            }).catch(err => console.warn('Cloud DB update notice:', err));
+            const postUrls = ['/api/products', 'https://globalbusiness-cyan.vercel.app/api/products'];
+            for (const url of postUrls) {
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.fallbackProducts[idx])
+                    });
+                    if (res && res.ok) break;
+                } catch (err) {}
+            }
 
             this.pushProductsToCloud();
             return { status: 'success', data: this.fallbackProducts[idx], message: 'Product updated successfully!' };
@@ -537,9 +651,16 @@ const API = {
         this.fallbackProducts = this.fallbackProducts.filter(x => String(x.id) !== String(id));
         this.saveLocalData('products', this.fallbackProducts);
 
-        fetch(`/api/products?id=${encodeURIComponent(id)}`, {
-            method: 'DELETE'
-        }).catch(err => console.warn('Cloud DB delete notice:', err));
+        const delUrls = [
+            `/api/products?id=${encodeURIComponent(id)}`,
+            `https://globalbusiness-cyan.vercel.app/api/products?id=${encodeURIComponent(id)}`
+        ];
+        for (const url of delUrls) {
+            try {
+                const res = await fetch(url, { method: 'DELETE' });
+                if (res && res.ok) break;
+            } catch (err) {}
+        }
 
         this.pushProductsToCloud();
         return { status: 'success', message: 'Product removed successfully!' };
@@ -728,6 +849,30 @@ const API = {
         };
         this.fallbackSellers.unshift(newSeller);
         this.saveLocalData('sellers', this.fallbackSellers);
+
+        const postUrls = ['/api/users', 'https://globalbusiness-cyan.vercel.app/api/users'];
+        for (const url of postUrls) {
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: 'seller-' + newSeller.id,
+                        full_name: newSeller.full_name,
+                        store_name: newSeller.store_name,
+                        phone: newSeller.phone,
+                        email: newSeller.email,
+                        password: newSeller.password,
+                        role: 'seller',
+                        location: newSeller.location || newSeller.city,
+                        country: newSeller.country,
+                        verified: newSeller.verified
+                    })
+                });
+                if (res && res.ok) break;
+            } catch(e) {}
+        }
+
         this.pushUsersToCloud();
         return { status: 'success', data: newSeller, message: 'Seller registered successfully!' };
     },
@@ -804,6 +949,29 @@ const API = {
         };
         this.fallbackBuyers.unshift(newBuyer);
         this.saveLocalData('buyers', this.fallbackBuyers);
+
+        const postUrls = ['/api/users', 'https://globalbusiness-cyan.vercel.app/api/users'];
+        for (const url of postUrls) {
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: 'buyer-' + newBuyer.id,
+                        full_name: newBuyer.full_name,
+                        phone: newBuyer.phone,
+                        email: newBuyer.email,
+                        password: newBuyer.password,
+                        role: 'buyer',
+                        location: newBuyer.location || newBuyer.city,
+                        country: newBuyer.country,
+                        verified: 1
+                    })
+                });
+                if (res && res.ok) break;
+            } catch(e) {}
+        }
+
         this.pushUsersToCloud();
         return { status: 'success', data: newBuyer, message: 'Buyer registered successfully!' };
     },
@@ -844,6 +1012,9 @@ const API = {
     // ==========================================
     async getMembers(params = {}) {
         this.initLocalData();
+        if (!this._lastSyncTime || (this.fallbackSellers.length === 0 && this.fallbackBuyers.length === 0) || Date.now() - this._lastSyncTime > 15000) {
+            await this.pullFromCloud();
+        }
         const sellersList = this.fallbackSellers.map(s => ({
             id: s.id,
             member_id: s.id_number || ('SELLER-' + s.id),
