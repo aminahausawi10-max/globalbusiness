@@ -27,9 +27,7 @@ const API = {
                 const isMockUser = (user) => {
                     if (!user) return false;
                     const idStr = String(user.id || '');
-                    if (['101', '102', '103', '104', '201', '202', '203', '204'].includes(idStr)) return true;
-                    const name = (user.full_name || user.store_name || '').toLowerCase();
-                    if (name.includes('amina bello lawal') || name.includes('fatima zahra') || name.includes('blessing emmanuel') || name.includes('david chen') || name.includes('ahmed yusuf al-mansoor') || name.includes('chioma okafor') || name.includes('ibrahim al-rashid') || name.includes('zainab kabir')) return true;
+                    if (['101', '102', '103', '104', '201', '202', '203', '204'].includes(idStr) || idStr.startsWith('mock-')) return true;
                     return false;
                 };
 
@@ -62,9 +60,7 @@ const API = {
                 const isMockProduct = (prod) => {
                     if (!prod) return false;
                     const idStr = String(prod.id || '');
-                    if (['1001', '1002', '1003', '1004', '1005', '1006', '1007', '1008'].includes(idStr)) return true;
-                    const title = (prod.title || prod.name || '').toLowerCase();
-                    if (title.includes('ankara material') || title.includes('bone straight human hair') || title.includes('benue yams') || title.includes('iphone 15 pro max') || title.includes('saudi thobe') || title.includes('electric commuter scooter') || title.includes('dining table') || title.includes('oxford shoes')) return true;
+                    if (['1001', '1002', '1003', '1004', '1005', '1006', '1007', '1008'].includes(idStr) || idStr.startsWith('mock-')) return true;
                     return false;
                 };
 

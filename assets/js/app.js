@@ -1154,9 +1154,11 @@ async function filterMarketplace() {
     const grid = document.getElementById('marketplaceProductsGrid');
     if (!grid) return;
 
-    const search = document.getElementById('marketSearchFilter')?.value.trim() || '';
-    const country = document.getElementById('marketCountryFilter')?.value || AppState.activeCountryFilter;
-    const state = document.getElementById('marketStateFilter')?.value || AppState.activeStateFilter;
+    const search = (document.getElementById('marketSearchFilter')?.value || '').trim();
+    const countryEl = document.getElementById('marketCountryFilter');
+    const country = countryEl ? countryEl.value : (AppState.activeCountryFilter || '');
+    const stateEl = document.getElementById('marketStateFilter');
+    const state = stateEl ? stateEl.value : (AppState.activeStateFilter || '');
 
     const products = await API.getProducts({ search, country, state });
     renderProductsGrid(products, grid);
