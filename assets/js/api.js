@@ -306,9 +306,30 @@ const API = {
         this.initLocalData();
         const idx = this.fallbackProducts.findIndex(p => p.id == id);
         if (idx !== -1) {
-            this.fallbackProducts[idx] = { ...this.fallbackProducts[idx], ...payload };
+            const current = this.fallbackProducts[idx];
+            const title = payload.title || payload.name || current.title || current.name;
+            const photo = payload.photo || payload.photo_url || current.photo || current.photo_url;
+            const phone = payload.phone || payload.seller_phone || current.phone || current.seller_phone;
+            const city = payload.city || payload.location || current.city;
+            const country = payload.country || current.country || 'Nigeria';
+            const location = payload.location || (city ? `${city}, ${country}` : current.location);
+
+            this.fallbackProducts[idx] = {
+                ...current,
+                ...payload,
+                title: title,
+                name: title,
+                photo: photo,
+                photo_url: photo,
+                phone: phone,
+                seller_phone: phone,
+                city: city,
+                country: country,
+                location: location,
+                updated_at: new Date().toISOString().split('T')[0]
+            };
             this.saveLocalData('products', this.fallbackProducts);
-            return { status: 'success', message: 'Product updated successfully!' };
+            return { status: 'success', data: this.fallbackProducts[idx], message: 'Product updated successfully!' };
         }
         return { status: 'error', message: 'Product not found' };
     },

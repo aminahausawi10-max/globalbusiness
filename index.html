@@ -1720,10 +1720,11 @@
                         <label class="form-label">Description</label>
                         <textarea id="sellerProdDesc" class="form-textarea" rows="2"></textarea>
                     </div>
+                    <input type="hidden" id="sellerProdId" value="">
                     <input type="file" id="sellerProdPhotoFileInput" accept="image/*" style="display:none;" onchange="handleProductImageImport(event)">
                     <input type="hidden" id="sellerProdPhoto" value="https://images.unsplash.com/photo-1544441893-675973e31985?w=600">
                     <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="document.getElementById('sellerProdPhotoFileInput').click()">📸 Upload Product Picture</button>
-                    <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Save & Publish Product</button>
+                    <button type="submit" id="sellerProductSubmitBtn" class="btn btn-primary" style="width:100%; padding:12px;">Save & Publish Product</button>
                 </form>
             </div>
         </div>
@@ -1991,8 +1992,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with v=5.2 cache bust -->
-    <script src="assets/js/api.js?v=5.2"></script>
-    <script src="assets/js/app.js?v=5.2"></script>
+    <!-- Scripts with v=5.3 cache bust -->
+    <script src="assets/js/api.js?v=5.3"></script>
+    <script src="assets/js/app.js?v=5.3"></script>
 </body>
 </html>

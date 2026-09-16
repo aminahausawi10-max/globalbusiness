@@ -371,6 +371,8 @@ async function openProductDetails(productId) {
 
     const formattedPrice = formatPrice(product.price);
     const sellerPhoneClean = (product.phone || '').replace(/[^0-9]/g, '');
+    const user = getCurrentUser();
+    const isOwnerOrAdmin = user && (user.role === 'seller' || isAdminAuthenticated() || (product.seller_id && user.id == product.seller_id));
 
     contentEl.innerHTML = `
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;" class="product-detail-layout">
@@ -448,10 +450,17 @@ async function openProductDetails(productId) {
                     <button class="btn btn-primary" style="flex:2; padding:12px;" onclick="addToCart('${product.id}'); closeModal('productDetailModal');">
                         <i class="fa-solid fa-cart-plus"></i> Add to Cart
                     </button>
-                    <a href="https://wa.me/${sellerPhoneClean}?text=Hello%20${encodeURIComponent(product.seller_name)},%20I%20am%20interested%20in%20buying%20${encodeURIComponent(product.name)}%20on%20Market%20at%20Home." target="_blank" class="btn btn-outline" style="flex:1; border-color:#25D366; color:#25D366; display:flex; align-items:center; justify-content:center; gap:6px;">
+                    <a href="https://wa.me/${sellerPhoneClean}?text=Hello%20${encodeURIComponent(product.seller_name || 'Seller')},%20I%20am%20interested%20in%20buying%20${encodeURIComponent(product.name || product.title)}%20on%20Market%20at%20Home." target="_blank" class="btn btn-outline" style="flex:1; border-color:#25D366; color:#25D366; display:flex; align-items:center; justify-content:center; gap:6px;">
                         <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> WhatsApp
                     </a>
                 </div>
+                ${isOwnerOrAdmin ? `
+                <div style="margin-top:10px;">
+                    <button class="btn btn-sm btn-white" style="width:100%; padding:10px; font-weight:800; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; gap:6px;" onclick="closeModal('productDetailModal'); openEditProductModal('${product.id}');">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit This Listing Details
+                    </button>
+                </div>
+                ` : ''}
             </div>
         </div>
     `;
@@ -1547,11 +1556,14 @@ function renderSellerProductsGrid(products, grid) {
                     <div class="product-location" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">
                         <i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${pLocation}
                     </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                        <button class="btn btn-outline btn-sm" onclick="openProductDetails('${p.id}')" style="font-size:0.78rem; padding:6px;">
-                            <i class="fa-solid fa-eye"></i> View Live
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+                        <button class="btn btn-sm btn-white" onclick="openEditProductModal('${p.id}')" style="font-size:0.75rem; padding:6px 4px; background:#FFFFFF; color:#0F172A; font-weight:800; border:1px solid var(--border);" title="Edit product details">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="handleDeleteProduct('${p.id}')" style="font-size:0.78rem; padding:6px;">
+                        <button class="btn btn-outline btn-sm" onclick="openProductDetails('${p.id}')" style="font-size:0.75rem; padding:6px 4px;" title="View public product page">
+                            <i class="fa-solid fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="handleDeleteProduct('${p.id}')" style="font-size:0.75rem; padding:6px 4px;" title="Delete listing">
                             <i class="fa-solid fa-trash"></i> Delete
                         </button>
                     </div>
@@ -1571,6 +1583,14 @@ async function handleUpdateOrderStatus(orderId, newStatus) {
 function openAddProductModal() {
     const user = getCurrentUser();
     document.getElementById('sellerProductForm')?.reset();
+
+    const titleEl = document.getElementById('addProductModalTitle');
+    const submitBtn = document.getElementById('sellerProductSubmitBtn');
+    const prodIdInput = document.getElementById('sellerProdId');
+
+    if (titleEl) titleEl.textContent = 'Add New Good';
+    if (submitBtn) submitBtn.textContent = 'Save & Publish Product';
+    if (prodIdInput) prodIdInput.value = '';
 
     const storeNameInput = document.getElementById('sellerProdSellerName');
     const phoneInput = document.getElementById('sellerProdPhone');
@@ -1595,6 +1615,53 @@ function openAddProductModal() {
     }
 
     populateSellerStateDropdown(countrySelect ? countrySelect.value : 'Nigeria');
+    document.getElementById('addProductModal')?.classList.add('active');
+}
+
+async function openEditProductModal(productId) {
+    const product = await API.getProductById(productId);
+    if (!product) {
+        showToast('Product not found for editing', 'error');
+        return;
+    }
+
+    const titleEl = document.getElementById('addProductModalTitle');
+    const submitBtn = document.getElementById('sellerProductSubmitBtn');
+    const prodIdInput = document.getElementById('sellerProdId');
+
+    if (titleEl) titleEl.textContent = '✏️ Edit Product Listing';
+    if (submitBtn) submitBtn.textContent = '💾 Update & Save Changes';
+    if (prodIdInput) prodIdInput.value = product.id;
+
+    const titleInput = document.getElementById('sellerProdTitle');
+    const priceInput = document.getElementById('sellerProdPrice');
+    const categorySelect = document.getElementById('sellerProdCategory');
+    const storeNameInput = document.getElementById('sellerProdSellerName');
+    const countrySelect = document.getElementById('sellerProdCountry');
+    const locationInput = document.getElementById('sellerProdLocation');
+    const phoneInput = document.getElementById('sellerProdPhone');
+    const descInput = document.getElementById('sellerProdDesc');
+    const photoInput = document.getElementById('sellerProdPhoto');
+
+    if (titleInput) titleInput.value = product.title || product.name || '';
+    if (priceInput) priceInput.value = product.price || '';
+    if (categorySelect) {
+        categorySelect.value = product.category_name || product.category || categorySelect.value;
+    }
+    if (storeNameInput) storeNameInput.value = product.seller_name || '';
+    if (countrySelect && product.country) {
+        countrySelect.value = product.country;
+        populateSellerStateDropdown(product.country);
+    }
+    const stateSelect = document.getElementById('sellerProdStateSelect');
+    if (stateSelect && product.state) {
+        stateSelect.value = product.state;
+    }
+    if (locationInput) locationInput.value = product.city || product.location || '';
+    if (phoneInput) phoneInput.value = product.phone || product.seller_phone || '';
+    if (descInput) descInput.value = product.description || '';
+    if (photoInput) photoInput.value = product.photo || product.photo_url || '';
+
     document.getElementById('addProductModal')?.classList.add('active');
 }
 
@@ -1631,6 +1698,9 @@ async function handleProductFormSubmit(event) {
     if (event) event.preventDefault();
     const user = getCurrentUser();
 
+    const prodId = document.getElementById('sellerProdId')?.value;
+    const isEdit = !!prodId;
+
     const title = (document.getElementById('sellerProdTitle')?.value || '').trim();
     const price = parseFloat(document.getElementById('sellerProdPrice')?.value || 0);
     const categorySelect = document.getElementById('sellerProdCategory');
@@ -1652,31 +1722,51 @@ async function handleProductFormSubmit(event) {
         return;
     }
 
-    const sellerId = user?.id || ('seller-' + Date.now());
-
-    await API.createProduct({
-        title: title,
-        name: title,
-        price: price,
-        category: category_name,
-        category_name: category_name,
-        seller_name: seller_name,
-        seller_id: sellerId,
-        country: country,
-        state: state,
-        city: location,
-        location: `${location}, ${country}`,
-        phone: phone,
-        seller_phone: phone,
-        description: description,
-        photo: photo,
-        photo_url: photo,
-        status: 'approved',
-        business_verified: 1
-    });
+    if (isEdit) {
+        await API.updateProduct(prodId, {
+            title: title,
+            name: title,
+            price: price,
+            category: category_name,
+            category_name: category_name,
+            seller_name: seller_name,
+            country: country,
+            state: state,
+            city: location,
+            location: `${location}, ${country}`,
+            phone: phone,
+            seller_phone: phone,
+            description: description,
+            photo: photo,
+            photo_url: photo
+        });
+        showToast('✅ Product updated successfully!', 'success');
+    } else {
+        const sellerId = user?.id || ('seller-' + Date.now());
+        await API.createProduct({
+            title: title,
+            name: title,
+            price: price,
+            category: category_name,
+            category_name: category_name,
+            seller_name: seller_name,
+            seller_id: sellerId,
+            country: country,
+            state: state,
+            city: location,
+            location: `${location}, ${country}`,
+            phone: phone,
+            seller_phone: phone,
+            description: description,
+            photo: photo,
+            photo_url: photo,
+            status: 'approved',
+            business_verified: 1
+        });
+        showToast('🎉 Product published live across global marketplace!', 'success');
+    }
 
     closeModal('addProductModal');
-    showToast('🎉 Product published live across global marketplace!', 'success');
 
     // Instant multi-view refresh
     loadSellerProducts();
