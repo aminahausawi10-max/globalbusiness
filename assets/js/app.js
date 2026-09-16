@@ -965,27 +965,77 @@ function switchBuyerTab(tabId) {
     if (tabId === 'disputes') renderBuyerDisputes();
 }
 
-function switchAdminTab(tabId) {
-    AppState.currentAdminTab = tabId;
-    document.querySelectorAll('.admin-sidebar-item').forEach(b => {
-        if (b.id === 'adminMenu-' + tabId) b.classList.add('active');
-        else if (b.id && b.id.startsWith('adminMenu-')) b.classList.remove('active');
+// ==========================================
+// ADMIN & BUYER TAB SWITCHING CONTROLLER
+// ==========================================
+function switchAdminTab(tab) {
+    AppState.currentAdminTab = tab;
+
+    // 1. Update sidebar active item styling
+    document.querySelectorAll('.admin-sidebar-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.id === 'adminMenu-' + tab) {
+            item.classList.add('active');
+        }
     });
 
-    document.querySelectorAll('.admin-tab-view').forEach(v => {
-        if (v.id === 'admin-tab-' + tabId) v.style.display = 'block';
-        else v.style.display = 'none';
+    // 2. Hide all admin tab views, show selected one
+    const tabViews = document.querySelectorAll('.admin-tab-view');
+    tabViews.forEach(v => {
+        v.style.display = 'none';
+        v.classList.remove('active');
     });
 
-    if (tabId === 'dashboard') loadAdminDashboardKpis();
-    if (tabId === 'users') renderAdminUsersTable();
-    if (tabId === 'verification') renderAdminVerificationTable();
-    if (tabId === 'products') renderAdminProductsTable();
-    if (tabId === 'orders') renderAdminOrdersTable();
-    if (tabId === 'sourcing') renderAdminSourcingTable();
-    if (tabId === 'complaints') renderAdminComplaintsTable();
-    if (tabId === 'notifications') renderAdminAnnouncementsTable();
-    if (tabId === 'analytics') renderAdminAnalyticsCharts();
+    const targetView = document.getElementById('admin-tab-' + tab);
+    if (targetView) {
+        targetView.style.display = 'block';
+        targetView.classList.add('active');
+        
+        // Scroll down to the content so it is immediately visible on mobile
+        setTimeout(() => {
+            targetView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+
+    // 3. Load data for specific tab
+    if (tab === 'dashboard') loadAdminDashboardKpis();
+    if (tab === 'users') renderAdminUsersTable();
+    if (tab === 'verification') renderAdminVerificationTable();
+    if (tab === 'products') renderAdminProductsTable();
+    if (tab === 'orders') renderAdminOrdersTable();
+    if (tab === 'sourcing') renderAdminSourcingTable();
+    if (tab === 'complaints') renderAdminComplaintsTable();
+    if (tab === 'notifications') renderAdminAnnouncementsTable();
+    if (tab === 'analytics') renderAdminAnalyticsCharts();
+}
+
+function switchBuyerTab(tab) {
+    AppState.currentBuyerTab = tab;
+
+    // 1. Update subtab buttons
+    document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.id === 'buyerTabBtn-' + tab) btn.classList.add('active');
+    });
+
+    // 2. Show target view
+    document.querySelectorAll('.buyer-subtab-view').forEach(v => {
+        v.style.display = 'none';
+        v.classList.remove('active');
+    });
+
+    const target = document.getElementById('buyer-tab-' + tab);
+    if (target) {
+        target.style.display = 'block';
+        target.classList.add('active');
+        setTimeout(() => {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+
+    if (tab === 'orders') renderBuyerOrders();
+    if (tab === 'cart') renderBuyerCart();
+    if (tab === 'favorites') renderBuyerFavorites();
 }
 
 // ==========================================

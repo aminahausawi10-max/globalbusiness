@@ -3721,3 +3721,89 @@ html, body {
 .bottom-nav-item:active, .bottom-nav-item:hover {
     color: #34D399 !important;
 }
+
+
+/* ==========================================================================
+   ADMIN LAYOUT GRID & MOBILE RESPONSIVE SIDEBAR
+   ========================================================================== */
+.admin-layout-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-top: 16px;
+}
+
+.admin-sidebar-nav {
+    background: #1C2541;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-sidebar-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-radius: 12px;
+    color: #CBD5E1;
+    text-decoration: none;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #FFFFFF;
+}
+
+.admin-sidebar-item.active {
+    background: #059669 !important;
+    color: #FFFFFF !important;
+    font-weight: 800;
+}
+
+.admin-main-viewport {
+    min-width: 0;
+}
+
+.admin-tab-view {
+    display: none;
+    animation: fadeInTab 0.25s ease-in-out;
+}
+
+.admin-tab-view.active {
+    display: block;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+    .admin-layout-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .admin-sidebar-nav {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .admin-sidebar-item {
+        padding: 8px 10px;
+        font-size: 0.78rem;
+    }
+}
