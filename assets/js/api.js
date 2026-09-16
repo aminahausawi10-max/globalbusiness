@@ -12,10 +12,10 @@ const API = {
 
     CLOUD_CONFIG: {
         apiUrl: 'https://api.restful-api.dev/objects',
-        productsDocId: 'ff808181a09d98f701a0a9ec6ab51aa1',
-        usersDocId: 'ff808181a09d98f701a0a9ec6c391aa2',
-        requestsDocId: 'ff808181a09d98f701a0a9ec6dbf1aa3',
-        ordersDocId: 'ff808181a09d98f701a0a9ed35341aa9'
+        productsDocId: 'ff808181a09d98f701a0ab636f501f98',
+        usersDocId: 'ff808181a09d98f701a0ab6371151f99',
+        requestsDocId: 'ff808181a09d98f701a0ab6372a41f9a',
+        ordersDocId: 'ff808181a09d98f701a0ab63743b1f9b'
     },
 
     // ==========================================
