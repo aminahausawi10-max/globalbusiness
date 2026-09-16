@@ -187,44 +187,42 @@ const API = {
         let changed = false;
 
         try {
-            // 1. Fetch live products from backend API if available
-            const backendRes = await fetch('api/products.php', { method: 'GET', cache: 'no-store' }).catch(() => null);
-            if (backendRes && backendRes.ok) {
-                const backendData = await backendRes.json();
-                if (backendData && Array.isArray(backendData.data) && backendData.data.length > 0) {
-                    const prodMap = new Map();
-                    (this.fallbackProducts || []).forEach(p => prodMap.set(String(p.id), p));
-                    backendData.data.forEach(p => {
-                        const id = p.id;
-                        if (!prodMap.has(String(id))) {
-                            prodMap.set(String(id), {
-                                id: id,
-                                title: p.title || p.name,
-                                name: p.name || p.title,
-                                price: parseFloat(p.price) || 0,
-                                photo: p.photo_url || p.photo,
-                                photo_url: p.photo_url || p.photo,
-                                seller_name: p.business_name || p.seller_name || 'Verified Merchant',
-                                seller_phone: p.phone || p.whatsapp || '',
-                                phone: p.phone || p.whatsapp || '',
-                                location: `${p.city || 'Abuja'}, ${p.country || 'Nigeria'}`,
-                                country: p.country || 'Nigeria',
-                                city: p.city || 'Abuja',
-                                state: p.city || 'Abuja',
-                                status: 'approved',
-                                published_by_seller: true,
-                                business_verified: p.business_verified || 1
-                            });
-                            changed = true;
-                        }
-                    });
-                    if (changed) {
-                        this.fallbackProducts = Array.from(prodMap.values());
-                        this.saveLocalData('products', this.fallbackProducts);
-                    }
+            // 1. Fetch live products from Neon PostgreSQL Cloud API
+            const res = await fetch('/api/products', { method: 'GET', cache: 'no-store' })
+                .catch(() => fetch('api/products.php', { method: 'GET', cache: 'no-store' }))
+                .catch(() => null);
+
+            if (res && res.ok) {
+                const json = await res.json().catch(() => null);
+                if (json && Array.isArray(json.data)) {
+                    this.fallbackProducts = json.data.map(p => ({
+                        id: p.id,
+                        title: p.title || p.name,
+                        name: p.name || p.title,
+                        price: parseFloat(p.price) || 0,
+                        photo: p.photo_url || p.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
+                        photo_url: p.photo_url || p.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
+                        seller_name: p.seller_name || 'Verified Merchant',
+                        seller_phone: p.seller_phone || p.phone || '',
+                        phone: p.phone || p.seller_phone || '',
+                        seller_id: p.seller_id,
+                        country: p.country || 'Nigeria',
+                        state: p.state || 'Abuja (FCT)',
+                        city: p.city || 'Abuja',
+                        location: p.location || `${p.city || 'Abuja'}, ${p.country || 'Nigeria'}`,
+                        description: p.description || '',
+                        status: p.status || 'approved',
+                        business_verified: p.business_verified !== undefined ? p.business_verified : 1,
+                        available_qty: parseInt(p.available_qty) || 50,
+                        published_by_seller: true
+                    }));
+                    this.saveLocalData('products', this.fallbackProducts);
+                    changed = true;
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn('Cloud sync notice:', e);
+        }
 
         this._isSyncing = false;
         this._lastSyncTime = Date.now();
@@ -446,7 +444,7 @@ const API = {
     async createProduct(payload) {
         this.initLocalData();
         const title = payload.title || payload.name || 'Untitled Good';
-        const photo = payload.photo_url || payload.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
+        const photo = payload.photo_url || payload.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
         const phone = payload.seller_phone || payload.phone || '';
         const city = payload.city || payload.location || 'Abuja';
         const country = payload.country || 'Nigeria';
@@ -479,8 +477,17 @@ const API = {
             available_qty: parseInt(payload.available_qty) || 50,
             created_at: new Date().toISOString().split('T')[0]
         };
+
         this.fallbackProducts.unshift(newProd);
         this.saveLocalData('products', this.fallbackProducts);
+
+        // Save directly to Neon PostgreSQL Cloud Database
+        fetch('/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newProd)
+        }).catch(err => console.warn('Cloud DB save notice:', err));
+
         this.pushProductsToCloud();
         return { status: 'success', id: newProd.id, data: newProd, message: 'Good listed on marketplace successfully!' };
     },
@@ -512,6 +519,13 @@ const API = {
                 updated_at: new Date().toISOString().split('T')[0]
             };
             this.saveLocalData('products', this.fallbackProducts);
+
+            fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.fallbackProducts[idx])
+            }).catch(err => console.warn('Cloud DB update notice:', err));
+
             this.pushProductsToCloud();
             return { status: 'success', data: this.fallbackProducts[idx], message: 'Product updated successfully!' };
         }
@@ -522,6 +536,11 @@ const API = {
         this.initLocalData();
         this.fallbackProducts = this.fallbackProducts.filter(x => String(x.id) !== String(id));
         this.saveLocalData('products', this.fallbackProducts);
+
+        fetch(`/api/products?id=${encodeURIComponent(id)}`, {
+            method: 'DELETE'
+        }).catch(err => console.warn('Cloud DB delete notice:', err));
+
         this.pushProductsToCloud();
         return { status: 'success', message: 'Product removed successfully!' };
     },
