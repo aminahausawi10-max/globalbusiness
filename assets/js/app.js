@@ -1341,26 +1341,42 @@ async function renderBuyerOrders() {
     if (!container) return;
 
     const user = getCurrentUser();
-    const orders = await API.getOrders({ buyerId: user?.id });
+    if (!user) {
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-lock fa-2x" style="margin-bottom:8px;"></i><p>Sign in to view your orders</p></div>';
+        return;
+    }
+
+    const userPhoneDigits = (user.phone || '').replace(/[^0-9]/g, '');
+    const userEmail = (user.email || '').toLowerCase().trim();
+    const allOrders = await API.getOrders();
+
+    const myOrders = allOrders.filter(o => {
+        if (o.buyer_id && (o.buyer_id === user.id || o.buyer_id == user.id)) return true;
+        const oPhoneDigits = (o.buyer_phone || '').replace(/[^0-9]/g, '');
+        if (userPhoneDigits && oPhoneDigits && userPhoneDigits.length >= 7 && (userPhoneDigits.includes(oPhoneDigits) || oPhoneDigits.includes(userPhoneDigits))) return true;
+        const oEmail = (o.buyer_email || '').toLowerCase().trim();
+        if (userEmail && oEmail && userEmail === oEmail) return true;
+        return false;
+    });
 
     const orderCountBadges = [document.getElementById('buyerOrdersTabCount'), document.getElementById('buyerKpiOrdersCount')];
-    orderCountBadges.forEach(b => { if (b) b.textContent = orders.length; });
+    orderCountBadges.forEach(b => { if (b) b.textContent = myOrders.length; });
 
-    if (orders.length === 0) {
+    if (myOrders.length === 0) {
         container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fa-solid fa-box-open fa-2x" style="margin-bottom:8px;"></i><p>No orders placed yet. Explore the marketplace to make your first purchase!</p></div>';
         return;
     }
 
-    container.innerHTML = orders.map(o => `
+    container.innerHTML = myOrders.map(o => `
         <div class="order-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px; margin-bottom:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <div>
-                    <span style="font-weight:800;">Order #${o.id}</span> &bull; <span style="font-size:0.8rem; color:var(--text-muted);">${new Date(o.created_at).toLocaleDateString()}</span>
+                    <span style="font-weight:800;">Order #${o.id || o.order_number}</span> &bull; <span style="font-size:0.8rem; color:var(--text-muted);">${new Date(o.created_at || Date.now()).toLocaleDateString()}</span>
                 </div>
                 <span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green); font-weight:800;">${o.status}</span>
             </div>
             <div style="font-size:0.85rem; margin-bottom:8px;">
-                <strong>Items:</strong> ${o.items ? o.items.map(i => i.name + ' (' + i.quantity + 'x)').join(', ') : o.product_name || 'Verified Goods'}
+                <strong>Items:</strong> ${o.items ? o.items.map(i => i.name + ' (' + i.quantity + 'x)').join(', ') : o.item_name || 'Verified Goods'}
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:8px;">
                 <span style="font-weight:800; color:var(--brand-green);">Total: ${formatPrice(o.total_amount)}</span>
@@ -1485,25 +1501,37 @@ async function loadSellerProducts() {
     if (!grid) return;
 
     const user = getCurrentUser();
-    const allProducts = await API.getProducts();
-
-    let sellerProducts = [];
-    if (user) {
-        const userPhoneDigits = (user.phone || '').replace(/[^0-9]/g, '');
-        const userName = (user.full_name || user.store_name || '').toLowerCase().trim();
-        const userId = user.id;
-
-        sellerProducts = allProducts.filter(p => {
-            if (p.seller_id && (p.seller_id === userId || p.seller_id == user.id)) return true;
-            const pPhoneDigits = (p.phone || p.seller_phone || '').replace(/[^0-9]/g, '');
-            if (userPhoneDigits && pPhoneDigits && (userPhoneDigits.includes(pPhoneDigits) || pPhoneDigits.includes(userPhoneDigits))) return true;
-            const pSellerName = (p.seller_name || '').toLowerCase().trim();
-            if (userName && pSellerName && (pSellerName.includes(userName) || userName.includes(pSellerName))) return true;
-            return false;
-        });
-    } else {
-        sellerProducts = allProducts;
+    if (!user) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align:center; padding:45px 20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
+                <i class="fa-solid fa-lock" style="font-size:2.8rem; color:var(--text-muted); margin-bottom:12px;"></i>
+                <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-main); margin-bottom:6px;">Sign In to View Your Listed Goods</h3>
+                <p style="color:var(--text-muted); font-size:0.88rem; max-width:420px; margin:0 auto 16px auto;">
+                    Please sign in or register as a seller to manage your products and inventory securely.
+                </p>
+                <button class="btn btn-primary" onclick="openAuthModal('login')" style="padding:10px 22px; font-weight:700;">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Store
+                </button>
+            </div>
+        `;
+        const countEl = document.getElementById('sellerListedProductsCount');
+        if (countEl) countEl.textContent = 0;
+        return;
     }
+
+    const allProducts = await API.getProducts();
+    const userPhoneDigits = (user.phone || '').replace(/[^0-9]/g, '');
+    const userName = (user.full_name || user.store_name || '').toLowerCase().trim();
+    const userId = user.id;
+
+    const sellerProducts = allProducts.filter(p => {
+        if (p.seller_id && (p.seller_id === userId || p.seller_id == user.id)) return true;
+        const pPhoneDigits = (p.phone || p.seller_phone || '').replace(/[^0-9]/g, '');
+        if (userPhoneDigits && pPhoneDigits && userPhoneDigits.length >= 7 && (userPhoneDigits.includes(pPhoneDigits) || pPhoneDigits.includes(userPhoneDigits))) return true;
+        const pSellerName = (p.seller_name || '').toLowerCase().trim();
+        if (userName && pSellerName && userName.length >= 3 && (pSellerName.includes(userName) || userName.includes(pSellerName))) return true;
+        return false;
+    });
 
     const countEl = document.getElementById('sellerListedProductsCount');
     if (countEl) countEl.textContent = sellerProducts.length;
@@ -1619,9 +1647,16 @@ function openAddProductModal() {
 }
 
 async function openEditProductModal(productId) {
+    const user = getCurrentUser();
     const product = await API.getProductById(productId);
     if (!product) {
         showToast('Product not found for editing', 'error');
+        return;
+    }
+
+    const isOwner = user && (isAdminAuthenticated() || (product.seller_id && (product.seller_id === user.id || product.seller_id == user.id)) || (product.phone && user.phone && product.phone.replace(/[^0-9]/g, '') === user.phone.replace(/[^0-9]/g, '')));
+    if (!isOwner) {
+        showToast('Access Denied: You can only edit items belonging to your store', 'error');
         return;
     }
 
@@ -1781,6 +1816,19 @@ async function handleProductFormSubmit(event) {
 }
 
 async function handleDeleteProduct(productId) {
+    const user = getCurrentUser();
+    const product = await API.getProductById(productId);
+    if (!product) {
+        showToast('Product not found', 'error');
+        return;
+    }
+
+    const isOwner = user && (isAdminAuthenticated() || (product.seller_id && (product.seller_id === user.id || product.seller_id == user.id)) || (product.phone && user.phone && product.phone.replace(/[^0-9]/g, '') === user.phone.replace(/[^0-9]/g, '')));
+    if (!isOwner) {
+        showToast('Access Denied: You can only delete items belonging to your store', 'error');
+        return;
+    }
+
     if (confirm('Are you sure you want to remove this product listing?')) {
         await API.deleteProduct(productId);
         showToast('Product removed successfully', 'info');
