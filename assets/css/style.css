@@ -4058,3 +4058,85 @@ body {
 .ai-bot-floating-trigger {
     display: none !important;
 }
+
+
+/* ==========================================================================
+   MOBILE FLUID CARD CONTROLS & AUTO-WRAPPING (NO TRUNCATION)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .card {
+        padding: 14px 12px !important;
+        border-radius: 14px !important;
+        margin-bottom: 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .card > div:first-child {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    .card h2, .card h3 {
+        font-size: 1.05rem !important;
+        word-break: break-word !important;
+        line-height: 1.3 !important;
+    }
+
+    .card input, .card select, #adminUserSearchInput {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .card .btn-sm {
+        flex: 1 1 calc(50% - 4px) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 8px 10px !important;
+        font-size: 0.76rem !important;
+        white-space: nowrap !important;
+    }
+
+    .hero-loc-pill {
+        padding: 5px 10px !important;
+        font-size: 0.74rem !important;
+    }
+
+    /* Swipeable Admin Menu on Mobile */
+    .admin-sidebar-nav {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 8px !important;
+        gap: 8px !important;
+        border-radius: 12px !important;
+        scrollbar-width: none !important;
+    }
+
+    .admin-sidebar-nav::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .admin-sidebar-item {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
+        font-size: 0.78rem !important;
+        padding: 7px 12px !important;
+    }
+
+    .admin-table-container {
+        border-radius: 10px !important;
+        padding: 2px !important;
+    }
+
+    .admin-table th, .admin-table td {
+        padding: 8px 10px !important;
+        font-size: 0.78rem !important;
+    }
+}
