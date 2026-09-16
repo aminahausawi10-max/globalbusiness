@@ -1459,128 +1459,168 @@ async function loadAdminDashboardKpis() {
     });
 }
 
-async function renderAdminUsersTable() {
-    const tbody = document.getElementById('adminMembersTableBody');
-    if (!tbody) return;
 
-    const users = await API.getUsers();
-    tbody.innerHTML = users.map(u => `
-        <tr>
-            <td style="padding:10px; font-weight:700;">${u.full_name}</td>
-            <td style="padding:10px;">${u.phone}</td>
-            <td style="padding:10px;"><span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green);">${u.role}</span></td>
-            <td style="padding:10px;">${u.location || 'Nigeria'}</td>
-            <td style="padding:10px;"><span class="badge" style="background:${u.status === 'suspended' ? '#FEE2E2; color:#EF4444' : '#DCFCE7; color:#16A34A'}">${u.status || 'Active'}</span></td>
-            <td style="padding:10px;">
-                <button class="btn btn-sm btn-outline" onclick="handleToggleUserStatus('${u.id}')" style="padding:4px 8px; font-size:0.75rem;">
-                    ${u.status === 'suspended' ? 'Activate' : 'Suspend'}
-                </button>
-            </td>
-        </tr>
-    `).join('');
+// ==========================================
+// ADMIN USER MANAGEMENT (BUYERS & SELLERS)
+// ==========================================
+let adminMemberFilterRole = 'all';
+let adminMemberSearchText = '';
+
+function handleFilterMembers(role, btnEl) {
+    adminMemberFilterRole = role;
+    if (btnEl) {
+        document.querySelectorAll('#admin-tab-users .hero-loc-pill').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+    }
+    renderAdminUsersTable();
 }
 
-async function renderAdminVerificationTable() {
-    const tbody = document.getElementById('adminVerificationTableBody');
-    if (!tbody) return;
-
-    const sellers = await API.getSellers();
-    tbody.innerHTML = sellers.map(s => `
-        <tr>
-            <td style="padding:10px; font-weight:700;">${s.full_name}</td>
-            <td style="padding:10px;">${s.store_name}</td>
-            <td style="padding:10px;">${s.phone}</td>
-            <td style="padding:10px;">${s.location}</td>
-            <td style="padding:10px;">
-                <span class="badge" style="background:${s.verified ? '#DCFCE7; color:#16A34A' : '#FEF3C7; color:#D97706'}">
-                    ${s.verified ? '<i class="fa-solid fa-circle-check"></i> Verified' : 'Pending'}
-                </span>
-            </td>
-            <td style="padding:10px;">
-                <button class="btn btn-sm btn-primary" onclick="handleVerifySeller('${s.id}')" style="padding:4px 8px; font-size:0.75rem;">
-                    ${s.verified ? 'Unverify' : 'Verify'}
-                </button>
-            </td>
-        </tr>
-    `).join('');
+function handleAdminMemberSearch(query) {
+    adminMemberSearchText = (query || '').toLowerCase().trim();
+    renderAdminUsersTable();
 }
 
-async function renderAdminProductsTable() {
-    const tbody = document.getElementById('adminProductsTableBody');
-    if (!tbody) return;
-
-    const products = await API.getProducts();
-    tbody.innerHTML = products.map(p => `
-        <tr>
-            <td style="padding:10px; font-weight:700;">${p.name}</td>
-            <td style="padding:10px;">${p.category}</td>
-            <td style="padding:10px; color:var(--brand-green); font-weight:800;">${formatPrice(p.price)}</td>
-            <td style="padding:10px;">${p.seller_name}</td>
-            <td style="padding:10px;">
-                <button class="btn btn-sm" onclick="handleDeleteProduct('${p.id}')" style="background:#EF4444; color:#fff; padding:4px 8px; font-size:0.75rem;"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        </tr>
-    `).join('');
+function openAdminAddBuyerModal() {
+    document.getElementById('adminAddBuyerForm')?.reset();
+    document.getElementById('adminAddBuyerModal')?.classList.add('active');
 }
 
-async function renderAdminOrdersTable() {
-    const tbody = document.getElementById('adminOrdersTableBody');
-    if (!tbody) return;
+async function handleAdminAddBuyer(event) {
+    if (event) event.preventDefault();
+    const fullName = document.getElementById('adminBuyerFullName')?.value.trim();
+    const phone = document.getElementById('adminBuyerPhone')?.value.trim();
+    const location = document.getElementById('adminBuyerLocation')?.value.trim();
 
-    const orders = await API.getOrders();
-    tbody.innerHTML = orders.map(o => `
-        <tr>
-            <td style="padding:10px; font-weight:700;">#${o.id}</td>
-            <td style="padding:10px;">${o.buyer_name || 'Buyer'}</td>
-            <td style="padding:10px; color:var(--brand-green); font-weight:800;">${formatPrice(o.total_amount)}</td>
-            <td style="padding:10px;"><span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green);">${o.status}</span></td>
-            <td style="padding:10px;">${new Date(o.created_at).toLocaleDateString()}</td>
-        </tr>
-    `).join('');
+    await API.registerUser({
+        full_name: fullName,
+        phone: phone,
+        email: phone + '@marketathome.com',
+        location: location,
+        password: 'password123',
+        role: 'buyer'
+    });
+
+    closeModal('adminAddBuyerModal');
+    showToast(`Buyer "${fullName}" registered successfully!`, 'success');
+    loadAdminPortalData();
 }
 
-async function renderAdminSourcingTable() {
-    const tbody = document.getElementById('adminRequestsTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = `
-        <tr>
-            <td style="padding:10px; font-weight:700;">PBA-19127</td>
-            <td style="padding:10px;">Kano Leather & Hides Wholesale</td>
-            <td style="padding:10px;">Alhaji Haruna</td>
-            <td style="padding:10px;">₦450,000</td>
-            <td style="padding:10px;"><span class="badge" style="background:var(--brand-green-soft); color:var(--brand-green);">Negotiating</span></td>
-        </tr>
-    `;
+function openAdminAddSellerModal() {
+    document.getElementById('adminAddSellerForm')?.reset();
+    document.getElementById('adminAddSellerModal')?.classList.add('active');
 }
 
-async function renderAdminComplaintsTable() {
-    const tbody = document.getElementById('adminComplaintsTableBody');
-    if (!tbody) return;
+async function handleAdminAddSeller(event) {
+    if (event) event.preventDefault();
+    const fullName = document.getElementById('adminSellerFullName')?.value.trim();
+    const phone = document.getElementById('adminSellerPhone')?.value.trim();
+    const store = document.getElementById('adminSellerStoreName')?.value.trim();
+    const location = document.getElementById('adminSellerLocation')?.value.trim();
 
-    const disputes = API.getDisputes ? await API.getDisputes() : [];
-    tbody.innerHTML = disputes.map(d => `
-        <tr>
-            <td style="padding:10px; font-weight:700;">${d.subject}</td>
-            <td style="padding:10px;">${d.category}</td>
-            <td style="padding:10px;">${d.details}</td>
-            <td style="padding:10px;"><span class="badge" style="background:#FEF3C7; color:#D97706;">${d.status || 'Under Review'}</span></td>
-            <td style="padding:10px;">
-                <button class="btn btn-sm btn-primary" onclick="handleResolveDispute('${d.id}')" style="padding:4px 8px; font-size:0.75rem;">Resolve</button>
-            </td>
-        </tr>
-    `).join('');
+    await API.registerUser({
+        full_name: fullName,
+        store_name: store,
+        phone: phone,
+        email: phone + '@marketathome.com',
+        location: location,
+        password: 'password123',
+        role: 'seller',
+        verified: 1
+    });
+
+    closeModal('adminAddSellerModal');
+    showToast(`Seller "${store || fullName}" added with verified badge!`, 'success');
+    loadAdminPortalData();
 }
 
-async function handleResolveDispute(disputeId) {
-    showToast('Dispute resolved', 'success');
-    renderAdminComplaintsTable();
+async function handleDeleteUser(userId) {
+    if (confirm('Permanently delete this user from the marketplace?')) {
+        await API.deleteUser(userId);
+        showToast('Member removed permanently', 'info');
+        loadAdminPortalData();
+    }
 }
 
 async function handleToggleUserStatus(userId) {
     await API.toggleUserStatus(userId);
-    showToast('User status updated', 'success');
+    showToast('Member status updated', 'success');
     renderAdminUsersTable();
 }
+
+async function renderAdminUsersTable() {
+    const tbody = document.getElementById('adminMembersTableBody');
+    if (!tbody) return;
+
+    let users = await API.getUsers();
+
+    // Filter by role
+    if (adminMemberFilterRole !== 'all') {
+        users = users.filter(u => (u.role || 'buyer').toLowerCase() === adminMemberFilterRole.toLowerCase());
+    }
+
+    // Filter by search query
+    if (adminMemberSearchText) {
+        users = users.filter(u => 
+            (u.full_name || '').toLowerCase().includes(adminMemberSearchText) ||
+            (u.phone || '').toLowerCase().includes(adminMemberSearchText) ||
+            (u.store_name || '').toLowerCase().includes(adminMemberSearchText) ||
+            (u.location || '').toLowerCase().includes(adminMemberSearchText) ||
+            (u.email || '').toLowerCase().includes(adminMemberSearchText)
+        );
+    }
+
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:#94A3B8;">No members found matching criteria.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = users.map(u => {
+        const isSeller = u.role === 'seller';
+        const cleanPhone = (u.phone || '').replace(/[^0-9+]/g, '');
+        return `
+            <tr>
+                <td style="padding:12px; font-weight:700;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="width:32px; height:32px; border-radius:50%; background:${isSeller ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)'}; color:${isSeller ? '#F59E0B' : '#10B981'}; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800;">
+                            ${u.full_name ? u.full_name.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div>
+                            <div>${u.full_name}</div>
+                            <small style="color:#94A3B8; font-weight:400;">${u.store_name ? 'Store: ' + u.store_name : (u.email || '')}</small>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:12px;">
+                    <span class="badge" style="background:${isSeller ? 'rgba(245,158,11,0.2); color:#F59E0B' : 'rgba(16,185,129,0.2); color:#10B981'}">
+                        <i class="fa-solid ${isSeller ? 'fa-store' : 'fa-bag-shopping'}"></i> ${isSeller ? 'Seller' : 'Buyer'}
+                    </span>
+                </td>
+                <td style="padding:12px;">
+                    <a href="https://wa.me/${cleanPhone}" target="_blank" style="color:#25D366; text-decoration:none; font-weight:600; font-size:0.8rem;">
+                        <i class="fa-brands fa-whatsapp"></i> ${u.phone}
+                    </a>
+                </td>
+                <td style="padding:12px; font-size:0.82rem; color:#CBD5E1;">${u.location || 'Nigeria'}</td>
+                <td style="padding:12px;">
+                    <span class="badge" style="background:${u.status === 'suspended' ? 'rgba(239,68,68,0.2); color:#EF4444' : 'rgba(16,185,129,0.2); color:#10B981'}">
+                        ${u.status === 'suspended' ? 'Suspended' : 'Active'}
+                    </span>
+                </td>
+                <td style="padding:12px;">
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-sm btn-outline" onclick="handleToggleUserStatus('${u.id}')" style="padding:4px 8px; font-size:0.75rem;">
+                            ${u.status === 'suspended' ? '<i class="fa-solid fa-play"></i> Unsuspend' : '<i class="fa-solid fa-pause"></i> Suspend'}
+                        </button>
+                        <button class="btn btn-sm" onclick="handleDeleteUser('${u.id}')" style="background:#EF4444; color:#fff; padding:4px 8px; font-size:0.75rem; border-radius:var(--radius-xs);" title="Delete User Permanently">
+                            <i class="fa-solid fa-trash-can"></i> Remove
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
 
 async function handleVerifySeller(sellerId) {
     await API.toggleSellerVerification(sellerId);

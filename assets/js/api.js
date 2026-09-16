@@ -450,6 +450,17 @@ const API = {
         return { status: 'success', message: 'Buyer removed successfully' };
     },
 
+    async deleteUser(id) {
+        this.initLocalData();
+        this.fallbackUsers = (this.fallbackUsers || []).filter(u => u.id != id);
+        this.fallbackBuyers = (this.fallbackBuyers || []).filter(b => b.id != id);
+        this.fallbackSellers = (this.fallbackSellers || []).filter(s => s.id != id);
+        this.saveLocalData('users', this.fallbackUsers);
+        this.saveLocalData('buyers', this.fallbackBuyers);
+        this.saveLocalData('sellers', this.fallbackSellers);
+        return { status: 'success', message: 'Member deleted permanently' };
+    },
+
     // ==========================================
     // 6. UNIFIED MEMBERS DIRECTORY & USER MANAGEMENT
     // ==========================================
