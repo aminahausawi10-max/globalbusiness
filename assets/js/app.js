@@ -1322,18 +1322,52 @@ async function loadBuyerPortalData() {
     const avatarEl = document.getElementById('buyerAvatarCircle');
 
     if (nameEl) nameEl.textContent = user.full_name;
-    if (phoneEl) phoneEl.innerHTML = `<i class="fa-solid fa-phone" style="color:#10B981;"></i> ${user.phone}`;
+    if (phoneEl) phoneEl.innerHTML = `<i class="fa-solid fa-phone" style="color:#10B981;"></i> ${user.phone || '+234 800 000 0000'}`;
     if (emailEl) emailEl.innerHTML = `<i class="fa-solid fa-envelope" style="color:#38BDF8;"></i> ${user.email || 'buyer@marketathome.com'}`;
     if (locEl) locEl.innerHTML = `<i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${user.location || 'Abuja, Nigeria'}`;
-    if (avatarEl) avatarEl.textContent = user.full_name ? user.full_name.charAt(0).toUpperCase() : 'B';
+    if (avatarEl) avatarEl.textContent = (user.full_name || 'B').charAt(0).toUpperCase();
 
-    // 2. Load Subsections
+    // 2. Populate Categories in Buyer Portal Filter
+    populateBuyerCategories();
+
+    // 3. Load Goods for Buyer to Choose and Buy
+    await loadBuyerGoods();
+
+    // 4. Load Subsections
     await renderBuyerOrders();
     renderBuyerCart();
     await renderBuyerFavorites();
     renderBuyerWallet();
     await renderBuyerSourcing();
     await renderBuyerDisputes();
+}
+
+async function populateBuyerCategories() {
+    const select = document.getElementById('buyerCatalogCategorySelect');
+    if (!select || select.children.length > 1) return;
+
+    const cats = await API.getCategories();
+    select.innerHTML = '<option value="">All Categories</option>' +
+        cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+}
+
+async function loadBuyerGoods() {
+    const grid = document.getElementById('buyerRecommendedGrid');
+    if (!grid) return;
+
+    const products = await API.getProducts();
+    renderProductsGrid(products, grid);
+}
+
+async function filterBuyerCatalog() {
+    const grid = document.getElementById('buyerRecommendedGrid');
+    if (!grid) return;
+
+    const search = document.getElementById('buyerCatalogSearchInput')?.value.trim() || '';
+    const category = document.getElementById('buyerCatalogCategorySelect')?.value || '';
+
+    const products = await API.getProducts({ search, category });
+    renderProductsGrid(products, grid);
 }
 
 async function renderBuyerOrders() {
@@ -1482,16 +1516,26 @@ async function renderBuyerDisputes() {
 // 18. 🏪 SELLER PORTAL CONTROLLERS
 // ==========================================
 async function loadSellerPortalData() {
-    const user = getCurrentUser() || { store_name: 'Amina Global Emporium', full_name: 'Amina Ahmed', location: 'Abuja (Wuse 2)', phone: '+234 803 456 7890' };
+    const user = getCurrentUser();
+
+    // Strict role redirection: Buyers cannot be loaded into Seller Operational Center
+    if (user && user.role === 'buyer') {
+        showToast('You are signed in as a Buyer. Redirecting to Buyer Portal...', 'info');
+        switchPage('buyer');
+        loadBuyerPortalData();
+        return;
+    }
+
+    const activeUser = user || { store_name: 'Amina Global Emporium', full_name: 'Amina Ahmed', location: 'Abuja (Wuse 2)', phone: '+234 803 456 7890' };
     const nameEl = document.getElementById('sellerDisplayName');
     const phoneEl = document.getElementById('sellerDisplayPhone');
     const locEl = document.getElementById('sellerDisplayLocation');
     const avatarEl = document.getElementById('sellerAvatarCircle');
 
-    if (nameEl) nameEl.textContent = user.store_name || user.full_name;
-    if (phoneEl) phoneEl.innerHTML = `<i class="fa-brands fa-whatsapp" style="color:#10B981;"></i> ${user.phone || '+234 803 456 7890'}`;
-    if (locEl) locEl.innerHTML = `<i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${user.location || 'Abuja (Wuse 2)'}`;
-    if (avatarEl) avatarEl.textContent = (user.store_name || user.full_name || 'S').charAt(0).toUpperCase();
+    if (nameEl) nameEl.textContent = activeUser.store_name || activeUser.full_name;
+    if (phoneEl) phoneEl.innerHTML = `<i class="fa-brands fa-whatsapp" style="color:#10B981;"></i> ${activeUser.phone || '+234 803 456 7890'}`;
+    if (locEl) locEl.innerHTML = `<i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${activeUser.location || 'Abuja (Wuse 2)'}`;
+    if (avatarEl) avatarEl.textContent = (activeUser.store_name || activeUser.full_name || 'S').charAt(0).toUpperCase();
 
     loadSellerProducts();
 }

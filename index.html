@@ -512,7 +512,7 @@
                 <!-- 2. Buyer Navigation Sub-Tabs -->
                 <div class="sub-nav-tabs">
                     <button class="sub-tab-btn active" id="buyerTabBtn-dashboard" onclick="switchBuyerTab('dashboard')">
-                        <i class="fa-solid fa-house"></i> 1. Dashboard
+                        <i class="fa-solid fa-bag-shopping"></i> 1. Choose & Buy Goods
                     </button>
                     <button class="sub-tab-btn" id="buyerTabBtn-orders" onclick="switchBuyerTab('orders')">
                         <i class="fa-solid fa-box"></i> 2. My Orders (<span id="buyerOrdersTabCount">0</span>)
@@ -558,21 +558,30 @@
                     </div>
 
                     <div class="card" style="margin-bottom:24px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
                             <div>
-                                <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin:0;">
-                                    🌟 Recommended Goods For You
+                                <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0; display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-bag-shopping" style="color:var(--brand-green);"></i> Choose Goods & Buy Directly
                                 </h3>
                                 <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0 0;">
-                                    Curated items tailored to your recent search and purchase activity.
+                                    Browse authentic goods published by verified sellers with direct checkout and Escrow safety.
                                 </p>
                             </div>
                             <button class="btn btn-outline btn-sm" onclick="switchPage('marketplace')">
-                                View Full Catalog <i class="fa-solid fa-arrow-right"></i>
+                                View Full Marketplace <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
+
+                        <!-- Buyer Live Filter Controls -->
+                        <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+                            <input type="text" id="buyerCatalogSearchInput" class="form-input" placeholder="Search goods to buy (e.g. Ankara, iPhone, Yam)..." oninput="filterBuyerCatalog()" style="flex:2; min-width:200px;">
+                            <select id="buyerCatalogCategorySelect" class="form-select" onchange="filterBuyerCatalog()" style="flex:1; min-width:140px;">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+
                         <div id="buyerRecommendedGrid" class="products-grid">
-                            <!-- Loaded via JS -->
+                            <!-- Loaded live via JS -->
                         </div>
                     </div>
                 </div>
@@ -2059,8 +2068,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with v=5.5 cache bust -->
-    <script src="assets/js/api.js?v=5.5"></script>
-    <script src="assets/js/app.js?v=5.5"></script>
+    <!-- Scripts with v=5.6 cache bust -->
+    <script src="assets/js/api.js?v=5.6"></script>
+    <script src="assets/js/app.js?v=5.6"></script>
 </body>
 </html>
