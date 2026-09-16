@@ -98,10 +98,11 @@ html, body {
 }
 
 .btn-white {
-    background: #fff;
-    color: var(--primary);
-    font-weight: 800;
-    box-shadow: var(--shadow-sm);
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border: none;
 }
 
 .btn-white:hover {
@@ -3676,4 +3677,47 @@ html, body {
 
 .portal-action-card:hover .action-card-btn-text {
     color: #34D399;
+}
+
+
+/* Forced high-contrast button styling */
+.btn-white, button.btn-white, a.btn-white {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    font-weight: 800 !important;
+}
+
+.bottom-nav {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    background: #0B132B !important;
+    border-top: 1px solid rgba(255,255,255,0.14) !important;
+    padding: 6px 4px !important;
+    z-index: 1000 !important;
+}
+
+.bottom-nav-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    color: #94A3B8 !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    gap: 3px !important;
+    padding: 4px 2px !important;
+    transition: all 0.2s ease !important;
+}
+
+.bottom-nav-item i {
+    font-size: 1.15rem !important;
+}
+
+.bottom-nav-item.active {
+    color: #10B981 !important;
+}
+
+.bottom-nav-item:active, .bottom-nav-item:hover {
+    color: #34D399 !important;
 }

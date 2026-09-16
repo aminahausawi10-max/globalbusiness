@@ -697,8 +697,6 @@ function updateNavAuthUI() {
     const user = getCurrentUser();
     const navAuthText = document.getElementById('navAuthText');
     const quickBar = document.getElementById('adminQuickActionsBar');
-    const bottomAccountLabel = document.getElementById('bottomNavAccountLabel');
-    const bottomAccountIcon = document.getElementById('bottomNavAccountIcon');
 
     if (isAdminAuthenticated() && quickBar) {
         quickBar.style.display = 'block';
@@ -708,13 +706,9 @@ function updateNavAuthUI() {
 
     if (user) {
         const firstName = user.full_name ? user.full_name.split(' ')[0] : 'Account';
-        if (navAuthText) navAuthText.textContent = firstName;
-        if (bottomAccountLabel) bottomAccountLabel.textContent = user.role === 'seller' ? 'Seller Hub' : 'Buyer Hub';
-        if (bottomAccountIcon) bottomAccountIcon.className = user.role === 'seller' ? 'fa-solid fa-store' : 'fa-solid fa-bag-shopping';
+        if (navAuthText) navAuthText.textContent = firstName + ' (' + (user.role === 'seller' ? 'Seller' : 'Buyer') + ')';
     } else {
         if (navAuthText) navAuthText.textContent = 'Sign In';
-        if (bottomAccountLabel) bottomAccountLabel.textContent = 'Account';
-        if (bottomAccountIcon) bottomAccountIcon.className = 'fa-solid fa-user-shield';
     }
 }
 

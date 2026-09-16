@@ -51,7 +51,7 @@
                 <span style="font-weight:700;">Welcome, <strong style="color:var(--brand-green-light);" id="adminBarName">Amina</strong></span>
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
-                <button class="btn btn-sm btn-white" onclick="switchPage('admin')" style="padding:4px 10px; font-size:0.75rem;">
+                <button class="btn btn-sm btn-white" onclick="switchPage('admin')" style="padding:4px 10px; font-size:0.75rem; background:#FFFFFF; color:#0F172A; font-weight:800;">
                     <i class="fa-solid fa-gauge-high"></i> Admin Portal
                 </button>
                 <button class="btn btn-sm btn-outline" onclick="switchPage('home')" style="padding:4px 10px; font-size:0.75rem; color:#fff; border-color:#475569; background:transparent;">
@@ -1973,6 +1973,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- Bottom Dock Navigation Bar -->
+        <!-- Bottom Dock Navigation Bar (Permanent 1-Click Access to All Hubs) -->
     <nav class="bottom-nav">
         <a class="bottom-nav-item active" data-page="home" onclick="switchPage('home')">
             <i class="fa-solid fa-house"></i>
@@ -1982,22 +1983,22 @@
             <i class="fa-solid fa-store"></i>
             <span>Market</span>
         </a>
-        <a class="bottom-nav-item post-btn" data-page="seller" onclick="handleBottomNavSellClick()" title="Sell a Product">
-            <i class="fa-solid fa-plus"></i>
-            <span>Sell</span>
+        <a class="bottom-nav-item" data-page="buyer" id="bottomNavBuyerBtn" onclick="switchPage('buyer')">
+            <i class="fa-solid fa-bag-shopping" style="color:#10B981;"></i>
+            <span>Buyer Hub</span>
+        </a>
+        <a class="bottom-nav-item" data-page="seller" id="bottomNavSellerBtn" onclick="switchPage('seller')">
+            <i class="fa-solid fa-shop" style="color:#F59E0B;"></i>
+            <span>Seller Hub</span>
         </a>
         <a class="bottom-nav-item" onclick="toggleMarketAssistant()" title="AI Shopping Assistant">
-            <i class="fa-solid fa-robot"></i>
+            <i class="fa-solid fa-robot" style="color:#38BDF8;"></i>
             <span>AI Assist</span>
-        </a>
-        <a class="bottom-nav-item" id="bottomNavAccountBtn" data-page="buyer" onclick="handleBottomNavAccountClick()">
-            <i class="fa-solid fa-user-shield" id="bottomNavAccountIcon"></i>
-            <span id="bottomNavAccountLabel">Account</span>
         </a>
     </nav>
 
     <!-- Scripts with v=4.2 cache bust -->
-    <script src="assets/js/api.js?v=4.2"></script>
-    <script src="assets/js/app.js?v=4.2"></script>
+    <script src="assets/js/api.js?v=4.3"></script>
+    <script src="assets/js/app.js?v=4.3"></script>
 </body>
 </html>
