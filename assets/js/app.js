@@ -1155,20 +1155,26 @@ function renderProductsGrid(products, grid) {
     }
 
     grid.innerHTML = products.map(p => {
-        const cleanPhone = (p.phone || '+2348090908090').replace(/[^0-9+]/g, '');
+        const prodTitle = p.title || p.name || 'Untitled Good';
+        const prodPhoto = p.photo || p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
+        const prodPhone = p.phone || p.seller_phone || '+2348090908090';
+        const cleanPhone = prodPhone.replace(/[^0-9+]/g, '');
+        const prodLocation = p.location || (p.city ? `${p.city}, ${p.country || 'Nigeria'}` : 'Nigeria');
+        const prodSeller = p.seller_name || 'Verified Merchant';
+
         return `
             <div class="product-card product-card-3d" onclick="openProductDetails('${p.id}')">
                 <div class="product-img-wrapper">
-                    <img src="${p.photo}" alt="${p.name}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
+                    <img src="${prodPhoto}" alt="${prodTitle}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
                     <span class="product-badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>
                     <span class="product-price-pill">${formatPrice(p.price)}</span>
                 </div>
                 <div class="product-body">
-                    <h3 class="product-title">${p.name}</h3>
-                    <div class="product-location"><i class="fa-solid fa-location-dot"></i> ${p.location || 'Abuja, Nigeria'}</div>
-                    <div class="product-seller-tag"><i class="fa-solid fa-store"></i> Seller: ${p.seller_name || 'Verified Merchant'}</div>
+                    <h3 class="product-title">${prodTitle}</h3>
+                    <div class="product-location"><i class="fa-solid fa-location-dot"></i> ${prodLocation}</div>
+                    <div class="product-seller-tag"><i class="fa-solid fa-store"></i> Seller: ${prodSeller}</div>
                     <div class="product-card-actions">
-                        <button class="btn-chat-seller" onclick="event.stopPropagation(); openChatWithSeller('${p.phone || cleanPhone}', '${p.seller_name || 'Merchant'}')">
+                        <button class="btn-chat-seller" onclick="event.stopPropagation(); openChatWithSeller('${prodPhone}', '${prodSeller}')">
                             <i class="fa-brands fa-whatsapp"></i> Chat Seller
                         </button>
                         <a href="tel:${cleanPhone}" class="btn-call-seller" onclick="event.stopPropagation();">
@@ -1446,7 +1452,7 @@ async function loadSellerPortalData() {
     if (nameEl) nameEl.textContent = user.store_name || user.full_name;
     if (phoneEl) phoneEl.innerHTML = `<i class="fa-brands fa-whatsapp" style="color:#10B981;"></i> ${user.phone || '+234 803 456 7890'}`;
     if (locEl) locEl.innerHTML = `<i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${user.location || 'Abuja (Wuse 2)'}`;
-    if (avatarEl) avatarEl.textContent = user.store_name ? user.store_name.charAt(0).toUpperCase() : 'S';
+    if (avatarEl) avatarEl.textContent = (user.store_name || user.full_name || 'S').charAt(0).toUpperCase();
 
     loadSellerProducts();
 }
@@ -1455,11 +1461,92 @@ async function loadSellerProducts() {
     const grid = document.getElementById('myProductsContainer');
     if (!grid) return;
 
-    const products = await API.getProducts();
-    const countEl = document.getElementById('sellerListedProductsCount');
-    if (countEl) countEl.textContent = products.length;
+    const user = getCurrentUser();
+    const allProducts = await API.getProducts();
 
-    renderProductsGrid(products, grid);
+    let sellerProducts = [];
+    if (user) {
+        const userPhoneDigits = (user.phone || '').replace(/[^0-9]/g, '');
+        const userName = (user.full_name || user.store_name || '').toLowerCase().trim();
+        const userId = user.id;
+
+        sellerProducts = allProducts.filter(p => {
+            if (p.seller_id && (p.seller_id === userId || p.seller_id == user.id)) return true;
+            const pPhoneDigits = (p.phone || p.seller_phone || '').replace(/[^0-9]/g, '');
+            if (userPhoneDigits && pPhoneDigits && (userPhoneDigits.includes(pPhoneDigits) || pPhoneDigits.includes(userPhoneDigits))) return true;
+            const pSellerName = (p.seller_name || '').toLowerCase().trim();
+            if (userName && pSellerName && (pSellerName.includes(userName) || userName.includes(pSellerName))) return true;
+            return false;
+        });
+    } else {
+        sellerProducts = allProducts;
+    }
+
+    const countEl = document.getElementById('sellerListedProductsCount');
+    if (countEl) countEl.textContent = sellerProducts.length;
+
+    renderSellerProductsGrid(sellerProducts, grid);
+}
+
+function renderSellerProductsGrid(products, grid) {
+    if (!grid) return;
+
+    if (!products || products.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align:center; padding:45px 20px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
+                <i class="fa-solid fa-boxes-stacked" style="font-size:3rem; color:var(--text-muted); margin-bottom:12px;"></i>
+                <h3 style="font-size:1.15rem; font-weight:800; color:var(--text-main); margin-bottom:6px;">No Products Listed Yet</h3>
+                <p style="color:var(--text-muted); font-size:0.88rem; max-width:420px; margin:0 auto 16px auto;">
+                    You have not published any items yet. Add your products to start selling to buyers worldwide!
+                </p>
+                <button class="btn btn-success" onclick="openAddProductModal()" style="padding:10px 22px; font-weight:700;">
+                    <i class="fa-solid fa-plus"></i> Post Your First Product
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = products.map(p => {
+        const pTitle = p.title || p.name || 'Untitled Product';
+        const pPhoto = p.photo || p.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
+        const pPrice = formatPrice(p.price || 0);
+        const pCategory = p.category_name || p.category || 'General';
+        const pLocation = p.location || (p.city ? `${p.city}, ${p.country || 'Nigeria'}` : 'Nigeria');
+        const pQty = p.available_qty || 50;
+
+        return `
+            <div class="product-card product-card-3d" style="position:relative; overflow:hidden;">
+                <div class="product-img-wrapper" style="position:relative;">
+                    <img src="${pPhoto}" alt="${pTitle}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
+                    <span class="product-badge-verified" style="background:#10B981; color:#fff;">
+                        <i class="fa-solid fa-circle-check"></i> Published Live
+                    </span>
+                    <span class="product-price-pill">${pPrice}</span>
+                </div>
+                <div class="product-body" style="padding:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span class="badge" style="background:var(--bg-alt); color:var(--text-muted); font-size:0.72rem; padding:3px 8px;">${pCategory}</span>
+                        <span style="font-size:0.75rem; color:var(--brand-green); font-weight:700;"><i class="fa-solid fa-box"></i> Stock: ${pQty}</span>
+                    </div>
+                    <h3 class="product-title" style="font-size:0.95rem; font-weight:700; margin-bottom:6px; line-height:1.3;">${pTitle}</h3>
+                    <div class="product-location" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">
+                        <i class="fa-solid fa-location-dot" style="color:#EF4444;"></i> ${pLocation}
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="openProductDetails('${p.id}')" style="font-size:0.78rem; padding:6px;">
+                            <i class="fa-solid fa-eye"></i> View Live
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="handleDeleteProduct('${p.id}')" style="font-size:0.78rem; padding:6px;">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    init3DTiltEffects();
 }
 
 async function handleUpdateOrderStatus(orderId, newStatus) {
@@ -1468,8 +1555,32 @@ async function handleUpdateOrderStatus(orderId, newStatus) {
 }
 
 function openAddProductModal() {
+    const user = getCurrentUser();
     document.getElementById('sellerProductForm')?.reset();
-    populateSellerStateDropdown('Nigeria');
+
+    const storeNameInput = document.getElementById('sellerProdSellerName');
+    const phoneInput = document.getElementById('sellerProdPhone');
+    const countrySelect = document.getElementById('sellerProdCountry');
+    const locationInput = document.getElementById('sellerProdLocation');
+    const photoInput = document.getElementById('sellerProdPhoto');
+
+    if (storeNameInput && user) {
+        storeNameInput.value = user.store_name || user.full_name || '';
+    }
+    if (phoneInput && user) {
+        phoneInput.value = user.phone || '';
+    }
+    if (countrySelect && user?.country) {
+        countrySelect.value = user.country;
+    }
+    if (locationInput && user?.location) {
+        locationInput.value = user.location;
+    }
+    if (photoInput) {
+        photoInput.value = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
+    }
+
+    populateSellerStateDropdown(countrySelect ? countrySelect.value : 'Nigeria');
     document.getElementById('addProductModal')?.classList.add('active');
 }
 
@@ -1496,7 +1607,7 @@ function handleProductImageImport(event) {
         const reader = new FileReader();
         reader.onload = (e) => {
             document.getElementById('sellerProdPhoto').value = e.target.result;
-            showToast('Product photo uploaded', 'success');
+            showToast('Product photo uploaded successfully', 'success');
         };
         reader.readAsDataURL(file);
     }
@@ -1506,44 +1617,75 @@ async function handleProductFormSubmit(event) {
     if (event) event.preventDefault();
     const user = getCurrentUser();
 
-    const name = document.getElementById('sellerProdTitle')?.value.trim();
+    const title = (document.getElementById('sellerProdTitle')?.value || '').trim();
     const price = parseFloat(document.getElementById('sellerProdPrice')?.value || 0);
-    const category = document.getElementById('sellerProdCategory')?.value;
-    const seller_name = document.getElementById('sellerProdSellerName')?.value.trim() || user?.full_name || 'Verified Merchant';
-    const country = document.getElementById('sellerProdCountry')?.value;
-    const location = document.getElementById('sellerProdLocation')?.value.trim();
-    const phone = document.getElementById('sellerProdPhone')?.value.trim();
-    const description = document.getElementById('sellerProdDesc')?.value.trim();
+    const categorySelect = document.getElementById('sellerProdCategory');
+    const category_name = categorySelect ? (categorySelect.options[categorySelect.selectedIndex]?.text || categorySelect.value) : 'General';
+    const seller_name = (document.getElementById('sellerProdSellerName')?.value || '').trim() || user?.store_name || user?.full_name || 'Verified Merchant';
+    const country = document.getElementById('sellerProdCountry')?.value || user?.country || 'Nigeria';
+    const location = (document.getElementById('sellerProdLocation')?.value || '').trim() || 'Abuja';
+    const state = document.getElementById('sellerProdStateSelect')?.value || location;
+    const phone = (document.getElementById('sellerProdPhone')?.value || '').trim() || user?.phone || '+234 803 000 0000';
+    const description = (document.getElementById('sellerProdDesc')?.value || '').trim();
     const photo = document.getElementById('sellerProdPhoto')?.value || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
 
+    if (!title) {
+        showToast('Please enter a product title', 'error');
+        return;
+    }
+    if (isNaN(price) || price <= 0) {
+        showToast('Please enter a valid price in USD', 'error');
+        return;
+    }
+
+    const sellerId = user?.id || ('seller-' + Date.now());
+
     await API.createProduct({
-        name,
-        price,
-        category,
-        seller_name,
-        country,
-        location,
-        phone,
-        description,
-        photo,
-        seller_id: user?.id || 'seller-1'
+        title: title,
+        name: title,
+        price: price,
+        category: category_name,
+        category_name: category_name,
+        seller_name: seller_name,
+        seller_id: sellerId,
+        country: country,
+        state: state,
+        city: location,
+        location: `${location}, ${country}`,
+        phone: phone,
+        seller_phone: phone,
+        description: description,
+        photo: photo,
+        photo_url: photo,
+        status: 'approved',
+        business_verified: 1
     });
 
     closeModal('addProductModal');
-    showToast('Product published live worldwide!', 'success');
-    loadHomeFeatured();
-    filterMarketplace();
+    showToast('🎉 Product published live across global marketplace!', 'success');
+
+    // Instant multi-view refresh
     loadSellerProducts();
+    loadMarketplaceProducts();
+    loadHomeFeatured();
+    if (typeof selectNigeriaState === 'function') {
+        selectNigeriaState(state);
+    }
+    if (typeof renderAdminProductsTable === 'function') {
+        renderAdminProductsTable();
+    }
 }
 
 async function handleDeleteProduct(productId) {
-    if (confirm('Delete this product?')) {
+    if (confirm('Are you sure you want to remove this product listing?')) {
         await API.deleteProduct(productId);
-        showToast('Product deleted', 'info');
-        loadHomeFeatured();
-        filterMarketplace();
+        showToast('Product removed successfully', 'info');
         loadSellerProducts();
-        renderAdminProductsTable();
+        loadMarketplaceProducts();
+        loadHomeFeatured();
+        if (typeof renderAdminProductsTable === 'function') {
+            renderAdminProductsTable();
+        }
     }
 }
 

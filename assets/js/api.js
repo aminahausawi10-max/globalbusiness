@@ -23,15 +23,26 @@ const API = {
 
                 const p = localStorage.getItem('globalbiz_products_store');
                 if (p) {
-                    const parsed = JSON.parse(p);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        const userProducts = parsed.filter(item => item.id > 10000 || item.user_id);
-                        const existingIds = new Set(userProducts.map(x => x.id));
-                        const uniqueSeeds = this.fallbackProducts.filter(x => !existingIds.has(x.id));
-                        this.fallbackProducts = [...userProducts, ...uniqueSeeds];
+                    try {
+                        const parsed = JSON.parse(p);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            this.fallbackProducts = parsed.map(prod => ({
+                                ...prod,
+                                title: prod.title || prod.name || 'Untitled Good',
+                                name: prod.name || prod.title || 'Untitled Good',
+                                photo: prod.photo || prod.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
+                                photo_url: prod.photo_url || prod.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600',
+                                phone: prod.phone || prod.seller_phone || '',
+                                seller_phone: prod.seller_phone || prod.phone || '',
+                                location: prod.location || (prod.city ? `${prod.city}, ${prod.country || 'Nigeria'}` : 'Nigeria')
+                            }));
+                        }
+                    } catch(err) {
+                        console.warn('Error reading stored products', err);
                     }
+                } else {
+                    localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
                 }
-                localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
 
                 const r = localStorage.getItem('globalbiz_requests_store');
                 if (r) this.fallbackBuyingRequests = JSON.parse(r);
@@ -238,21 +249,38 @@ const API = {
         return this.fallbackProducts.find(p => p.id == id);
     },
 
+    async getProductById(id) {
+        return this.getProduct(id);
+    },
+
     async createProduct(payload) {
         this.initLocalData();
+        const title = payload.title || payload.name || 'Untitled Good';
+        const photo = payload.photo_url || payload.photo || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80';
+        const phone = payload.seller_phone || payload.phone || '';
+        const city = payload.city || payload.location || 'Abuja';
+        const country = payload.country || 'Nigeria';
+        const location = payload.location || `${city}, ${country}`;
         const newProd = {
             id: Date.now(),
-            title: payload.title,
+            title: title,
+            name: title,
             price: parseFloat(payload.price) || 0,
             category_id: payload.category_id || 1,
-            category_name: payload.category_name || 'General',
+            category_name: payload.category_name || payload.category || 'General',
+            category: payload.category || payload.category_name || 'General',
             seller_name: payload.seller_name || 'Verified Seller',
-            seller_phone: payload.seller_phone || payload.phone || '',
-            country: payload.country || 'Nigeria',
+            seller_phone: phone,
+            phone: phone,
+            whatsapp: phone.replace(/[^0-9+]/g, ''),
+            seller_id: payload.seller_id || ('seller-' + Date.now()),
+            country: country,
             state: payload.state || payload.state_province || 'Abuja (FCT)',
-            city: payload.city || payload.location || 'Abuja',
+            city: city,
+            location: location,
             description: payload.description || '',
-            photo_url: payload.photo_url || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
+            photo_url: photo,
+            photo: photo,
             delivery_info: payload.delivery_info || 'Local pickup & worldwide courier delivery available',
             views: 1,
             business_verified: payload.business_verified !== undefined ? payload.business_verified : 1,
@@ -969,16 +997,18 @@ const API = {
         };
     },
 
-    filterFallbackProducts(params) {
+    filterFallbackProducts(params = {}) {
         let results = [...this.fallbackProducts];
-        if (params.q) {
-            const q = params.q.toLowerCase().trim();
+        const search = params.search || params.q || params.keyword || '';
+        if (search) {
+            const q = search.toLowerCase().trim();
             results = results.filter(p =>
-                (p.title && p.title.toLowerCase().includes(q)) ||
+                ((p.title || p.name) && (p.title || p.name).toLowerCase().includes(q)) ||
                 (p.description && p.description.toLowerCase().includes(q)) ||
                 (p.city && p.city.toLowerCase().includes(q)) ||
                 (p.state && p.state.toLowerCase().includes(q)) ||
                 (p.country && p.country.toLowerCase().includes(q)) ||
+                (p.location && p.location.toLowerCase().includes(q)) ||
                 (p.seller_name && p.seller_name.toLowerCase().includes(q)) ||
                 (p.category_name && p.category_name.toLowerCase().includes(q))
             );
@@ -986,8 +1016,20 @@ const API = {
         if (params.category_id) {
             results = results.filter(p => p.category_id == params.category_id);
         }
-        if (params.category_name) {
-            results = results.filter(p => p.category_name && p.category_name.toLowerCase() === params.category_name.toLowerCase());
+        if (params.category && params.category !== 'all') {
+            const cat = params.category.toLowerCase().trim();
+            results = results.filter(p => 
+                (p.category_name && p.category_name.toLowerCase().includes(cat)) ||
+                (p.category && p.category.toLowerCase().includes(cat)) ||
+                (p.category_id && p.category_id == params.category)
+            );
+        }
+        if (params.category_name && params.category_name !== 'all') {
+            const cat = params.category_name.toLowerCase().trim();
+            results = results.filter(p => 
+                (p.category_name && p.category_name.toLowerCase().includes(cat)) ||
+                (p.category && p.category.toLowerCase().includes(cat))
+            );
         }
         if (params.country && params.country !== 'all' && params.country.trim() !== '') {
             const c = params.country.toLowerCase().trim();
@@ -997,8 +1039,12 @@ const API = {
             const s = params.state.toLowerCase().trim();
             results = results.filter(p =>
                 (p.state && (p.state.toLowerCase().includes(s) || s.includes(p.state.toLowerCase()))) ||
-                (p.city && (p.city.toLowerCase().includes(s) || s.includes(p.city.toLowerCase())))
+                (p.city && (p.city.toLowerCase().includes(s) || s.includes(p.city.toLowerCase()))) ||
+                (p.location && (p.location.toLowerCase().includes(s) || s.includes(p.location.toLowerCase())))
             );
+        }
+        if (params.seller_id) {
+            results = results.filter(p => p.seller_id == params.seller_id);
         }
         if (params.max_price) {
             results = results.filter(p => p.price <= parseFloat(params.max_price));
