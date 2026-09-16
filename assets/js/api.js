@@ -24,37 +24,40 @@ const API = {
     initLocalData() {
         if (!this._initialized) {
             try {
-                const s = localStorage.getItem('globalbiz_sellers_store');
+                const isMockUser = (user) => {
+                    if (!user) return false;
+                    const idStr = String(user.id || '');
+                    if (['101', '102', '103', '104', '201', '202', '203', '204'].includes(idStr)) return true;
+                    const name = (user.full_name || user.store_name || '').toLowerCase();
+                    if (name.includes('amina bello lawal') || name.includes('fatima zahra') || name.includes('blessing emmanuel') || name.includes('david chen') || name.includes('ahmed yusuf al-mansoor') || name.includes('chioma okafor') || name.includes('ibrahim al-rashid') || name.includes('zainab kabir')) return true;
+                    return false;
+                };
+
+                const s = localStorage.getItem('globalbiz_sellers_store') || localStorage.getItem('mah_sellers_db');
                 if (s) {
                     try {
                         const parsedS = JSON.parse(s);
-                        if (Array.isArray(parsedS) && parsedS.length > 0) {
-                            const sellerMap = new Map();
-                            parsedS.forEach(x => sellerMap.set(String(x.id || x.phone), x));
-                            (this.fallbackSellers || []).forEach(x => {
-                                if (!sellerMap.has(String(x.id || x.phone))) sellerMap.set(String(x.id || x.phone), x);
-                            });
-                            this.fallbackSellers = Array.from(sellerMap.values());
-                        }
-                    } catch (e) {}
+                        if (Array.isArray(parsedS)) this.fallbackSellers = parsedS.filter(x => !isMockUser(x));
+                        else this.fallbackSellers = [];
+                    } catch (e) { this.fallbackSellers = []; }
+                } else {
+                    this.fallbackSellers = [];
                 }
                 localStorage.setItem('globalbiz_sellers_store', JSON.stringify(this.fallbackSellers));
+                localStorage.setItem('mah_sellers_db', JSON.stringify(this.fallbackSellers));
 
-                const b = localStorage.getItem('globalbiz_buyers_store');
+                const b = localStorage.getItem('globalbiz_buyers_store') || localStorage.getItem('mah_buyers_db');
                 if (b) {
                     try {
                         const parsedB = JSON.parse(b);
-                        if (Array.isArray(parsedB) && parsedB.length > 0) {
-                            const buyerMap = new Map();
-                            parsedB.forEach(x => buyerMap.set(String(x.id || x.phone), x));
-                            (this.fallbackBuyers || []).forEach(x => {
-                                if (!buyerMap.has(String(x.id || x.phone))) buyerMap.set(String(x.id || x.phone), x);
-                            });
-                            this.fallbackBuyers = Array.from(buyerMap.values());
-                        }
-                    } catch (e) {}
+                        if (Array.isArray(parsedB)) this.fallbackBuyers = parsedB.filter(x => !isMockUser(x));
+                        else this.fallbackBuyers = [];
+                    } catch (e) { this.fallbackBuyers = []; }
+                } else {
+                    this.fallbackBuyers = [];
                 }
                 localStorage.setItem('globalbiz_buyers_store', JSON.stringify(this.fallbackBuyers));
+                localStorage.setItem('mah_buyers_db', JSON.stringify(this.fallbackBuyers));
 
                 const isMockProduct = (prod) => {
                     if (!prod) return false;
@@ -1488,346 +1491,11 @@ const API = {
         { id: 12, name: 'Professional Services', slug: 'professional-services', icon: 'fa-briefcase', description: 'Logistics, clearing agents, legal & translation desks' }
     ],
 
-    fallbackSellers: [
-        {
-            id: 101,
-            full_name: 'Amina Bello Lawal',
-            email: 'amina@luxurankara.ng',
-            id_number: 'NIN-78492019482',
-            phone: '+234 803 456 7890',
-            location: 'Abuja (Wuse 2)',
-            city: 'Abuja',
-            country: 'Nigeria',
-            kin_name: 'Usman Bello Lawal (Brother)',
-            kin_phone: '+234 802 111 2233',
-            store_name: 'Amina Luxury Ankara & Fabrics',
-            category_name: 'Clothing & Fashion',
-            verified: 1,
-            verification_status: 'Approved',
-            status: 'active',
-            registered_at: '2026-08-10'
-        },
-        {
-            id: 102,
-            full_name: 'Fatima Zahra Mohammed',
-            email: 'orders@kanowigs.ng',
-            id_number: 'NIN-92817401928',
-            phone: '+234 814 999 4455',
-            location: 'Kano (Kano Municipal)',
-            city: 'Kano',
-            country: 'Nigeria',
-            kin_name: 'Aisha Mohammed (Sister)',
-            kin_phone: '+234 816 777 8899',
-            store_name: 'Hajiya Wigs & Beauty Palace',
-            category_name: 'Wigs & Beauty',
-            verified: 1,
-            verification_status: 'Approved',
-            status: 'active',
-            registered_at: '2026-08-15'
-        },
-        {
-            id: 103,
-            full_name: 'Blessing Emmanuel',
-            email: 'blessing@kadunahair.ng',
-            id_number: 'NIN-55647382910',
-            phone: '+234 805 123 9876',
-            location: 'Kaduna (Barnawa)',
-            city: 'Kaduna',
-            country: 'Nigeria',
-            kin_name: 'David Emmanuel (Brother)',
-            kin_phone: '+234 809 333 4455',
-            store_name: 'Kaduna Premium Hair & Styles',
-            category_name: 'Wigs & Beauty',
-            verified: 0,
-            verification_status: 'Pending Review',
-            status: 'active',
-            registered_at: '2026-09-01'
-        },
-        {
-            id: 104,
-            full_name: 'David Chen',
-            email: 'david@guangzhousmart.cn',
-            id_number: 'ID-CN-88992211',
-            phone: '+86 138 0013 8000',
-            location: 'Guangzhou',
-            city: 'Guangzhou',
-            country: 'China',
-            kin_name: 'Mei Chen',
-            kin_phone: '+86 139 0013 8000',
-            store_name: 'Guangzhou Smart Mobility Co.',
-            category_name: 'Car Sales & Auto',
-            verified: 1,
-            verification_status: 'Approved',
-            status: 'active',
-            registered_at: '2026-08-05'
-        }
-    ],
-
-    fallbackBuyers: [
-        {
-            id: 201,
-            full_name: 'Ahmed Yusuf Al-Mansoor',
-            email: 'ahmed.yusuf@diaspora.ae',
-            phone: '+234 802 345 6789',
-            location: 'Abuja (Maitama)',
-            city: 'Abuja',
-            country: 'Nigeria',
-            delivery_address: 'Plot 42, Gana Street, Maitama, Abuja, Nigeria',
-            status: 'active',
-            registered_at: '2026-08-12',
-            orders_count: 5
-        },
-        {
-            id: 202,
-            full_name: 'Chioma Okafor',
-            email: 'chioma.okafor@gmail.com',
-            phone: '+234 813 456 7890',
-            location: 'Kano (Nassarawa)',
-            city: 'Kano',
-            country: 'Nigeria',
-            delivery_address: '14 Bompai Road, Nassarawa GRA, Kano, Nigeria',
-            status: 'active',
-            registered_at: '2026-08-18',
-            orders_count: 3
-        },
-        {
-            id: 203,
-            full_name: 'Ibrahim Al-Rashid',
-            email: 'ibrahim.rashid@globalinvest.sa',
-            phone: '+966 55 112 2334',
-            location: 'Riyadh',
-            city: 'Riyadh',
-            country: 'Saudi Arabia',
-            delivery_address: 'Al Olaya District, King Fahd Road, Riyadh, Saudi Arabia',
-            status: 'active',
-            registered_at: '2026-08-22',
-            orders_count: 8
-        },
-        {
-            id: 204,
-            full_name: 'Zainab Kabir Musa',
-            email: 'zainab.musa@outlook.com',
-            phone: '+234 808 222 3344',
-            location: 'Abuja (Garki)',
-            city: 'Abuja',
-            country: 'Nigeria',
-            delivery_address: 'Area 11, Garki, Abuja, Nigeria',
-            status: 'active',
-            registered_at: '2026-08-25',
-            orders_count: 2
-        }
-    ],
-
-    fallbackOrders: [
-        {
-            id: 301,
-            order_number: 'ORD-849201',
-            buyer_id: 201,
-            buyer_name: 'Ahmed Yusuf Al-Mansoor',
-            buyer_phone: '+234 802 345 6789',
-            buyer_email: 'ahmed.yusuf@diaspora.ae',
-            delivery_address: 'Plot 42, Gana Street, Maitama, Abuja',
-            delivery_city: 'Abuja',
-            delivery_country: 'Nigeria',
-            seller_id: 101,
-            seller_name: 'Amina Luxury Ankara & Fabrics',
-            seller_phone: '+234 803 456 7890',
-            item_name: 'Authentic 6-Yards Premium Ankara Material',
-            quantity: 3,
-            total_amount: 29.04,
-            currency: 'USD',
-            status: 'Delivered',
-            payment_status: 'Paid (Escrow)',
-            payment_method: 'Online Card Payment',
-            has_dispute: 0,
-            dispute_reason: '',
-            created_at: '2026-09-10',
-            timeline: [
-                { status: 'Pending', timestamp: '10:00 AM', note: 'Order placed by buyer' },
-                { status: 'Confirmed', timestamp: '10:30 AM', note: 'Seller accepted order' },
-                { status: 'Processing', timestamp: '01:00 PM', note: 'Packaging fabrics' },
-                { status: 'Shipped', timestamp: '03:45 PM', note: 'Dispatched via express dispatch rider' },
-                { status: 'Delivered', timestamp: '05:30 PM', note: 'Buyer confirmed safe receipt' }
-            ]
-        },
-        {
-            id: 302,
-            order_number: 'ORD-519283',
-            buyer_id: 202,
-            buyer_name: 'Chioma Okafor',
-            buyer_phone: '+234 813 456 7890',
-            buyer_email: 'chioma.okafor@gmail.com',
-            delivery_address: '14 Bompai Road, Nassarawa GRA, Kano',
-            delivery_city: 'Kano',
-            delivery_country: 'Nigeria',
-            seller_id: 102,
-            seller_name: 'Hajiya Wigs & Beauty Palace',
-            seller_phone: '+234 814 999 4455',
-            item_name: 'Luxury Double Drawn Bone Straight Human Hair Wig (28-inch)',
-            quantity: 1,
-            total_amount: 77.42,
-            currency: 'USD',
-            status: 'Shipped',
-            payment_status: 'Paid (Escrow)',
-            payment_method: 'Direct Bank Transfer',
-            has_dispute: 0,
-            dispute_reason: '',
-            created_at: '2026-09-14',
-            timeline: [
-                { status: 'Pending', timestamp: '09:15 AM', note: 'Order placed by Chioma' },
-                { status: 'Confirmed', timestamp: '09:40 AM', note: 'Merchant confirmed item in stock' },
-                { status: 'Processing', timestamp: '11:00 AM', note: 'Wig customized and packed' },
-                { status: 'Shipped', timestamp: '02:15 PM', note: 'Waybill sent via GIG Logistics (Waybill #GIG-99812)' }
-            ]
-        },
-        {
-            id: 303,
-            order_number: 'ORD-771920',
-            buyer_id: 203,
-            buyer_name: 'Ibrahim Al-Rashid',
-            buyer_phone: '+966 55 112 2334',
-            buyer_email: 'ibrahim.rashid@globalinvest.sa',
-            delivery_address: 'Al Olaya District, King Fahd Road, Riyadh',
-            delivery_city: 'Riyadh',
-            delivery_country: 'Saudi Arabia',
-            seller_id: 104,
-            seller_name: 'Guangzhou Smart Mobility Co.',
-            seller_phone: '+86 138 0013 8000',
-            item_name: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
-            quantity: 2,
-            total_amount: 560.00,
-            currency: 'USD',
-            status: 'Processing',
-            payment_status: 'Paid (Escrow)',
-            payment_method: 'International Card (USD)',
-            has_dispute: 0,
-            dispute_reason: '',
-            created_at: '2026-09-15',
-            timeline: [
-                { status: 'Pending', timestamp: '08:00 AM', note: 'International order placed' },
-                { status: 'Confirmed', timestamp: '08:45 AM', note: 'Seller prepared export documentation' },
-                { status: 'Processing', timestamp: '10:00 AM', note: 'Battery safety inspection and container loading' }
-            ]
-        },
-        {
-            id: 304,
-            order_number: 'ORD-339210',
-            buyer_id: 204,
-            buyer_name: 'Zainab Kabir Musa',
-            buyer_phone: '+234 808 222 3344',
-            buyer_email: 'zainab.musa@outlook.com',
-            delivery_address: 'Area 11, Garki, Abuja',
-            delivery_city: 'Abuja',
-            delivery_country: 'Nigeria',
-            seller_id: 101,
-            seller_name: 'Amina Luxury Ankara & Fabrics',
-            seller_phone: '+234 803 456 7890',
-            item_name: 'Authentic 6-Yards Premium Ankara Material',
-            quantity: 1,
-            total_amount: 9.68,
-            currency: 'USD',
-            status: 'Pending',
-            payment_status: 'Awaiting Escrow Confirmation',
-            payment_method: 'Pay on Delivery / Escrow',
-            has_dispute: 0,
-            dispute_reason: '',
-            created_at: '2026-09-16',
-            timeline: [
-                { status: 'Pending', timestamp: '06:30 AM', note: 'New order received from buyer' }
-            ]
-        }
-    ],
-
-    fallbackComplaints: [
-        {
-            id: 401,
-            ticket_number: 'TKT-8821',
-            type: 'seller_issue',
-            subject: 'Seller delayed delivery on Ankara order',
-            reported_by: 'Chioma Okafor',
-            reporter_phone: '+234 813 456 7890',
-            reporter_role: 'buyer',
-            target_entity: 'Amina Luxury Ankara & Fabrics',
-            target_id: 101,
-            details: 'Merchant promised 2-day dispatch but item was delayed by 48 hours without prior notice.',
-            status: 'Resolved',
-            admin_notes: 'Spoke with seller. Merchant apologized and included free matching headgear.',
-            created_at: '2026-09-08'
-        },
-        {
-            id: 402,
-            ticket_number: 'TKT-9042',
-            type: 'inappropriate_product',
-            subject: 'Listing description missing accurate dimensions',
-            reported_by: 'Ahmed Yusuf Al-Mansoor',
-            reporter_phone: '+234 802 345 6789',
-            reporter_role: 'buyer',
-            target_entity: 'Product: iPhone 15 Pro Max',
-            target_id: 1003,
-            details: 'Wanted clarification on whether model is dual physical SIM or eSIM before ordering.',
-            status: 'Under Investigation',
-            admin_notes: 'Contacted tech merchant to update listing description with global dual eSIM specifications.',
-            created_at: '2026-09-12'
-        }
-    ],
-
-    fallbackAnnouncements: [
-        {
-            id: 501,
-            title: '🎉 Welcome to Market at Home Worldwide Marketplace!',
-            message: 'Connect directly with verified sellers across Nigeria, China, USA, UK, UAE and worldwide with Escrow safety protection.',
-            target: 'all',
-            priority: 'important',
-            created_at: '2026-09-01',
-            created_by: 'Administrator Desk'
-        },
-        {
-            id: 502,
-            title: '🚀 Sourcing Desk Now Active Across All 36 Nigerian States & Global Ports',
-            message: 'Need bulk agricultural produce from Kano, fashion from Abuja, or electronics from Guangzhou? Submit a sourcing request for full concierge inspection and doorstep delivery.',
-            target: 'buyers',
-            priority: 'normal',
-            created_at: '2026-09-10',
-            created_by: 'Administrator Desk'
-        }
-    ],
-
-    fallbackBuyingRequests: [
-        {
-            id: 601,
-            tracking_code: 'PBA-00101',
-            customer_name: 'Ibrahim Al-Rashid',
-            customer_phone: '+966 55 112 2334',
-            item_title: '200 Bags of Export-Grade Benue Yam',
-            requested_qty: '200 Bags (10,000 Tubers)',
-            target_country: 'Nigeria',
-            target_city: 'Kano (Dawanau Market)',
-            package_type: 'Full Buying Assistance',
-            service_fee: 60.00,
-            status: 'Sourcing Active',
-            assigned_agent: 'Aliyu Garba (Kano Agro Desk)',
-            supplier_info: 'Dawanau Export Farmers Syndicate (Line 4)',
-            specifications: 'Dry white tubers, zero rot, 2kg+ average weight per tuber, container fumigation certificate required.',
-            created_at: '2026-08-16'
-        },
-        {
-            id: 602,
-            tracking_code: 'PBA-00102',
-            customer_name: 'Ahmed Yusuf Al-Mansoor',
-            customer_phone: '+234 802 345 6789',
-            item_title: '10 Sets of Grade-A Senegalese Luxury Kaftans',
-            requested_qty: '10 Sets',
-            target_country: 'Nigeria',
-            target_city: 'Abuja (Wuse 2)',
-            package_type: 'Price Negotiation',
-            service_fee: 40.00,
-            status: 'Quality Checked',
-            assigned_agent: 'Maryam Sani (Fashion Desk)',
-            supplier_info: 'Sahelian Tailoring Guild, Emab Plaza',
-            specifications: 'Hand embroidered necklines, 100% original Guinea brocade fabric, XXL & XL sizing.',
-            created_at: '2026-09-05'
-        }
-    ],
+    fallbackSellers: [],
+    fallbackBuyers: [],
+    fallbackOrders: [],
+    fallbackComplaints: [],
+    fallbackBuyingRequests: [],
 
     // Admin & Platform Helper APIs
     async toggleSellerVerification(sellerId) {
