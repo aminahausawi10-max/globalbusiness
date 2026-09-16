@@ -89,35 +89,18 @@ async function initApp() {
 }
 
 // ==========================================
-// 4. 🎨 THEME SYSTEM (LIGHT / DARK MODE)
+// 4. 🎨 THEME SYSTEM (PERMANENT DARK MODE)
 // ==========================================
 function initTheme() {
-    const savedTheme = localStorage.getItem('mah_theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('mah_theme', 'dark');
 }
 
 function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('mah_theme', newTheme);
-    updateThemeIcon(newTheme);
-    showToast(`Switched to ${newTheme === 'dark' ? 'Dark' : 'Light'} Mode`, 'info');
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('mah_theme', 'dark');
 }
 
-function updateThemeIcon(theme) {
-    const icon = document.getElementById('themeToggleIcon');
-    if (icon) {
-        if (theme === 'dark') {
-            icon.className = 'fa-solid fa-sun';
-            icon.style.color = '#F59E0B';
-        } else {
-            icon.className = 'fa-solid fa-moon';
-            icon.style.color = '';
-        }
-    }
-}
 
 // ==========================================
 // 5. 🌍 INTERACTIVE NIGERIA MAP EXPLORER

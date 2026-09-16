@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,7 +7,7 @@
     
     <!-- PWA & Mobile App Meta Tags -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#059669">
+    <meta name="theme-color" content="#0F172A">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -92,13 +92,8 @@
                 <a href="#" class="nav-link" data-page="assistance" onclick="switchPage('assistance'); return false;">Buying Assistance</a>
             </nav>
 
-            <!-- Right Header Actions (Dark Mode, Currency, Sign In) -->
+            <!-- Right Header Actions (Currency & Sign In) -->
             <div class="nav-actions">
-                <!-- 🌓 Dark / Light Mode Toggle Button -->
-                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                    <i class="fa-solid fa-moon" id="themeToggleIcon"></i>
-                </button>
-
                 <!-- Currency Selector -->
                 <div class="currency-wrapper">
                     <select id="currencySelector" class="currency-select" title="Change Currency">
