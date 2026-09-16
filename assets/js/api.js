@@ -26,12 +26,11 @@ const API = {
                     try {
                         const parsed = JSON.parse(p);
                         if (Array.isArray(parsed) && parsed.length > 0) {
-                            // Preserve all valid published items
-                            const validUserItems = parsed.filter(item => item && (item.title || item.name));
-                            const existingIds = new Set(validUserItems.map(item => String(item.id)));
-                            const defaultsToAdd = (this.defaultVerifiedSellerProducts || []).filter(item => !existingIds.has(String(item.id)));
-
-                            this.fallbackProducts = [...validUserItems, ...defaultsToAdd].map(prod => ({
+                            // Only keep items genuinely published by a seller (not dummy IDs)
+                            this.fallbackProducts = parsed.filter(item => {
+                                const isDummySeed = (item.id >= 1000 && item.id <= 2006);
+                                return !isDummySeed && item && (item.title || item.name) && (item.seller_name || item.seller_phone || item.seller_id);
+                            }).map(prod => ({
                                 ...prod,
                                 title: prod.title || prod.name || 'Untitled Good',
                                 name: prod.name || prod.title || 'Untitled Good',
@@ -44,17 +43,16 @@ const API = {
                             }));
                             localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
                         } else {
-                            this.fallbackProducts = [...(this.defaultVerifiedSellerProducts || [])];
-                            localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                            this.fallbackProducts = [];
+                            localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
                         }
                     } catch(err) {
-                        console.warn('Error reading stored products', err);
-                        this.fallbackProducts = [...(this.defaultVerifiedSellerProducts || [])];
-                        localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                        this.fallbackProducts = [];
+                        localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
                     }
                 } else {
-                    this.fallbackProducts = [...(this.defaultVerifiedSellerProducts || [])];
-                    localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                    this.fallbackProducts = [];
+                    localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
                 }
 
                 const r = localStorage.getItem('globalbiz_requests_store');
@@ -1641,177 +1639,6 @@ const API = {
             supplier_info: 'Sahelian Tailoring Guild, Emab Plaza',
             specifications: 'Hand embroidered necklines, 100% original Guinea brocade fabric, XXL & XL sizing.',
             created_at: '2026-09-05'
-        }
-    ],
-
-    defaultVerifiedSellerProducts: [
-        {
-            id: 2001,
-            title: 'Authentic 6-Yards Premium Ankara Material',
-            name: 'Authentic 6-Yards Premium Ankara Material',
-            price: 15.00,
-            category_id: 2,
-            category_name: 'Clothing & Fashion',
-            category: 'Clothing & Fashion',
-            seller_name: 'Amina Luxury Ankara & Fabrics',
-            seller_phone: '+234 803 456 7890',
-            phone: '+234 803 456 7890',
-            whatsapp: '+2348034567890',
-            seller_id: 101,
-            published_by_seller: true,
-            country: 'Nigeria',
-            state: 'Abuja (FCT)',
-            city: 'Abuja',
-            location: 'Abuja (Wuse 2), Nigeria',
-            description: '100% original graded African wax cotton print with vibrant fast-color patterns suitable for weddings, parties, and everyday corporate attire.',
-            photo: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Same-day delivery in Abuja, 24-48h waybill across Nigeria',
-            views: 412,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 45,
-            created_at: '2026-09-01'
-        },
-        {
-            id: 2002,
-            title: 'Luxury Double Drawn Bone Straight Human Hair Wig (28-inch)',
-            name: 'Luxury Double Drawn Bone Straight Human Hair Wig (28-inch)',
-            price: 75.00,
-            category_id: 3,
-            category_name: 'Wigs & Beauty',
-            category: 'Wigs & Beauty',
-            seller_name: 'Hajiya Wigs & Beauty Palace',
-            seller_phone: '+234 814 999 4455',
-            phone: '+234 814 999 4455',
-            whatsapp: '+2348149994455',
-            seller_id: 102,
-            published_by_seller: true,
-            country: 'Nigeria',
-            state: 'Kano',
-            city: 'Kano',
-            location: 'Kano (Kano Municipal), Nigeria',
-            description: '100% Raw unprocessed human hair, silky bone straight with HD transparent lace frontal. Tangle-free, sheds zero hair, withstands high heat bleaching and styling.',
-            photo: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Direct dispatch via Kano Hub & nationwide GIG Logistics',
-            views: 290,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 20,
-            created_at: '2026-09-03'
-        },
-        {
-            id: 2003,
-            title: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
-            name: 'High-Performance Foldable Urban Electric Commuter Scooter (35km/h)',
-            price: 280.00,
-            category_id: 9,
-            category_name: 'Car Sales & Auto',
-            category: 'Car Sales & Auto',
-            seller_name: 'Guangzhou Smart Mobility Co.',
-            seller_phone: '+86 138 0013 8000',
-            phone: '+86 138 0013 8000',
-            whatsapp: '+8613800138000',
-            seller_id: 104,
-            published_by_seller: true,
-            country: 'China',
-            state: 'Guangdong',
-            city: 'Guangzhou',
-            location: 'Guangzhou, China',
-            description: '350W brushless motor, 35km range per charge, aircraft aluminum alloy body with disc braking and smart regenerative battery system.',
-            photo: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Global air freight & sea container dispatch worldwide',
-            views: 520,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 15,
-            created_at: '2026-08-28'
-        },
-        {
-            id: 2004,
-            title: 'Italian Leather Handbag & Matching Stiletto Heels Combo',
-            name: 'Italian Leather Handbag & Matching Stiletto Heels Combo',
-            price: 45.00,
-            category_id: 4,
-            category_name: 'Shoes & Bags',
-            category: 'Shoes & Bags',
-            seller_name: 'Kaduna Premium Hair & Styles',
-            seller_phone: '+234 805 123 9876',
-            phone: '+234 805 123 9876',
-            whatsapp: '+2348051239876',
-            seller_id: 103,
-            published_by_seller: true,
-            country: 'Nigeria',
-            state: 'Kaduna',
-            city: 'Kaduna',
-            location: 'Kaduna (Barnawa), Nigeria',
-            description: 'Handcrafted luxury Italian embossed leather handbag paired with matching 4-inch stiletto heels. Available in Black, Gold, and Royal Red.',
-            photo: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Express courier delivery across Northern Nigeria & nationwide',
-            views: 340,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 30,
-            created_at: '2026-09-05'
-        },
-        {
-            id: 2005,
-            title: 'AMOLED Ultra HD Bluetooth Smartwatch with Heart & Sleep Monitor',
-            name: 'AMOLED Ultra HD Bluetooth Smartwatch with Heart & Sleep Monitor',
-            price: 32.00,
-            category_id: 6,
-            category_name: 'Electronics & Gadgets',
-            category: 'Electronics & Gadgets',
-            seller_name: 'Amina Luxury Ankara & Fabrics',
-            seller_phone: '+234 803 456 7890',
-            phone: '+234 803 456 7890',
-            whatsapp: '+2348034567890',
-            seller_id: 101,
-            published_by_seller: true,
-            country: 'Nigeria',
-            state: 'Abuja (FCT)',
-            city: 'Abuja',
-            location: 'Abuja (Wuse 2), Nigeria',
-            description: 'All-day optical heart rate, blood oxygen tracking, IP68 water resistance, and 7-day battery standby with wireless magnetic charging.',
-            photo: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Next day dispatch in Abuja and Lagos',
-            views: 610,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 50,
-            created_at: '2026-09-08'
-        },
-        {
-            id: 2006,
-            title: '50kg Premium Stone-Free Foreign Parboiled Rice',
-            name: '50kg Premium Stone-Free Foreign Parboiled Rice',
-            price: 55.00,
-            category_id: 10,
-            category_name: 'Agriculture & Produce',
-            category: 'Agriculture & Produce',
-            seller_name: 'Amina Luxury Ankara & Fabrics',
-            seller_phone: '+234 803 456 7890',
-            phone: '+234 803 456 7890',
-            whatsapp: '+2348034567890',
-            seller_id: 101,
-            published_by_seller: true,
-            country: 'Nigeria',
-            state: 'Kano',
-            city: 'Kano',
-            location: 'Kano (Dawanau Market), Nigeria',
-            description: 'Export grade 100% stone-free, long grain parboiled rice packaged in clean moisture-barrier bags straight from Dawanau wholesale market.',
-            photo: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Direct freight truck waybills nationwide',
-            views: 380,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 100,
-            created_at: '2026-09-10'
         }
     ],
 
