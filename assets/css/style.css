@@ -3380,3 +3380,164 @@ html, body {
 .bottom-nav-item.active, .bottom-nav-item:hover {
     color: #10B981;
 }
+
+
+/* ==========================================================================
+   PERFECT HIGH-CONTRAST DARK MODALS & FORMS
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(7, 11, 25, 0.85) !important;
+    backdrop-filter: blur(8px);
+    z-index: 2500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-card, .modal-card-premium {
+    background: #1C2541 !important;
+    color: #FFFFFF !important;
+    border-radius: 20px !important;
+    max-width: 540px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.modal-header, .modal-header-modern {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: #1C2541 !important;
+    z-index: 10;
+}
+
+.modal-title {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #FFFFFF !important;
+}
+
+.modal-subtitle {
+    font-size: 0.78rem;
+    color: #94A3B8 !important;
+}
+
+.modal-close-btn {
+    background: #0B132B !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #FFFFFF !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.modal-close-btn:hover {
+    background: #EF4444 !important;
+    border-color: #EF4444 !important;
+}
+
+.modal-body, .modal-body-styled {
+    padding: 20px;
+    background: #1C2541 !important;
+    color: #FFFFFF !important;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #FFFFFF !important;
+    margin-bottom: 6px;
+}
+
+.form-input, .form-select, .form-textarea, .form-textarea-styled {
+    width: 100%;
+    background: #0B132B !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.18) !important;
+    color: #FFFFFF !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    outline: none;
+    transition: var(--transition);
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--brand-green-light) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+    color: #64748B !important;
+}
+
+/* Auth Tabs & Role Radios */
+.admin-nav-tabs {
+    display: flex;
+    gap: 6px;
+    background: #0B132B;
+    padding: 5px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-tab-btn {
+    flex: 1;
+    background: transparent;
+    color: #94A3B8;
+    border: none;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.admin-tab-btn.active {
+    background: #059669 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 10px rgba(5, 150, 105, 0.5);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4) !important;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    transform: translateY(-1px);
+}
