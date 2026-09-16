@@ -801,17 +801,19 @@ async function handleUserLogin(event) {
     const cleanInput = identifier.replace(/[^0-9]/g, '');
     const users = await API.getUsers();
 
-    // Match by phone digits, email, or full name
+    // Match by phone digits, email, full name, or store name
     let matched = users.find(u => {
         const uPhoneDigits = (u.phone || '').replace(/[^0-9]/g, '');
         const uEmail = (u.email || '').toLowerCase().trim();
         const inputLower = identifier.toLowerCase().trim();
 
-        const phoneMatch = cleanInput.length >= 7 && (uPhoneDigits.includes(cleanInput) || cleanInput.includes(uPhoneDigits));
+        const phoneDirect = (u.phone || '').trim().toLowerCase() === inputLower;
+        const phoneMatch = cleanInput.length >= 7 && (uPhoneDigits.endsWith(cleanInput) || cleanInput.endsWith(uPhoneDigits) || uPhoneDigits.includes(cleanInput) || cleanInput.includes(uPhoneDigits));
         const emailMatch = uEmail && uEmail === inputLower;
         const nameMatch = u.full_name && u.full_name.toLowerCase().trim() === inputLower;
+        const storeMatch = u.store_name && u.store_name.toLowerCase().trim() === inputLower;
 
-        return (phoneMatch || emailMatch || nameMatch);
+        return (phoneDirect || phoneMatch || emailMatch || nameMatch || storeMatch);
     });
 
     // Enforce that ONLY registered users can sign in

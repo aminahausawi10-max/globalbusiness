@@ -26,11 +26,11 @@ const API = {
                     try {
                         const parsed = JSON.parse(p);
                         if (Array.isArray(parsed) && parsed.length > 0) {
-                            const validUserItems = parsed.filter(item => item && (item.title || item.name));
-                            const existingIds = new Set(validUserItems.map(item => String(item.id)));
-                            const baseToAdd = (this.fallbackProducts || []).filter(item => !existingIds.has(String(item.id)));
-
-                            this.fallbackProducts = [...validUserItems, ...baseToAdd].map(prod => ({
+                            // Keep ONLY items created by a seller in the app
+                            this.fallbackProducts = parsed.filter(item => {
+                                const isDummyId = item && ((item.id >= 1000 && item.id <= 2006) || (item.id >= 1789554000000 && item.id <= 1789554000005));
+                                return !isDummyId && item && (item.title || item.name) && (item.seller_name || item.seller_phone || item.seller_id);
+                            }).map(prod => ({
                                 ...prod,
                                 title: prod.title || prod.name || 'Untitled Good',
                                 name: prod.name || prod.title || 'Untitled Good',
@@ -43,13 +43,16 @@ const API = {
                             }));
                             localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
                         } else {
-                            localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                            this.fallbackProducts = [];
+                            localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
                         }
                     } catch(err) {
-                        localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                        this.fallbackProducts = [];
+                        localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
                     }
                 } else {
-                    localStorage.setItem('globalbiz_products_store', JSON.stringify(this.fallbackProducts));
+                    this.fallbackProducts = [];
+                    localStorage.setItem('globalbiz_products_store', JSON.stringify([]));
                 }
 
                 const r = localStorage.getItem('globalbiz_requests_store');
@@ -132,11 +135,13 @@ const API = {
     async registerUser(payload) {
         this.initLocalData();
         const isSeller = payload.role === 'seller';
+        const userPass = payload.password || 'password123';
         if (isSeller) {
             const sellerRes = await this.registerSeller({
                 full_name: payload.full_name,
                 phone: payload.phone,
                 email: payload.email,
+                password: userPass,
                 location: payload.location || payload.city || 'Abuja, Nigeria',
                 store_name: payload.store_name || (payload.full_name + "'s Store"),
                 verified: payload.verified || 0
@@ -144,7 +149,7 @@ const API = {
             const newUser = {
                 ...sellerRes.data,
                 role: 'seller',
-                password: payload.password || 'password123'
+                password: userPass
             };
             return newUser;
         } else {
@@ -152,12 +157,13 @@ const API = {
                 full_name: payload.full_name,
                 phone: payload.phone,
                 email: payload.email,
+                password: userPass,
                 location: payload.location || payload.city || 'Abuja, Nigeria'
             });
             const newUser = {
                 ...buyerRes.data,
                 role: 'buyer',
-                password: payload.password || 'password123'
+                password: userPass
             };
             return newUser;
         }
@@ -1639,90 +1645,5 @@ const API = {
         }
     ],
 
-    fallbackProducts: [
-        {
-            id: 1789554000001,
-            title: 'Bag',
-            name: 'Bag',
-            price: 25000,
-            category_id: 4,
-            category_name: 'Shoes & Bags',
-            category: 'Shoes & Bags',
-            seller_name: "Fahd inuwa's Store",
-            seller_phone: '+234 803 000 0000',
-            phone: '+234 803 000 0000',
-            whatsapp: '+2348030000000',
-            seller_id: 105,
-            published_by_seller: true,
-            country: 'Nigeria',
-            state: 'Abuja (FCT)',
-            city: 'Abuja (FCT)',
-            location: 'Abuja (FCT), Nigeria',
-            description: 'Designer luxury leather handbag in rich cognac brown with gold hardware.',
-            photo: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Available for immediate pickup and nationwide dispatch',
-            views: 18,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 10,
-            created_at: '2026-09-16'
-        },
-        {
-            id: 1789554000002,
-            title: 'Untitled Good',
-            name: 'Untitled Good',
-            price: 25000,
-            category_id: 2,
-            category_name: 'Clothing & Fashion',
-            category: 'Clothing & Fashion',
-            seller_name: 'Fahds collection',
-            seller_phone: '+234 803 000 0000',
-            phone: '+234 803 000 0000',
-            whatsapp: '+2348030000000',
-            seller_id: 106,
-            published_by_seller: true,
-            country: 'Nigeria',
-            state: 'Kano',
-            city: 'Court road',
-            location: 'Court road, Nigeria',
-            description: 'Premium casual wear collection paired with designer sneakers.',
-            photo: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Fast dispatch from Court Road',
-            views: 12,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 25,
-            created_at: '2026-09-16'
-        },
-        {
-            id: 1789554000003,
-            title: 'Untitled Good',
-            name: 'Untitled Good',
-            price: 1000,
-            category_id: 2,
-            category_name: 'Clothing & Fashion',
-            category: 'Clothing & Fashion',
-            seller_name: 'Fahds collection',
-            seller_phone: '+234 803 000 0000',
-            phone: '+234 803 000 0000',
-            whatsapp: '+2348030000000',
-            seller_id: 106,
-            published_by_seller: true,
-            country: 'Nigeria',
-            state: 'Kano',
-            city: 'Court road',
-            location: 'Court road, Nigeria',
-            description: 'High quality cotton trousers with matching streetwear t-shirt.',
-            photo: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
-            photo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&auto=format&fit=crop&q=80',
-            delivery_info: 'Available in all sizes',
-            views: 15,
-            business_verified: 1,
-            status: 'approved',
-            available_qty: 50,
-            created_at: '2026-09-16'
-        }
-    ]
+    fallbackProducts: []
 };
