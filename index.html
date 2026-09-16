@@ -1820,18 +1820,18 @@
             <i class="fa-solid fa-plus"></i>
             <span>Sell</span>
         </a>
-        <a class="bottom-nav-item" data-page="buyer" onclick="switchPage('buyer')">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span>Buyer</span>
+        <a class="bottom-nav-item" onclick="toggleMarketAssistant()" title="AI Shopping Assistant">
+            <i class="fa-solid fa-robot"></i>
+            <span>AI Assist</span>
         </a>
-        <a class="bottom-nav-item" data-page="seller" onclick="switchPage('seller')">
-            <i class="fa-solid fa-gauge-high"></i>
-            <span>Seller</span>
+        <a class="bottom-nav-item" id="bottomNavAccountBtn" data-page="buyer" onclick="handleBottomNavAccountClick()">
+            <i class="fa-solid fa-user-shield" id="bottomNavAccountIcon"></i>
+            <span id="bottomNavAccountLabel">Account</span>
         </a>
     </nav>
 
-    <!-- Scripts with v=4.0 cache bust -->
-    <script src="assets/js/api.js?v=4.0"></script>
-    <script src="assets/js/app.js?v=4.0"></script>
+    <!-- Scripts with v=4.1 cache bust -->
+    <script src="assets/js/api.js?v=4.1"></script>
+    <script src="assets/js/app.js?v=4.1"></script>
 </body>
 </html>

@@ -134,24 +134,31 @@ function renderMapProducts(container, products, stateName) {
         return;
     }
 
-    container.innerHTML = products.map(p => `
-        <div class="product-card product-card-3d" style="cursor:pointer;" onclick="openProductDetails('${p.id}')">
-            <div class="product-img-wrapper" style="height:130px;">
-                <img src="${p.photo}" alt="${p.name}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
-                <span class="product-badge" style="background:var(--brand-green); font-size:0.65rem;"><i class="fa-solid fa-circle-check"></i> Verified</span>
-            </div>
-            <div class="product-body" style="padding:8px 10px;">
-                <h4 class="product-title" style="font-size:0.82rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</h4>
-                <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;"><i class="fa-solid fa-location-dot"></i> ${p.location || stateName}</div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="product-price" style="font-size:0.88rem;">${formatPrice(p.price)}</span>
-                    <button class="btn btn-sm btn-primary" style="padding:3px 8px; font-size:0.72rem;" onclick="event.stopPropagation(); addToCart('${p.id}')">
-                        <i class="fa-solid fa-cart-plus"></i> Buy
-                    </button>
+    container.innerHTML = products.map(p => {
+        const cleanPhone = (p.phone || '+2348090908090').replace(/[^0-9+]/g, '');
+        return `
+            <div class="product-card product-card-3d" style="cursor:pointer;" onclick="openProductDetails('${p.id}')">
+                <div class="product-img-wrapper" style="height:140px;">
+                    <img src="${p.photo}" alt="${p.name}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
+                    <span class="product-badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>
+                    <span class="product-price-pill">${formatPrice(p.price)}</span>
+                </div>
+                <div class="product-body" style="padding:10px;">
+                    <h4 class="product-title" style="font-size:0.88rem; margin-bottom:2px;">${p.name}</h4>
+                    <div class="product-location"><i class="fa-solid fa-location-dot"></i> ${p.location || stateName}</div>
+                    <div class="product-seller-tag"><i class="fa-solid fa-store"></i> Seller: ${p.seller_name || 'Verified Merchant'}</div>
+                    <div class="product-card-actions">
+                        <button class="btn-chat-seller" style="padding:6px 10px; font-size:0.75rem;" onclick="event.stopPropagation(); openChatWithSeller('${p.phone || cleanPhone}', '${p.seller_name || 'Merchant'}')">
+                            <i class="fa-brands fa-whatsapp"></i> Chat Seller
+                        </button>
+                        <a href="tel:${cleanPhone}" class="btn-call-seller" style="padding:5px 10px; font-size:0.75rem;" onclick="event.stopPropagation();">
+                            <i class="fa-solid fa-phone"></i> Call
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
     init3DTiltEffects();
 }
 
@@ -644,6 +651,19 @@ function handleAdminLogout() {
     switchPage('home');
 }
 
+function handleBottomNavAccountClick() {
+    const user = getCurrentUser();
+    if (user) {
+        if (user.role === 'seller') {
+            switchPage('seller');
+        } else {
+            switchPage('buyer');
+        }
+    } else {
+        openAuthModal('login');
+    }
+}
+
 function handleNavAuthBtnClick() {
     const user = getCurrentUser();
     if (user) {
@@ -658,6 +678,8 @@ function updateNavAuthUI() {
     const user = getCurrentUser();
     const navAuthText = document.getElementById('navAuthText');
     const quickBar = document.getElementById('adminQuickActionsBar');
+    const bottomAccountLabel = document.getElementById('bottomNavAccountLabel');
+    const bottomAccountIcon = document.getElementById('bottomNavAccountIcon');
 
     if (isAdminAuthenticated() && quickBar) {
         quickBar.style.display = 'block';
@@ -665,10 +687,15 @@ function updateNavAuthUI() {
         quickBar.style.display = 'none';
     }
 
-    if (user && navAuthText) {
-        navAuthText.textContent = user.full_name ? user.full_name.split(' ')[0] : 'Account';
-    } else if (navAuthText) {
-        navAuthText.textContent = 'Sign In';
+    if (user) {
+        const firstName = user.full_name ? user.full_name.split(' ')[0] : 'Account';
+        if (navAuthText) navAuthText.textContent = firstName;
+        if (bottomAccountLabel) bottomAccountLabel.textContent = user.role === 'seller' ? 'Seller Hub' : 'Buyer Hub';
+        if (bottomAccountIcon) bottomAccountIcon.className = user.role === 'seller' ? 'fa-solid fa-store' : 'fa-solid fa-bag-shopping';
+    } else {
+        if (navAuthText) navAuthText.textContent = 'Sign In';
+        if (bottomAccountLabel) bottomAccountLabel.textContent = 'Account';
+        if (bottomAccountIcon) bottomAccountIcon.className = 'fa-solid fa-user-shield';
     }
 }
 
@@ -988,27 +1015,25 @@ function renderProductsGrid(products, grid) {
     }
 
     grid.innerHTML = products.map(p => {
-        const isFav = API.isFavorite ? API.isFavorite(p.id) : false;
+        const cleanPhone = (p.phone || '+2348090908090').replace(/[^0-9+]/g, '');
         return `
             <div class="product-card product-card-3d" onclick="openProductDetails('${p.id}')">
                 <div class="product-img-wrapper">
                     <img src="${p.photo}" alt="${p.name}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
-                    <span class="product-badge"><i class="fa-solid fa-circle-check"></i> ${p.category || 'Goods'}</span>
-                    <button class="product-fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${p.id}')" title="Save to Favorites">
-                        <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i>
-                    </button>
+                    <span class="product-badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>
+                    <span class="product-price-pill">${formatPrice(p.price)}</span>
                 </div>
                 <div class="product-body">
                     <h3 class="product-title">${p.name}</h3>
-                    <div class="product-meta">
-                        <span><i class="fa-solid fa-store" style="color:var(--gold);"></i> ${p.seller_name || 'Verified Merchant'}</span>
-                        <span><i class="fa-solid fa-location-dot"></i> ${p.location || 'Nigeria'}</span>
-                    </div>
-                    <div class="product-footer">
-                        <span class="product-price">${formatPrice(p.price)}</span>
-                        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); addToCart('${p.id}')">
-                            <i class="fa-solid fa-cart-plus"></i> Buy
+                    <div class="product-location"><i class="fa-solid fa-location-dot"></i> ${p.location || 'Abuja, Nigeria'}</div>
+                    <div class="product-seller-tag"><i class="fa-solid fa-store"></i> Seller: ${p.seller_name || 'Verified Merchant'}</div>
+                    <div class="product-card-actions">
+                        <button class="btn-chat-seller" onclick="event.stopPropagation(); openChatWithSeller('${p.phone || cleanPhone}', '${p.seller_name || 'Merchant'}')">
+                            <i class="fa-brands fa-whatsapp"></i> Chat Seller
                         </button>
+                        <a href="tel:${cleanPhone}" class="btn-call-seller" onclick="event.stopPropagation();">
+                            <i class="fa-solid fa-phone"></i> Call
+                        </a>
                     </div>
                 </div>
             </div>
