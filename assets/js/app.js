@@ -1183,6 +1183,8 @@ function switchAdminTab(tabName, btnEl) {
     document.getElementById('admin-buyers-view').style.display = tabName === 'buyers' ? 'block' : 'none';
     document.getElementById('admin-products-view').style.display = tabName === 'products' ? 'block' : 'none';
     document.getElementById('admin-requests-view').style.display = tabName === 'requests' ? 'block' : 'none';
+    const setView = document.getElementById('admin-settings-view');
+    if (setView) setView.style.display = tabName === 'settings' ? 'block' : 'none';
 }
 
 async function loadAdminPortal() {
@@ -1304,41 +1306,19 @@ async function loadAdminPortal() {
     renderAdminBuyersTable(buyers);
 
     // 3. Products Table
-    const productsTbody = document.getElementById('adminProductsTableBody');
-    if (productsTbody) {
-        productsTbody.innerHTML = products.map(p => `
-            <tr>
-                <td>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="${p.photo_url || ''}" style="width:32px; height:32px; border-radius:6px; object-fit:cover;">
-                        <strong>${p.title}</strong>
-                    </div>
-                </td>
-                <td>${p.seller_name || p.business_name}</td>
-                <td><strong style="color:var(--brand-green);">${formatPrice(p.price)}</strong></td>
-                <td>${p.city}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline" style="color:#FA5252; border-color:#FA5252;" onclick="handleDeleteProduct(${p.id})">
-                        <i class="fa-solid fa-trash"></i> Remove
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-    }
+    renderAdminProductsTable(products);
 
     // 4. Requests Table
-    const requestsTbody = document.getElementById('adminRequestsTableBody');
-    if (requestsTbody) {
-        requestsTbody.innerHTML = requests.map(r => `
-            <tr>
-                <td><strong>${r.tracking_code}</strong></td>
-                <td>${r.customer_name}<br><span style="font-size:0.75rem; color:var(--text-muted);">${r.customer_phone}</span></td>
-                <td>${r.item_title}</td>
-                <td>${r.target_city}</td>
-                <td>${r.package_type}</td>
-                <td><span class="badge badge-verified">${r.status}</span></td>
-            </tr>
-        `).join('');
+    renderAdminRequestsTable(requests);
+
+    // 5. Populate Settings inputs with current values
+    const settingNameInput = document.getElementById('adminSettingName');
+    const settingPhoneInput = document.getElementById('adminSettingPhone');
+    if (settingNameInput) {
+        settingNameInput.value = localStorage.getItem('globalbiz_admin_name') || 'Amina Ahmed';
+    }
+    if (settingPhoneInput) {
+        settingPhoneInput.value = localStorage.getItem('globalbiz_admin_phone') || '09090809080';
     }
 }
 
@@ -1398,6 +1378,9 @@ function renderAdminMembersTable(members) {
                 </td>
                 <td>
                     <div style="display:flex; align-items:center; gap:4px;">
+                        <button class="btn btn-sm btn-outline" onclick="openAdminEditMemberModal(${m.id}, '${m.source_type || 'seller'}')" title="Edit Member Profile">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
                         <button class="btn btn-sm ${m.verified ? 'btn-outline' : 'btn-success'}" onclick="handleToggleMemberVerify(${m.id}, '${m.source_type || 'seller'}', ${m.verified ? 0 : 1})" title="${m.verified ? 'Revoke verification badge' : 'Verify member'}">
                             ${m.verified ? 'Revoke' : 'Verify'}
                         </button>
@@ -1440,6 +1423,68 @@ async function handleDeleteMember(id, sourceType) {
     loadAdminPortal();
 }
 
+// ------------------------------------------
+// EDIT MEMBER MODAL HANDLERS
+// ------------------------------------------
+async function openAdminEditMemberModal(id, sourceType) {
+    const members = await API.getMembers();
+    const member = members.find(m => m.id == id && m.source_type === sourceType);
+    if (!member) {
+        showToast('Member details not found.', 'error');
+        return;
+    }
+
+    document.getElementById('adminEditMemberId').value = member.id;
+    document.getElementById('adminEditMemberType').value = member.source_type;
+    document.getElementById('adminEditMemberName').value = member.full_name || '';
+    document.getElementById('adminEditMemberPhone').value = member.phone || '';
+    document.getElementById('adminEditMemberCountry').value = member.country || 'Nigeria';
+    document.getElementById('adminEditMemberLocation').value = member.location || member.city || '';
+    document.getElementById('adminEditMemberVerified').value = (member.verified ? 'true' : 'false');
+
+    const storeGroup = document.getElementById('adminEditMemberStoreGroup');
+    const storeInput = document.getElementById('adminEditMemberStore');
+    if (member.source_type === 'seller') {
+        if (storeGroup) storeGroup.style.display = 'block';
+        if (storeInput) storeInput.value = member.store_name || '';
+    } else {
+        if (storeGroup) storeGroup.style.display = 'none';
+        if (storeInput) storeInput.value = '';
+    }
+
+    document.getElementById('adminEditMemberModal')?.classList.add('active');
+}
+
+async function handleSaveEditMember(event) {
+    event.preventDefault();
+    const id = document.getElementById('adminEditMemberId').value;
+    const sourceType = document.getElementById('adminEditMemberType').value;
+    const fullName = document.getElementById('adminEditMemberName').value.trim();
+    const phone = document.getElementById('adminEditMemberPhone').value.trim();
+    const country = document.getElementById('adminEditMemberCountry').value.trim() || 'Nigeria';
+    const location = document.getElementById('adminEditMemberLocation').value.trim();
+    const verified = document.getElementById('adminEditMemberVerified').value === 'true' ? 1 : 0;
+    const storeName = document.getElementById('adminEditMemberStore')?.value.trim() || '';
+
+    const payload = {
+        full_name: fullName,
+        phone: phone,
+        country: country,
+        location: location,
+        city: location,
+        verified: verified
+    };
+
+    if (sourceType === 'seller') {
+        payload.store_name = storeName || `${fullName}'s Store`;
+    }
+
+    await API.updateMember(id, sourceType, payload);
+    closeModal('adminEditMemberModal');
+    showToast(`Member profile for "${fullName}" updated successfully!`, 'success');
+    loadAdminPortal();
+}
+
 function renderAdminSellersTable(sellers) {
     const sellersTbody = document.getElementById('adminSellersTableBody');
     if (!sellersTbody) return;
@@ -1447,36 +1492,51 @@ function renderAdminSellersTable(sellers) {
         sellersTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">No registered sellers found.</td></tr>`;
         return;
     }
-    sellersTbody.innerHTML = sellers.map(s => `
-        <tr>
-            <td>
-                <strong>${s.full_name}</strong><br>
-                <span style="font-size:0.75rem; color:var(--text-muted);">${s.store_name}</span>
-            </td>
-            <td><span class="badge" style="background:var(--bg-alt); color:var(--primary); font-size:0.72rem;">${s.category_name || 'General'}</span></td>
-            <td>
-                <strong>${s.phone}</strong>
-            </td>
-            <td>
-                ${s.location || 'Nigeria'}
-            </td>
-            <td>
-                <span class="badge ${s.verified ? 'badge-verified' : 'badge-warning'}">
-                    ${s.verified ? '<i class="fa-solid fa-check"></i> Verified' : '<i class="fa-solid fa-clock"></i> Active'}
-                </span>
-            </td>
-            <td>
-                <div style="display:flex; align-items:center; gap:4px;">
-                    <button class="btn btn-sm ${s.verified ? 'btn-outline' : 'btn-success'}" onclick="handleToggleSellerVerify(${s.id}, ${s.verified ? 0 : 1})" title="${s.verified ? 'Revoke badge' : 'Verify seller'}">
-                        ${s.verified ? 'Revoke' : 'Verify'}
-                    </button>
-                    <button class="btn btn-sm btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="handleDeleteSeller(${s.id})" title="Delete Seller">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
+    sellersTbody.innerHTML = sellers.map(s => {
+        const cleanPhone = (s.phone || '').replace(/[^0-9]/g, '');
+        const waLink = `https://wa.me/${cleanPhone}`;
+        return `
+            <tr>
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="width:32px; height:32px; border-radius:50%; background:var(--brand-green-soft); color:var(--brand-green); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem;">
+                            ${(s.full_name || 'S').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <strong>${s.full_name}</strong><br>
+                            <span style="font-size:0.75rem; color:var(--brand-green); font-weight:700;"><i class="fa-solid fa-shop"></i> ${s.store_name}</span>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="badge" style="background:var(--bg-alt); color:var(--primary); font-size:0.72rem;">${s.category_name || 'General'}</span></td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <strong>${s.phone}</strong>
+                        ${cleanPhone ? `<a href="${waLink}" target="_blank" style="color:#22C55E; font-size:0.95rem;" title="WhatsApp Seller"><i class="fa-brands fa-whatsapp"></i></a>` : ''}
+                    </div>
+                </td>
+                <td>${s.location || 'Nigeria'}</td>
+                <td>
+                    <span class="badge ${s.verified ? 'badge-verified' : 'badge-warning'}">
+                        ${s.verified ? '<i class="fa-solid fa-check"></i> Verified' : '<i class="fa-solid fa-clock"></i> Active'}
+                    </span>
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <button class="btn btn-sm btn-outline" onclick="openAdminEditMemberModal(${s.id}, 'seller')" title="Edit Seller Profile">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button class="btn btn-sm ${s.verified ? 'btn-outline' : 'btn-success'}" onclick="handleToggleSellerVerify(${s.id}, ${s.verified ? 0 : 1})" title="${s.verified ? 'Revoke badge' : 'Verify seller'}">
+                            ${s.verified ? 'Revoke' : 'Verify'}
+                        </button>
+                        <button class="btn btn-sm btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="handleDeleteSeller(${s.id})" title="Delete Seller">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 function renderAdminBuyersTable(buyers) {
@@ -1486,22 +1546,211 @@ function renderAdminBuyersTable(buyers) {
         buyersTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">No registered buyers found.</td></tr>`;
         return;
     }
-    buyersTbody.innerHTML = buyers.map(b => `
+    buyersTbody.innerHTML = buyers.map(b => {
+        const cleanPhone = (b.phone || '').replace(/[^0-9]/g, '');
+        const waLink = `https://wa.me/${cleanPhone}`;
+        return `
+            <tr>
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="width:32px; height:32px; border-radius:50%; background:#EFF6FF; color:#2563EB; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem;">
+                            ${(b.full_name || 'B').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <strong>${b.full_name}</strong>
+                            <div style="font-size:0.72rem; color:var(--text-muted);">Direct Verified Buyer</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <strong>${b.phone}</strong>
+                        ${cleanPhone ? `<a href="${waLink}" target="_blank" style="color:#22C55E; font-size:0.95rem;" title="WhatsApp Buyer"><i class="fa-brands fa-whatsapp"></i></a>` : ''}
+                    </div>
+                </td>
+                <td>${b.location || b.city || 'Nigeria'}</td>
+                <td><span style="font-size:0.75rem; color:var(--text-muted);">${b.registered_at || '2026-08-15'}</span></td>
+                <td><span class="badge badge-verified">${b.orders_count || 0} Orders</span></td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <button class="btn btn-sm btn-outline" onclick="openAdminEditMemberModal(${b.id}, 'buyer')" title="Edit Buyer Profile">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="handleDeleteBuyer(${b.id})" title="Delete Buyer">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// ------------------------------------------
+// PRODUCTS MODERATION HANDLERS
+// ------------------------------------------
+function renderAdminProductsTable(products) {
+    const productsTbody = document.getElementById('adminProductsTableBody');
+    if (!productsTbody) return;
+    if (!products || products.length === 0) {
+        productsTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">No products found matching your filter.</td></tr>`;
+        return;
+    }
+    productsTbody.innerHTML = products.map(p => `
         <tr>
             <td>
-                <strong>${b.full_name}</strong>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${p.photo_url || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100'}" style="width:40px; height:40px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);" alt="${p.title}">
+                    <div>
+                        <strong style="color:var(--primary); font-size:0.85rem;">${p.title}</strong>
+                        <div style="font-size:0.72rem; color:var(--text-muted);">Category ID: ${p.category_id || 1} &bull; ${p.country || 'Nigeria'}</div>
+                    </div>
+                </div>
             </td>
-            <td><strong>${b.phone}</strong></td>
-            <td>${b.location || b.city || 'Nigeria'}</td>
-            <td><span style="font-size:0.75rem; color:var(--text-muted);">${b.registered_at || '2026-08-15'}</span></td>
-            <td><span class="badge badge-verified">${b.orders_count || 0} Orders</span></td>
             <td>
-                <button class="btn btn-sm btn-outline" style="color:#EF4444; border-color:#EF4444;" onclick="handleDeleteBuyer(${b.id})" title="Delete Buyer">
-                    <i class="fa-solid fa-trash"></i> Delete
-                </button>
+                <strong>${p.seller_name || p.business_name || 'Verified Merchant'}</strong>
+                <div style="font-size:0.72rem; color:var(--text-muted);">${p.phone || p.seller_phone || ''}</div>
+            </td>
+            <td><strong style="color:var(--brand-green); font-size:0.9rem;">${formatPrice(p.price)}</strong></td>
+            <td>
+                <span style="font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-location-dot" style="color:#EF4444; font-size:0.72rem;"></i> ${p.city || p.location || 'Abuja'}</span>
+            </td>
+            <td>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <button class="btn btn-sm btn-outline" onclick="openProductDetailModal(${p.id})" title="View Product Details">
+                        <i class="fa-solid fa-eye"></i> View
+                    </button>
+                    <button class="btn btn-sm btn-outline" style="color:#FA5252; border-color:#FA5252;" onclick="handleDeleteProduct(${p.id})" title="Remove Good from Marketplace">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
             </td>
         </tr>
     `).join('');
+}
+
+async function handleAdminProductSearch(query) {
+    const products = await API.getProducts({ q: query });
+    renderAdminProductsTable(products);
+}
+
+// ------------------------------------------
+// SOURCING DESK & ASSISTED BUYING ORDERS
+// ------------------------------------------
+function renderAdminRequestsTable(requests) {
+    const requestsTbody = document.getElementById('adminRequestsTableBody');
+    if (!requestsTbody) return;
+    if (!requests || requests.length === 0) {
+        requestsTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">No sourcing requests found.</td></tr>`;
+        return;
+    }
+    requestsTbody.innerHTML = requests.map(r => {
+        const cleanPhone = (r.customer_phone || '').replace(/[^0-9]/g, '');
+        const waText = encodeURIComponent(`Hello ${r.customer_name}, this is Market at Home Desk regarding your Sourcing Order (${r.tracking_code} - ${r.item_title}). Current Status: ${r.status}`);
+        const waLink = `https://wa.me/${cleanPhone}?text=${waText}`;
+
+        return `
+            <tr>
+                <td>
+                    <strong style="color:var(--primary); font-family:monospace; font-size:0.88rem;">${r.tracking_code}</strong>
+                    <div style="font-size:0.7rem; color:var(--text-muted);">${r.created_at || '2026-08-16'}</div>
+                </td>
+                <td>
+                    <strong>${r.customer_name}</strong><br>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">${r.customer_phone}</span>
+                </td>
+                <td>
+                    <strong style="color:var(--primary); font-size:0.84rem;">${r.item_title}</strong>
+                    ${r.specifications ? `<div style="font-size:0.72rem; color:var(--text-secondary); max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.specifications}</div>` : ''}
+                </td>
+                <td>
+                    <span style="font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-location-dot" style="color:#EF4444; font-size:0.72rem;"></i> ${r.target_city || 'Lagos'}</span>
+                </td>
+                <td>
+                    <span class="badge" style="background:var(--gold-soft); color:var(--gold); font-size:0.72rem; font-weight:800;">${r.package_type || 'Standard'}</span>
+                </td>
+                <td>
+                    <select class="form-input" style="padding:4px 8px; font-size:0.75rem; font-weight:700; border-radius:6px; background:var(--bg-alt); cursor:pointer;" onchange="handleUpdateOrderStatus(${r.id}, this.value)">
+                        <option value="Sourcing Active" ${r.status === 'Sourcing Active' ? 'selected' : ''}>⏳ Sourcing Active</option>
+                        <option value="Inspecting Goods" ${r.status === 'Inspecting Goods' ? 'selected' : ''}>🔍 Inspecting Goods</option>
+                        <option value="Quality Checked" ${r.status === 'Quality Checked' ? 'selected' : ''}>✅ Quality Checked</option>
+                        <option value="Shipped & En Route" ${r.status === 'Shipped & En Route' ? 'selected' : ''}>🚚 Shipped</option>
+                        <option value="Completed & Delivered" ${r.status === 'Completed & Delivered' ? 'selected' : ''}>🎉 Completed</option>
+                    </select>
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        ${cleanPhone ? `<a href="${waLink}" target="_blank" class="btn btn-sm btn-success" style="padding:4px 8px; font-size:0.75rem; text-decoration:none;" title="Update Customer on WhatsApp"><i class="fa-brands fa-whatsapp"></i> Update</a>` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function handleUpdateOrderStatus(orderId, newStatus) {
+    await API.updateBuyingRequest({ id: orderId, status: newStatus });
+    showToast(`Order status updated to "${newStatus}"! Customer can view live update.`, 'success');
+    loadAdminPortal();
+}
+
+// ------------------------------------------
+// SETTINGS & BACKUP ACTIONS (ADMIN)
+// ------------------------------------------
+function handleSaveAdminSecurity(event) {
+    event.preventDefault();
+    const adminName = document.getElementById('adminSettingName').value.trim();
+    const adminPhone = document.getElementById('adminSettingPhone').value.trim();
+    const newPassword = document.getElementById('adminSettingPassword').value.trim();
+
+    if (adminName) localStorage.setItem('globalbiz_admin_name', adminName);
+    if (adminPhone) localStorage.setItem('globalbiz_admin_phone', adminPhone);
+    if (newPassword) {
+        localStorage.setItem('globalbiz_admin_password', newPassword);
+        showToast('Admin password and security settings updated successfully!', 'success');
+    } else {
+        showToast('Admin profile settings saved!', 'success');
+    }
+    document.getElementById('adminSettingPassword').value = '';
+}
+
+async function handleExportPlatformData() {
+    const sellers = await API.getSellers();
+    const buyers = await API.getBuyers();
+    const products = await API.getProducts();
+    const requests = await API.getBuyingRequests();
+
+    const backupData = {
+        platform: "Market at Home: Buy & Sell Worldwide",
+        exported_at: new Date().toISOString(),
+        version: "3.1",
+        sellers: sellers,
+        buyers: buyers,
+        products: products,
+        requests: requests
+    };
+
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `market_at_home_backup_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Platform JSON database backup downloaded successfully!', 'success');
+}
+
+function handleResetPlatformData() {
+    if (!confirm('Are you sure you want to reset platform data to factory seeds? Custom created products and members will be restored to clean defaults.')) return;
+    localStorage.removeItem('globalbiz_sellers_store');
+    localStorage.removeItem('globalbiz_buyers_store');
+    localStorage.removeItem('globalbiz_products_store');
+    localStorage.removeItem('globalbiz_requests_store');
+    showToast('Platform database reset to default seed catalog.', 'info');
+    loadAdminPortal();
+    loadMarketplaceProducts();
 }
 
 async function handleAdminSellerSearch(query) {
@@ -1719,9 +1968,16 @@ function setupForms() {
             const u = (document.getElementById('adminUsernameInput')?.value || '').trim();
             const p = (document.getElementById('adminPasswordInput')?.value || '').trim();
 
-            if ((u === 'admin' || u === 'admin@globalbiz.ng' || u === 'Amina') && (p === 'admin123' || p === '09090809080')) {
+            const savedPassword = localStorage.getItem('globalbiz_admin_password') || 'admin123';
+            const adminName = localStorage.getItem('globalbiz_admin_name') || 'Amina';
+            const adminPhone = localStorage.getItem('globalbiz_admin_phone') || '09090809080';
+            const validUsernames = ['admin', 'admin@globalbiz.ng', 'amina', adminName.toLowerCase()];
+            const isUserValid = validUsernames.includes(u.toLowerCase());
+            const isPassValid = (p === savedPassword || p === 'admin123' || p === '09090809080' || p === adminPhone);
+
+            if (isUserValid && isPassValid) {
                 localStorage.setItem('globalbiz_admin_session', 'active');
-                showToast('Welcome to Administrator Desk, Amina!', 'success');
+                showToast(`Welcome to Administrator Desk, ${adminName}!`, 'success');
                 adminForm.reset();
                 loadAdminPortal();
             } else {

@@ -756,99 +756,122 @@
         </div>
 
         <!-- ======================================================================
-           PAGE 5: ADMIN & MODERATION PORTAL (RESTRICTED & PASSWORD PROTECTED)
+           PAGE 5: EXECUTIVE ADMIN & MODERATION PORTAL
            ====================================================================== -->
         <div id="page-admin" class="page-view">
             <div class="container section">
 
                 <!-- 1. Admin Login Gate (Shown when not logged in) -->
-                <div id="admin-login-gate" class="card form-container-card" style="text-align:center; padding:32px 24px; max-width:440px; margin:20px auto;">
-                    <div style="width:58px; height:58px; background:var(--brand-green-soft); color:var(--brand-green); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:12px; border:1px solid rgba(5,150,105,0.2);">
-                        <i class="fa-solid fa-lock"></i>
+                <div id="admin-login-gate" class="card form-container-card" style="text-align:center; padding:36px 28px; max-width:440px; margin:24px auto; box-shadow:0 10px 30px rgba(0,0,0,0.08); border-radius:20px;">
+                    <div style="width:64px; height:64px; background:var(--brand-green-soft); color:var(--brand-green); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.75rem; margin-bottom:14px; border:1.5px solid rgba(5,150,105,0.25);">
+                        <i class="fa-solid fa-shield-halved"></i>
                     </div>
-                    <h2 style="font-size:1.35rem; font-weight:900; color:var(--primary); margin-bottom:4px;">
-                        Administrator Sign In
+                    <h2 style="font-size:1.4rem; font-weight:900; color:var(--primary); margin-bottom:4px;">
+                        Administrator Desk Sign In
                     </h2>
-                    <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:20px;">
-                        Restricted portal. Please enter your administrator credentials to access moderation and verification controls.
+                    <p style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:22px;">
+                        Restricted Access &bull; Full oversight of Worldwide Marketplace, Members, Sourcing Orders, and Security.
                     </p>
 
                     <form id="adminLoginForm" style="text-align:left;">
                         <div class="form-group">
                             <label class="form-label"><i class="fa-solid fa-user-shield"></i> Admin Username or Email *</label>
-                            <input type="text" id="adminUsernameInput" class="form-input" placeholder="e.g. admin" required>
+                            <input type="text" id="adminUsernameInput" class="form-input" placeholder="e.g. admin or Amina" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label"><i class="fa-solid fa-key"></i> Password *</label>
-                            <input type="password" id="adminPasswordInput" class="form-input" placeholder="Enter password" required>
+                            <input type="password" id="adminPasswordInput" class="form-input" placeholder="Enter password (admin123)" required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px; font-weight:800; font-size:0.92rem;">
                             <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Admin Portal
                         </button>
 
-                        <div style="margin-top:14px; text-align:center; background:var(--bg-alt); padding:8px 12px; border-radius:var(--radius-sm); font-size:0.75rem; color:var(--text-secondary);">
+                        <div style="margin-top:16px; text-align:center; background:var(--bg-alt); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.75rem; color:var(--text-secondary); border:1px solid var(--border);">
                             <i class="fa-solid fa-circle-info" style="color:var(--brand-green);"></i> 
-                            Demo credentials: <strong>admin</strong> / <strong>admin123</strong>
+                            Credentials: <strong>admin</strong> / <strong>admin123</strong> *(or phone: <strong>09090809080</strong>)*
                         </div>
                     </form>
                 </div>
 
                 <!-- 2. Protected Admin Dashboard View (Shown after authentication) -->
                 <div id="admin-dashboard-view" style="display:none;">
-                    <div class="section-header" style="flex-wrap:wrap; gap:12px;">
-                        <div>
-                            <h2 class="section-title">🛡️ Admin Management & Activity Portal</h2>
-                            <p class="section-subtitle">Logged in as Administrator (Amina) &bull; Full system oversight & moderation.</p>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <button class="btn btn-outline btn-sm" onclick="switchPage('home')">
-                                <i class="fa-solid fa-earth-americas" style="color:var(--brand-green);"></i> Go Back to Website
-                            </button>
-                            <button class="btn btn-outline btn-sm" onclick="handleAdminLogout()" style="color:#EF4444; border-color:#EF4444;">
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-                            </button>
+                    
+                    <!-- Executive Header Banner -->
+                    <div class="card" style="margin-bottom:20px; background:linear-gradient(135deg, #0B132B 0%, #1C2541 100%); color:#FFFFFF; border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:22px 24px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                            <div style="display:flex; align-items:center; gap:16px;">
+                                <div style="width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg, #059669, #10B981); color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:900; box-shadow:0 4px 15px rgba(5,150,105,0.4); flex-shrink:0;">
+                                    <i class="fa-solid fa-user-shield"></i>
+                                </div>
+                                <div>
+                                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                        <h2 style="font-size:1.35rem; font-weight:800; color:#FFFFFF; margin:0;" id="adminHeaderName">Amina Ahmed (Super Administrator)</h2>
+                                        <span class="badge badge-verified" style="font-size:0.75rem;"><i class="fa-solid fa-circle-check"></i> MASTER ACCESS</span>
+                                    </div>
+                                    <div style="font-size:0.8rem; color:#94A3B8; margin-top:4px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                                        <span id="adminHeaderPhone"><i class="fa-brands fa-whatsapp" style="color:#10B981;"></i> 09090809080</span>
+                                        <span><i class="fa-solid fa-earth-americas" style="color:#38BDF8;"></i> Worldwide Platform Oversight</span>
+                                        <span style="font-family:monospace; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:6px; color:#34D399;">STATUS: ONLINE</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <button class="btn btn-sm btn-primary" onclick="openAddProductModal()">
+                                    <i class="fa-solid fa-plus"></i> Post Good
+                                </button>
+                                <button class="btn btn-sm btn-outline" style="color:#FFFFFF; border-color:rgba(255,255,255,0.3);" onclick="switchPage('home')">
+                                    <i class="fa-solid fa-earth-americas"></i> Live Website
+                                </button>
+                                <button class="btn btn-sm btn-outline" style="color:#F87171; border-color:rgba(248,113,113,0.4);" onclick="handleAdminLogout()">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Admin Tabs -->
+                    <!-- Admin Tabs Navigation Strip -->
                     <div class="admin-nav-tabs">
                         <button class="admin-tab-btn active" onclick="switchAdminTab('overview', this)">
-                            <i class="fa-solid fa-chart-pie"></i> Overview
+                            <i class="fa-solid fa-chart-pie"></i> Overview & KPIs
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('members', this)">
                             <i class="fa-solid fa-address-card"></i> All Members (<span id="adminTabMemberCount">7</span>)
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('sellers', this)">
-                            <i class="fa-solid fa-user-check"></i> Manage Sellers (<span id="adminTabSellerCount">3</span>)
+                            <i class="fa-solid fa-store"></i> Sellers & Stores (<span id="adminTabSellerCount">3</span>)
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('buyers', this)">
-                            <i class="fa-solid fa-users"></i> Manage Buyers (<span id="adminTabBuyerCount">4</span>)
+                            <i class="fa-solid fa-users"></i> Buyers & Customers (<span id="adminTabBuyerCount">4</span>)
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('products', this)">
-                            <i class="fa-solid fa-boxes-stacked"></i> Products (<span id="adminTabProductCount">6</span>)
+                            <i class="fa-solid fa-boxes-stacked"></i> Worldwide Goods (<span id="adminTabProductCount">6</span>)
                         </button>
                         <button class="admin-tab-btn" onclick="switchAdminTab('requests', this)">
                             <i class="fa-solid fa-handshake"></i> Sourcing Desk (<span id="adminTabRequestCount">1</span>)
                         </button>
+                        <button class="admin-tab-btn" onclick="switchAdminTab('settings', this)">
+                            <i class="fa-solid fa-gears"></i> Platform Settings
+                        </button>
                     </div>
 
-                    <!-- Admin Tab 0: Overview & Live Activities Feed -->
+                    <!-- TAB 1: OVERVIEW & SYSTEM METRICS -->
                     <div id="admin-overview-view">
                         <!-- KPI Metric Counters -->
-                        <div class="seller-stats-grid" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));">
+                        <div class="seller-stats-grid" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); margin-bottom:18px;">
                             <div class="stat-card" onclick="switchAdminTab('members', document.querySelectorAll('.admin-tab-btn')[1])" style="cursor:pointer;" title="Click to view all members">
                                 <div class="stat-icon green"><i class="fa-solid fa-users-viewfinder"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalMembers">7</div>
-                                    <div class="stat-label">Total Members</div>
+                                    <div class="stat-label">Total Platform Members</div>
                                 </div>
                             </div>
                             <div class="stat-card" onclick="switchAdminTab('sellers', document.querySelectorAll('.admin-tab-btn')[2])" style="cursor:pointer;">
                                 <div class="stat-icon green"><i class="fa-solid fa-store"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalSellers">3</div>
-                                    <div class="stat-label">Registered Sellers</div>
+                                    <div class="stat-label">Verified Sellers</div>
                                 </div>
                             </div>
                             <div class="stat-card" onclick="switchAdminTab('buyers', document.querySelectorAll('.admin-tab-btn')[3])" style="cursor:pointer;">
@@ -862,25 +885,56 @@
                                 <div class="stat-icon green"><i class="fa-solid fa-boxes-stacked"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalProducts">6</div>
-                                    <div class="stat-label">Active Listings</div>
+                                    <div class="stat-label">Worldwide Listed Goods</div>
                                 </div>
                             </div>
                             <div class="stat-card" onclick="switchAdminTab('requests', document.querySelectorAll('.admin-tab-btn')[5])" style="cursor:pointer;">
                                 <div class="stat-icon amber"><i class="fa-solid fa-handshake-angle"></i></div>
                                 <div>
                                     <div class="stat-value" id="adminTotalRequests">1</div>
-                                    <div class="stat-label">Sourcing Orders</div>
+                                    <div class="stat-label">Active Sourcing Orders</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon green"><i class="fa-solid fa-shield-check"></i></div>
+                                <div>
+                                    <div class="stat-value" style="color:var(--brand-green);">100%</div>
+                                    <div class="stat-label">System Health & Online</div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Quick Command Strip -->
+                        <div class="card" style="margin-bottom:18px; padding:16px 20px;">
+                            <div style="font-size:0.85rem; font-weight:800; color:var(--primary); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-bolt" style="color:var(--gold);"></i> Quick Administrative Actions
+                            </div>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button class="btn btn-sm btn-primary" onclick="openAdminAddSellerModal()">
+                                    <i class="fa-solid fa-user-plus"></i> Add New Seller
+                                </button>
+                                <button class="btn btn-sm btn-outline" onclick="openAdminAddBuyerModal()">
+                                    <i class="fa-solid fa-user-plus"></i> Add New Buyer
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="openAddProductModal()">
+                                    <i class="fa-solid fa-box-open"></i> Post New Good
+                                </button>
+                                <button class="btn btn-sm btn-outline" onclick="handleExportPlatformData()">
+                                    <i class="fa-solid fa-file-export"></i> Export JSON Backup
+                                </button>
+                                <button class="btn btn-sm btn-outline" onclick="loadAdminPortal(); showToast('Live platform data re-synchronized!', 'success');">
+                                    <i class="fa-solid fa-rotate"></i> Refresh Data
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Live System Activities Feed -->
-                        <div class="card" style="margin-top:14px;">
+                        <div class="card">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);">
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;">
                                     <i class="fa-solid fa-clock-rotate-left" style="color:var(--brand-green);"></i> Recent Platform Activities
                                 </h3>
-                                <span class="badge badge-verified"><i class="fa-solid fa-circle-dot"></i> Live Feed</span>
+                                <span class="badge badge-verified"><i class="fa-solid fa-circle-dot"></i> Live Stream</span>
                             </div>
 
                             <div id="adminActivityLogList" style="display:flex; flex-direction:column; gap:10px;">
@@ -889,11 +943,11 @@
                         </div>
                     </div>
 
-                    <!-- Admin Tab 0b: All Registered Members Directory -->
+                    <!-- TAB 2: ALL REGISTERED MEMBERS DIRECTORY -->
                     <div id="admin-members-view" style="display:none;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
                             <div>
-                                <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                                <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:8px; margin:0;">
                                     <i class="fa-solid fa-id-card-clip" style="color:var(--brand-green);"></i> Registered Members & User Directory
                                 </h3>
                                 <p style="font-size:0.78rem; color:var(--text-secondary); margin:2px 0 0 0;">
@@ -901,7 +955,7 @@
                                 </p>
                             </div>
                             <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
-                                <div class="input-with-icon" style="width:220px;">
+                                <div class="input-with-icon" style="width:230px;">
                                     <i class="fa-solid fa-magnifying-glass input-icon" style="font-size:0.85rem;"></i>
                                     <input type="text" id="adminMemberSearchInput" oninput="handleAdminMemberSearch(this.value)" placeholder="Search name, phone, ID, city..." class="form-input form-input-icon" style="padding:7px 10px 7px 34px !important; font-size:0.8rem;">
                                 </div>
@@ -920,7 +974,7 @@
                                         <th>Member ID & Full Name</th>
                                         <th>Role / Account Type</th>
                                         <th>Phone / WhatsApp</th>
-                                        <th>Location (City & State)</th>
+                                        <th>Location (City, State, Country)</th>
                                         <th>Registration Date</th>
                                         <th>Status & Verification</th>
                                         <th>Admin Actions</th>
@@ -933,12 +987,12 @@
                         </div>
                     </div>
 
-                    <!-- Admin Tab 1: Manage Sellers (Add, Delete, Verify) -->
+                    <!-- TAB 3: MANAGE SELLERS -->
                     <div id="admin-sellers-view" style="display:none;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                             <div>
-                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Registered Sellers & Stores</h3>
-                                <p style="font-size:0.75rem; color:var(--text-secondary);">Review registered merchants, verify badges, or add/remove seller accounts.</p>
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;"><i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Registered Sellers & Merchant Stores</h3>
+                                <p style="font-size:0.75rem; color:var(--text-secondary); margin:2px 0 0 0;">Review merchant KYC, verify badges, or add/remove seller accounts.</p>
                             </div>
                             <div style="display:flex; gap:8px;">
                                 <input type="text" id="adminSellerSearchInput" oninput="handleAdminSellerSearch(this.value)" placeholder="Search sellers..." class="form-input" style="padding:6px 12px; font-size:0.8rem; width:180px;">
@@ -956,7 +1010,7 @@
                                         <th>Category</th>
                                         <th>Phone & WhatsApp</th>
                                         <th>Location</th>
-                                        <th>Status</th>
+                                        <th>Verification</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -967,12 +1021,12 @@
                         </div>
                     </div>
 
-                    <!-- Admin Tab 2: Manage Buyers (Add, Delete) -->
+                    <!-- TAB 4: MANAGE BUYERS -->
                     <div id="admin-buyers-view" style="display:none;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                             <div>
-                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-users" style="color:var(--brand-green);"></i> Registered Buyers & Customers</h3>
-                                <p style="font-size:0.75rem; color:var(--text-secondary);">Monitor buyers registered on the platform, add new buyers, or remove accounts.</p>
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;"><i class="fa-solid fa-users" style="color:var(--brand-green);"></i> Registered Buyers & Customers</h3>
+                                <p style="font-size:0.75rem; color:var(--text-secondary); margin:2px 0 0 0;">Monitor active buyers worldwide, add new accounts, or view order count.</p>
                             </div>
                             <div style="display:flex; gap:8px;">
                                 <input type="text" id="adminBuyerSearchInput" oninput="handleAdminBuyerSearch(this.value)" placeholder="Search buyers..." class="form-input" style="padding:6px 12px; font-size:0.8rem; width:180px;">
@@ -988,9 +1042,9 @@
                                     <tr>
                                         <th>Buyer Full Name</th>
                                         <th>Phone / WhatsApp</th>
-                                        <th>Location & City</th>
+                                        <th>Location & Country</th>
                                         <th>Registration Date</th>
-                                        <th>Orders</th>
+                                        <th>Orders Count</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -1001,22 +1055,25 @@
                         </div>
                     </div>
 
-                    <!-- Admin Tab 3: Moderate Products -->
+                    <!-- TAB 5: MODERATE PRODUCTS -->
                     <div id="admin-products-view" style="display:none;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                             <div>
-                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-boxes-stacked" style="color:var(--brand-green);"></i> Moderate Products</h3>
-                                <p style="font-size:0.75rem; color:var(--text-secondary);">Oversee active marketplace listings across Abuja, Kano, Kaduna & Nigeria.</p>
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;"><i class="fa-solid fa-boxes-stacked" style="color:var(--brand-green);"></i> Moderate Worldwide Goods</h3>
+                                <p style="font-size:0.75rem; color:var(--text-secondary); margin:2px 0 0 0;">Oversee active marketplace listings across all worldwide countries and states.</p>
                             </div>
-                            <button class="btn btn-sm btn-primary" onclick="openAddProductModal()">
-                                <i class="fa-solid fa-plus"></i> Add Product
-                            </button>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="adminProductSearchInput" oninput="handleAdminProductSearch(this.value)" placeholder="Search products..." class="form-input" style="padding:6px 12px; font-size:0.8rem; width:180px;">
+                                <button class="btn btn-sm btn-primary" onclick="openAddProductModal()">
+                                    <i class="fa-solid fa-plus"></i> Post Good
+                                </button>
+                            </div>
                         </div>
                         <div class="admin-table-container">
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Product</th>
+                                        <th>Good / Product</th>
                                         <th>Seller</th>
                                         <th>Price</th>
                                         <th>Location</th>
@@ -1030,24 +1087,25 @@
                         </div>
                     </div>
 
-                    <!-- Admin Tab 4: Sourcing Requests -->
+                    <!-- TAB 6: SOURCING REQUESTS & ORDERS -->
                     <div id="admin-requests-view" style="display:none;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                             <div>
-                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary);"><i class="fa-solid fa-handshake" style="color:var(--brand-green);"></i> Buying Assistance & Sourcing Desk</h3>
-                                <p style="font-size:0.75rem; color:var(--text-secondary);">Direct concierge orders requiring agent inspection and supplier negotiation.</p>
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;"><i class="fa-solid fa-handshake" style="color:var(--brand-green);"></i> Assisted Buying Desk & Sourcing Orders</h3>
+                                <p style="font-size:0.75rem; color:var(--text-secondary); margin:2px 0 0 0;">Change order statuses, assign agents, and message buyers on WhatsApp directly.</p>
                             </div>
                         </div>
                         <div class="admin-table-container">
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Code</th>
+                                        <th>Tracking Code</th>
                                         <th>Customer</th>
-                                        <th>Item</th>
-                                        <th>Location</th>
-                                        <th>Package</th>
-                                        <th>Status</th>
+                                        <th>Item Description</th>
+                                        <th>Destination</th>
+                                        <th>Service Package</th>
+                                        <th>Live Status</th>
+                                        <th>Admin Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="adminRequestsTableBody">
@@ -1056,6 +1114,76 @@
                             </table>
                         </div>
                     </div>
+
+                    <!-- TAB 7: PLATFORM & ADMIN SETTINGS -->
+                    <div id="admin-settings-view" style="display:none;">
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px;">
+                            
+                            <!-- Security Settings Card -->
+                            <div class="card">
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-key" style="color:var(--brand-green);"></i> Administrator Security Settings
+                                </h3>
+                                <form id="adminSecurityForm" onsubmit="handleSaveAdminSecurity(event)">
+                                    <div class="form-group">
+                                        <label class="form-label">Administrator Display Name</label>
+                                        <input type="text" id="adminSettingName" class="form-input" value="Amina Ahmed" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Admin Support Phone / WhatsApp</label>
+                                        <input type="tel" id="adminSettingPhone" class="form-input" value="09090809080" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">New Admin Password</label>
+                                        <input type="password" id="adminSettingPassword" class="form-input" placeholder="Leave blank to keep admin123">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm" style="width:100%; padding:10px;">
+                                        <i class="fa-solid fa-floppy-disk"></i> Save Admin Credentials
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Currency Rates Adjustment Card -->
+                            <div class="card">
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-coins" style="color:var(--gold);"></i> Global Currency Conversion Rates (Base: 1 USD)
+                                </h3>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.82rem; margin-bottom:14px;">
+                                    <div><strong>₦ NGN:</strong> 1550.00</div>
+                                    <div><strong>£ GBP:</strong> 0.78</div>
+                                    <div><strong>€ EUR:</strong> 0.92</div>
+                                    <div><strong>CA$ CAD:</strong> 1.36</div>
+                                    <div><strong>AED:</strong> 3.67</div>
+                                    <div><strong>GH₵ GHS:</strong> 15.60</div>
+                                    <div><strong>KSh KES:</strong> 129.50</div>
+                                    <div><strong>¥ CNY:</strong> 7.24</div>
+                                </div>
+                                <div style="background:var(--bg-alt); padding:10px 12px; border-radius:var(--radius-sm); font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">
+                                    <i class="fa-solid fa-circle-check" style="color:var(--brand-green);"></i> All currency rates auto-convert live for all worldwide marketplace listings.
+                                </div>
+                            </div>
+
+                            <!-- Database Maintenance Card -->
+                            <div class="card" style="grid-column:1/-1;">
+                                <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                                    <i class="fa-solid fa-database" style="color:#3B82F6;"></i> System Maintenance & Data Control
+                                </h3>
+                                <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:14px;">
+                                    Download a complete JSON backup of registered members, products, and orders, or reset to factory defaults.
+                                </p>
+                                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="handleExportPlatformData()">
+                                        <i class="fa-solid fa-download"></i> Download Full Platform Backup (JSON)
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-sm" style="color:#EF4444; border-color:#EF4444;" onclick="handleResetPlatformData()">
+                                        <i class="fa-solid fa-trash-arrow-up"></i> Reset to Default Seed Data
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -1608,6 +1736,66 @@
                     <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
                         <i class="fa-solid fa-user-check"></i> Register Buyer
                     </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 6: Admin Edit Member Modal -->
+    <div id="adminEditMemberModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-user-pen" style="color:var(--brand-green);"></i> Admin: Edit Member Profile</div>
+                <button class="modal-close-btn" onclick="closeModal('adminEditMemberModal')">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="adminEditMemberForm" onsubmit="handleSaveEditMember(event)">
+                    <input type="hidden" id="adminEditMemberId">
+                    <input type="hidden" id="adminEditMemberType">
+
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" id="adminEditMemberName" class="form-input" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Phone / WhatsApp *</label>
+                            <input type="tel" id="adminEditMemberPhone" class="form-input" required>
+                        </div>
+                        <div class="form-group" id="adminEditMemberStoreGroup">
+                            <label class="form-label">Store / Business Name</label>
+                            <input type="text" id="adminEditMemberStore" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <input type="text" id="adminEditMemberCountry" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">City / State / Location *</label>
+                            <input type="text" id="adminEditMemberLocation" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Verification Badge Status</label>
+                        <select id="adminEditMemberVerified" class="form-input">
+                            <option value="true">Verified (Green Checkmark Badge)</option>
+                            <option value="false">Unverified (Pending Verification)</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:14px;">
+                        <button type="button" class="btn btn-outline" style="flex:1;" onclick="closeModal('adminEditMemberModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary" style="flex:2;">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Member Profile
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

@@ -238,6 +238,36 @@ const API = {
         }
     },
 
+    async updateSeller(id, payload) {
+        this.initLocalData();
+        const idx = this.fallbackSellers.findIndex(s => s.id == id);
+        if (idx !== -1) {
+            this.fallbackSellers[idx] = { ...this.fallbackSellers[idx], ...payload };
+            this.saveLocalData('sellers', this.fallbackSellers);
+            return { status: 'success', data: this.fallbackSellers[idx], message: 'Seller updated successfully' };
+        }
+        return { status: 'error', message: 'Seller not found' };
+    },
+
+    async updateBuyer(id, payload) {
+        this.initLocalData();
+        const idx = this.fallbackBuyers.findIndex(b => b.id == id);
+        if (idx !== -1) {
+            this.fallbackBuyers[idx] = { ...this.fallbackBuyers[idx], ...payload };
+            this.saveLocalData('buyers', this.fallbackBuyers);
+            return { status: 'success', data: this.fallbackBuyers[idx], message: 'Buyer updated successfully' };
+        }
+        return { status: 'error', message: 'Buyer not found' };
+    },
+
+    async updateMember(id, sourceType, payload) {
+        if (sourceType === 'seller') {
+            return await this.updateSeller(id, payload);
+        } else {
+            return await this.updateBuyer(id, payload);
+        }
+    },
+
     async toggleMemberVerification(id, sourceType = 'seller', isVerified = 1) {
         if (sourceType === 'seller') {
             return await this.verifySeller(id, isVerified);
@@ -421,13 +451,16 @@ const API = {
     },
 
     async updateBuyingRequest(payload) {
+        this.initLocalData();
         const req = this.fallbackBuyingRequests.find(x => x.id == payload.id);
         if (req) {
-            req.status = payload.status;
+            if (payload.status) req.status = payload.status;
             if (payload.assigned_agent) req.assigned_agent = payload.assigned_agent;
             if (payload.notes) req.notes = payload.notes;
+            this.saveLocalData('requests', this.fallbackBuyingRequests);
+            return { status: 'success', data: req, message: 'Request status updated successfully' };
         }
-        return { status: 'success', message: 'Request status updated' };
+        return { status: 'error', message: 'Request not found' };
     },
 
     // Categories
