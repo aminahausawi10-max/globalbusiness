@@ -322,7 +322,6 @@ const API = {
             return newUser;
         }
     },
-    },
 
     async toggleUserStatus(userId) {
         this.initLocalData();
