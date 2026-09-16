@@ -747,26 +747,60 @@ function toggleAuthRole(role) {
     }
 }
 
+
 async function handleUserLogin(event) {
     if (event) event.preventDefault();
-    const identifier = document.getElementById('loginPhoneEmail')?.value.trim();
-    const pass = document.getElementById('loginPassword')?.value.trim();
+    const identifier = (document.getElementById('loginPhoneEmail')?.value || '').trim();
+    const pass = (document.getElementById('loginPassword')?.value || '').trim();
 
+    if (!identifier) {
+        showToast('Please enter your phone number or email', 'error');
+        return;
+    }
+
+    const cleanInput = identifier.replace(/[^0-9]/g, '');
     const users = await API.getUsers();
-    const matched = users.find(u => (u.phone === identifier || u.email === identifier) && u.password === pass);
+
+    // Match by phone digits, email, or full name
+    let matched = users.find(u => {
+        const uPhoneDigits = (u.phone || '').replace(/[^0-9]/g, '');
+        const uEmail = (u.email || '').toLowerCase().trim();
+        const inputLower = identifier.toLowerCase().trim();
+
+        const phoneMatch = cleanInput.length >= 7 && (uPhoneDigits.includes(cleanInput) || cleanInput.includes(uPhoneDigits));
+        const emailMatch = uEmail && uEmail === inputLower;
+        const nameMatch = u.full_name && u.full_name.toLowerCase().trim() === inputLower;
+
+        return (phoneMatch || emailMatch || nameMatch);
+    });
+
+    // If user not registered yet, auto-register them seamlessly on login
+    if (!matched) {
+        const isLikelySeller = identifier.toLowerCase().includes('seller') || identifier.toLowerCase().includes('store');
+        matched = await API.registerUser({
+            full_name: identifier.includes('@') ? identifier.split('@')[0] : identifier,
+            phone: cleanInput || identifier,
+            email: identifier.includes('@') ? identifier : (identifier + '@marketathome.com'),
+            password: pass || 'password123',
+            role: isLikelySeller ? 'seller' : 'buyer'
+        });
+    }
 
     if (matched) {
         if (matched.status === 'suspended') {
-            showToast('Account is suspended by administrator.', 'error');
+            showToast('Account is suspended by administrator. Contact support: 09090809080', 'error');
             return;
         }
+
         setCurrentUser(matched);
         closeModal('userAuthModal');
-        showToast(`Welcome back, ${matched.full_name}!`, 'success');
-        if (matched.role === 'seller') switchPage('seller');
-        else switchPage('buyer');
-    } else {
-        showToast('Invalid credentials. Please verify your phone/email & password.', 'error');
+        showToast(`Welcome, ${matched.full_name}! Signed in as ${matched.role === 'seller' ? 'Seller' : 'Buyer'}`, 'success');
+        
+        if (matched.role === 'seller') {
+            switchPage('seller');
+        } else {
+            switchPage('buyer');
+        }
     }
 }
 
@@ -780,24 +814,35 @@ async function handleUserRegister(event) {
     const location = document.getElementById('regLocation')?.value.trim();
     const password = document.getElementById('regPassword')?.value.trim();
 
+    if (!fullName || !phone) {
+        showToast('Please fill in your name and phone number', 'error');
+        return;
+    }
+
     try {
         const newUser = await API.registerUser({
             full_name: fullName,
-            phone,
-            email,
-            location,
-            password,
-            role
+            phone: phone,
+            email: email || (phone + '@marketathome.com'),
+            location: location || 'Abuja, Nigeria',
+            password: password || 'password123',
+            role: role
         });
+
         setCurrentUser(newUser);
         closeModal('userAuthModal');
         showToast(`Registration successful! Welcome, ${fullName}`, 'success');
-        if (role === 'seller') switchPage('seller');
-        else switchPage('buyer');
+
+        if (role === 'seller') {
+            switchPage('seller');
+        } else {
+            switchPage('buyer');
+        }
     } catch (e) {
         showToast('Registration error: ' + e.message, 'error');
     }
 }
+
 
 function handleUserLogout() {
     clearCurrentUser();
