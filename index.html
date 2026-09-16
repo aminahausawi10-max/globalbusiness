@@ -1738,6 +1738,9 @@
                     <input type="hidden" id="sellerProdId" value="">
                     <input type="file" id="sellerProdPhotoFileInput" accept="image/*" style="display:none;" onchange="handleProductImageImport(event)">
                     <input type="hidden" id="sellerProdPhoto" value="https://images.unsplash.com/photo-1544441893-675973e31985?w=600">
+                    <div id="sellerProdPhotoPreview" style="margin-bottom:10px; display:none; text-align:center;">
+                        <img id="sellerProdPhotoPreviewImg" src="" style="max-height:120px; max-width:100%; border-radius:8px; border:1px solid var(--border); object-fit:cover;">
+                    </div>
                     <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="document.getElementById('sellerProdPhotoFileInput').click()">📸 Upload Product Picture</button>
                     <button type="submit" id="sellerProductSubmitBtn" class="btn btn-primary" style="width:100%; padding:12px;">Save & Publish Product</button>
                 </form>
@@ -2068,8 +2071,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with v=6.0 cache bust -->
-    <script src="assets/js/api.js?v=6.0"></script>
-    <script src="assets/js/app.js?v=6.0"></script>
+    <!-- Scripts with v=6.1 cache bust -->
+    <script src="assets/js/api.js?v=6.1"></script>
+    <script src="assets/js/app.js?v=6.1"></script>
 </body>
 </html>

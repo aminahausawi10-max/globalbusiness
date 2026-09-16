@@ -1685,6 +1685,13 @@ function openAddProductModal() {
         photoInput.value = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
     }
 
+    const previewBox = document.getElementById('sellerProdPhotoPreview');
+    const previewImg = document.getElementById('sellerProdPhotoPreviewImg');
+    if (previewBox && previewImg) {
+        previewImg.src = '';
+        previewBox.style.display = 'none';
+    }
+
     populateSellerStateDropdown(countrySelect ? countrySelect.value : 'Nigeria');
     document.getElementById('addProductModal')?.classList.add('active');
 }
@@ -1740,6 +1747,14 @@ async function openEditProductModal(productId) {
     if (descInput) descInput.value = product.description || '';
     if (photoInput) photoInput.value = product.photo || product.photo_url || '';
 
+    const previewBox = document.getElementById('sellerProdPhotoPreview');
+    const previewImg = document.getElementById('sellerProdPhotoPreviewImg');
+    const currentPhoto = product.photo || product.photo_url;
+    if (previewBox && previewImg && currentPhoto) {
+        previewImg.src = currentPhoto;
+        previewBox.style.display = 'block';
+    }
+
     document.getElementById('addProductModal')?.classList.add('active');
 }
 
@@ -1765,7 +1780,15 @@ function handleProductImageImport(event) {
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            document.getElementById('sellerProdPhoto').value = e.target.result;
+            const photoInput = document.getElementById('sellerProdPhoto');
+            if (photoInput) photoInput.value = e.target.result;
+
+            const previewBox = document.getElementById('sellerProdPhotoPreview');
+            const previewImg = document.getElementById('sellerProdPhotoPreviewImg');
+            if (previewBox && previewImg) {
+                previewImg.src = e.target.result;
+                previewBox.style.display = 'block';
+            }
             showToast('Product photo uploaded successfully', 'success');
         };
         reader.readAsDataURL(file);
