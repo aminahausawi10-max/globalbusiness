@@ -1659,7 +1659,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Price (USD) *</label>
-                        <input type="number" step="any" id="sellerProdPrice" class="form-input" required>
+                        <input type="text" id="sellerProdPrice" class="form-input" placeholder="e.g. 50 or 25000" required>
                     </div>
                     <div class="form-row form-row-2col">
                         <div class="form-group">
@@ -1702,7 +1702,7 @@
                         <img id="sellerProdPhotoPreviewImg" src="" style="max-height:120px; max-width:100%; border-radius:8px; border:1px solid var(--border); object-fit:cover;">
                     </div>
                     <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="document.getElementById('sellerProdPhotoFileInput').click()">📸 Upload Product Picture</button>
-                    <button type="submit" id="sellerProductSubmitBtn" class="btn btn-primary" style="width:100%; padding:12px;">Save & Publish Product</button>
+                    <button type="submit" id="sellerProductSubmitBtn" class="btn btn-primary" style="width:100%; padding:14px; font-weight:800; font-size:1rem; cursor:pointer;" onclick="handleProductFormSubmit(event)"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Product Now</button>
                 </form>
             </div>
         </div>
@@ -2012,8 +2012,8 @@
         </a>
     </nav>
 
-    <!-- Scripts with v=7.1 -->
-    <script src="assets/js/api.js?v=7.1"></script>
-    <script src="assets/js/app.js?v=7.1"></script>
+    <!-- Scripts with v=7.2 -->
+    <script src="assets/js/api.js?v=7.2"></script>
+    <script src="assets/js/app.js?v=7.2"></script>
 </body>
 </html>

@@ -1667,19 +1667,30 @@ function openAddProductModal() {
     const prodIdInput = document.getElementById('sellerProdId');
 
     if (titleEl) titleEl.textContent = '➕ Add New Good';
-    if (submitBtn) submitBtn.textContent = 'Publish Product Now';
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Product Now';
+        submitBtn.disabled = false;
+    }
     if (prodIdInput) prodIdInput.value = '';
 
     const storeNameInput = document.getElementById('sellerProdSellerName');
     const countrySelect = document.getElementById('sellerProdCountry');
     const phoneInput = document.getElementById('sellerProdPhone');
+    const locationInput = document.getElementById('sellerProdLocation');
+    const photoInput = document.getElementById('sellerProdPhoto');
     const previewBox = document.getElementById('sellerProdPhotoPreview');
 
-    if (storeNameInput && user) storeNameInput.value = user.store_name || user.full_name || '';
-    if (phoneInput && user) phoneInput.value = user.phone || '';
+    if (storeNameInput) storeNameInput.value = user?.store_name || user?.full_name || '';
+    if (phoneInput) phoneInput.value = user?.phone || '';
     if (countrySelect) {
         countrySelect.value = user?.country || 'Nigeria';
         populateSellerStateDropdown(countrySelect.value);
+    }
+    if (locationInput) {
+        locationInput.value = user?.location || user?.city || 'Abuja';
+    }
+    if (photoInput) {
+        photoInput.value = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
     }
     if (previewBox) previewBox.style.display = 'none';
 
@@ -1698,7 +1709,10 @@ async function openEditProductModal(productId) {
     const prodIdInput = document.getElementById('sellerProdId');
 
     if (titleEl) titleEl.textContent = '✏️ Edit Product Listing';
-    if (submitBtn) submitBtn.textContent = '💾 Update & Save Changes';
+    if (submitBtn) {
+        submitBtn.innerHTML = '💾 Update & Save Changes';
+        submitBtn.disabled = false;
+    }
     if (prodIdInput) prodIdInput.value = product.id;
 
     const titleInput = document.getElementById('sellerProdTitle');
@@ -1775,14 +1789,19 @@ function handleProductImageImport(event) {
 }
 
 async function handleProductFormSubmit(event) {
-    if (event) event.preventDefault();
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     const user = getCurrentUser();
+    const submitBtn = document.getElementById('sellerProductSubmitBtn');
 
     const prodId = document.getElementById('sellerProdId')?.value;
     const isEdit = !!prodId;
 
     const title = (document.getElementById('sellerProdTitle')?.value || '').trim();
-    const price = parseFloat(document.getElementById('sellerProdPrice')?.value || 0);
+    const rawPrice = (document.getElementById('sellerProdPrice')?.value || '').toString().replace(/[^0-9.]/g, '');
+    const price = parseFloat(rawPrice) || 0;
     const seller_name = (document.getElementById('sellerProdSellerName')?.value || '').trim() || user?.store_name || user?.full_name || 'Verified Merchant';
     const country = document.getElementById('sellerProdCountry')?.value || user?.country || 'Nigeria';
     const location = (document.getElementById('sellerProdLocation')?.value || '').trim() || 'Abuja';
@@ -1792,68 +1811,85 @@ async function handleProductFormSubmit(event) {
     const photo = document.getElementById('sellerProdPhoto')?.value || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600';
 
     if (!title) {
-        showToast('Please enter a product title', 'error');
+        showToast('Please enter a product title / name', 'error');
+        document.getElementById('sellerProdTitle')?.focus();
         return;
     }
     if (isNaN(price) || price <= 0) {
-        showToast('Please enter a valid price in USD', 'error');
+        showToast('Please enter a valid product price', 'error');
+        document.getElementById('sellerProdPrice')?.focus();
         return;
     }
 
-    if (isEdit) {
-        await API.updateProduct(prodId, {
-            title: title,
-            name: title,
-            price: price,
-            seller_name: seller_name,
-            country: country,
-            state: state,
-            city: location,
-            location: `${location}, ${country}`,
-            phone: phone,
-            seller_phone: phone,
-            description: description,
-            photo: photo,
-            photo_url: photo
-        });
-        showToast('✅ Product updated successfully!', 'success');
-    } else {
-        const sellerId = user?.id || ('seller-' + Date.now());
-        await API.createProduct({
-            title: title,
-            name: title,
-            price: price,
-            seller_name: seller_name,
-            seller_id: sellerId,
-            country: country,
-            state: state,
-            city: location,
-            location: `${location}, ${country}`,
-            phone: phone,
-            seller_phone: phone,
-            description: description,
-            photo: photo,
-            photo_url: photo,
-            status: 'approved',
-            business_verified: 1
-        });
-        showToast('🎉 Product published live across global marketplace!', 'success');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing Live...';
     }
 
-    closeModal('addProductModal');
+    try {
+        if (isEdit) {
+            await API.updateProduct(prodId, {
+                title: title,
+                name: title,
+                price: price,
+                seller_name: seller_name,
+                country: country,
+                state: state,
+                city: location,
+                location: `${location}, ${country}`,
+                phone: phone,
+                seller_phone: phone,
+                description: description,
+                photo: photo,
+                photo_url: photo
+            });
+            showToast('✅ Product updated successfully!', 'success');
+        } else {
+            const sellerId = user?.id || ('seller-' + Date.now());
+            await API.createProduct({
+                title: title,
+                name: title,
+                price: price,
+                seller_name: seller_name,
+                seller_id: sellerId,
+                country: country,
+                state: state,
+                city: location,
+                location: `${location}, ${country}`,
+                phone: phone,
+                seller_phone: phone,
+                description: description,
+                photo: photo,
+                photo_url: photo,
+                status: 'approved',
+                business_verified: 1
+            });
+            showToast('🎉 Product published live across global marketplace!', 'success');
+        }
 
-    // Instant multi-view refresh
-    loadSellerProducts();
-    loadMarketplaceProducts();
-    loadHomeFeatured();
-    if (typeof loadBuyerGoods === 'function') {
-        loadBuyerGoods();
-    }
-    if (typeof selectNigeriaState === 'function') {
-        selectNigeriaState(state);
-    }
-    if (typeof renderAdminProductsTable === 'function') {
-        renderAdminProductsTable();
+        closeModal('addProductModal');
+
+        // Instant multi-view refresh
+        loadSellerProducts();
+        loadMarketplaceProducts();
+        loadHomeFeatured();
+        if (typeof loadBuyerGoods === 'function') {
+            loadBuyerGoods();
+        }
+        if (typeof selectNigeriaState === 'function') {
+            selectNigeriaState(state);
+        }
+        if (typeof renderAdminProductsTable === 'function') {
+            renderAdminProductsTable();
+        }
+    } catch (err) {
+        console.error('Error publishing product:', err);
+        showToast('Failed to publish product. Please check connection.', 'error');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = isEdit ? '💾 Update & Save Changes' : '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Product Now';
+        }
     }
 }
 
