@@ -18,8 +18,7 @@ module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
 
     const client = getDbClient();
@@ -28,7 +27,8 @@ module.exports = async function handler(req, res) {
         await client.connect();
 
         if (req.method === 'GET') {
-            const { id, q, country, state } = req.query;
+            const queryParams = req.query || {};
+            const { id, q, country, state, category } = queryParams;
 
             if (id) {
                 const query = 'SELECT * FROM global_products WHERE id = $1';
@@ -58,6 +58,12 @@ module.exports = async function handler(req, res) {
             if (state && state !== 'all') {
                 query += ` AND (LOWER(state) LIKE $${paramIdx} OR LOWER(city) LIKE $${paramIdx} OR LOWER(location) LIKE $${paramIdx})`;
                 params.push(`%${state.toLowerCase()}%`);
+                paramIdx++;
+            }
+
+            if (category && category !== 'all') {
+                query += ` AND (LOWER(category) = $${paramIdx} OR LOWER(category_name) = $${paramIdx})`;
+                params.push(category.toLowerCase());
                 paramIdx++;
             }
 
@@ -95,12 +101,15 @@ module.exports = async function handler(req, res) {
             const status = body.status || 'approved';
             const business_verified = body.business_verified !== undefined ? body.business_verified : 1;
             const available_qty = parseInt(body.available_qty) || 50;
+            const category = body.category || body.category_name || 'General';
+            const category_name = body.category_name || body.category || 'General';
 
             const upsertQuery = `
                 INSERT INTO global_products (
                     id, title, name, price, photo_url, photo, seller_name, seller_phone, phone,
-                    seller_id, country, state, city, location, description, status, business_verified, available_qty
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+                    seller_id, country, state, city, location, description, status, business_verified, available_qty,
+                    category, category_name
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
                 ON CONFLICT (id) DO UPDATE SET
                     title = EXCLUDED.title,
                     name = EXCLUDED.name,
@@ -117,13 +126,16 @@ module.exports = async function handler(req, res) {
                     description = EXCLUDED.description,
                     status = EXCLUDED.status,
                     business_verified = EXCLUDED.business_verified,
-                    available_qty = EXCLUDED.available_qty
+                    available_qty = EXCLUDED.available_qty,
+                    category = EXCLUDED.category,
+                    category_name = EXCLUDED.category_name
                 RETURNING *;
             `;
 
             const values = [
                 id, title, title, price, photo_url, photo, seller_name, seller_phone, phone,
-                seller_id, country, state, city, location, description, status, business_verified, available_qty
+                seller_id, country, state, city, location, description, status, business_verified, available_qty,
+                category, category_name
             ];
 
             const result = await client.query(upsertQuery, values);
@@ -135,7 +147,7 @@ module.exports = async function handler(req, res) {
         }
 
         if (req.method === 'DELETE') {
-            const { id } = req.query;
+            const { id } = req.query || {};
             if (!id) {
                 return res.status(400).json({ status: 'error', message: 'Product ID is required' });
             }
@@ -149,6 +161,6 @@ module.exports = async function handler(req, res) {
         console.error('API Error:', err);
         return res.status(500).json({ status: 'error', message: err.message });
     } finally {
-        await client.end();
+        await client.end().catch(() => {});
     }
 };

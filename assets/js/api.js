@@ -18,6 +18,16 @@ const API = {
         ordersDocId: 'ff808181a09d98f701a0ab63743b1f9b'
     },
 
+    getApiEndpoints(path) {
+        const endpoints = [];
+        endpoints.push(`/api/${path}`);
+        if (typeof window !== 'undefined' && window.location && window.location.origin && !window.location.origin.startsWith('file')) {
+            endpoints.push(`${window.location.origin}/api/${path}`);
+        }
+        endpoints.push(`https://globalbusiness-cyan.vercel.app/api/${path}`);
+        return [...new Set(endpoints)];
+    },
+
     // ==========================================
     // INITIALIZATION & PERSISTENCE
     // ==========================================
@@ -182,18 +192,15 @@ const API = {
         this.initLocalData();
         let changed = false;
 
-        const endpoints = [
-            '/api/products',
-            'https://globalbusiness-cyan.vercel.app/api/products'
-        ];
+        const endpoints = this.getApiEndpoints('products');
 
         for (const ep of endpoints) {
             try {
                 const res = await fetch(ep, { method: 'GET', cache: 'no-store' });
                 if (res && res.ok) {
                     const json = await res.json().catch(() => null);
-                    if (json && Array.isArray(json.data) && json.data.length > 0) {
-                        this.fallbackProducts = json.data.map(p => ({
+                    if (json && Array.isArray(json.data)) {
+                        const cloudProducts = json.data.map(p => ({
                             id: p.id,
                             title: p.title || p.name || 'Untitled Good',
                             name: p.name || p.title || 'Untitled Good',
@@ -216,8 +223,16 @@ const API = {
                             category: p.category_name || p.category || 'General',
                             category_name: p.category_name || p.category || 'General'
                         }));
-                        this.saveLocalData('products', this.fallbackProducts);
-                        changed = true;
+
+                        // Merge cloud products with any locally published items that haven't synced yet
+                        const cloudIds = new Set(cloudProducts.map(cp => String(cp.id)));
+                        const localPending = (this.fallbackProducts || []).filter(lp => lp.published_by_seller && !cloudIds.has(String(lp.id)));
+
+                        if (cloudProducts.length > 0 || localPending.length > 0) {
+                            this.fallbackProducts = [...cloudProducts, ...localPending];
+                            this.saveLocalData('products', this.fallbackProducts);
+                            changed = true;
+                        }
                         break;
                     }
                 }
@@ -240,10 +255,7 @@ const API = {
         }
 
         // Pull users too
-        const userEndpoints = [
-            '/api/users',
-            'https://globalbusiness-cyan.vercel.app/api/users'
-        ];
+        const userEndpoints = this.getApiEndpoints('users');
         let usersFound = false;
         for (const ep of userEndpoints) {
             try {
@@ -580,7 +592,7 @@ const API = {
         this.saveLocalData('products', this.fallbackProducts);
 
         // Save directly to Neon PostgreSQL Cloud Database
-        const postUrls = ['/api/products', 'https://globalbusiness-cyan.vercel.app/api/products'];
+        const postUrls = this.getApiEndpoints('products');
         for (const url of postUrls) {
             try {
                 const res = await fetch(url, {
@@ -588,7 +600,10 @@ const API = {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newProd)
                 });
-                if (res && res.ok) break;
+                if (res && res.ok) {
+                    console.log('✅ Product synced to cloud DB via:', url);
+                    break;
+                }
             } catch (err) {}
         }
 
@@ -624,7 +639,7 @@ const API = {
             };
             this.saveLocalData('products', this.fallbackProducts);
 
-            const postUrls = ['/api/products', 'https://globalbusiness-cyan.vercel.app/api/products'];
+            const postUrls = this.getApiEndpoints('products');
             for (const url of postUrls) {
                 try {
                     const res = await fetch(url, {
@@ -647,10 +662,7 @@ const API = {
         this.fallbackProducts = this.fallbackProducts.filter(x => String(x.id) !== String(id));
         this.saveLocalData('products', this.fallbackProducts);
 
-        const delUrls = [
-            `/api/products?id=${encodeURIComponent(id)}`,
-            `https://globalbusiness-cyan.vercel.app/api/products?id=${encodeURIComponent(id)}`
-        ];
+        const delUrls = this.getApiEndpoints(`products?id=${encodeURIComponent(id)}`);
         for (const url of delUrls) {
             try {
                 const res = await fetch(url, { method: 'DELETE' });
@@ -846,7 +858,7 @@ const API = {
         this.fallbackSellers.unshift(newSeller);
         this.saveLocalData('sellers', this.fallbackSellers);
 
-        const postUrls = ['/api/users', 'https://globalbusiness-cyan.vercel.app/api/users'];
+        const postUrls = this.getApiEndpoints('users');
         for (const url of postUrls) {
             try {
                 const res = await fetch(url, {
@@ -946,7 +958,7 @@ const API = {
         this.fallbackBuyers.unshift(newBuyer);
         this.saveLocalData('buyers', this.fallbackBuyers);
 
-        const postUrls = ['/api/users', 'https://globalbusiness-cyan.vercel.app/api/users'];
+        const postUrls = this.getApiEndpoints('users');
         for (const url of postUrls) {
             try {
                 const res = await fetch(url, {

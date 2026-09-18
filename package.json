@@ -1,5 +1,12 @@
 {
+  "name": "market-at-home",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Global Business Marketplace & Professional Buying Assistance Platform",
+  "scripts": {
+    "test": "node tests/test_runner.js"
+  },
   "dependencies": {
-    "pg": "^8.23.0"
+    "pg": "^8.11.3"
   }
 }
