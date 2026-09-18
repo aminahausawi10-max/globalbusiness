@@ -1,7 +1,7 @@
-﻿{
-  "name": "Nigerian Diaspora Online Market â€” Buy & Sell Worldwide",
-  "short_name": "Nigerian Diaspora Online Market",
-  "description": "Buy and Sell Worldwide. Connecting global buyers with verified merchants, authentic goods, and assisted sourcing across countries & states.",
+{
+  "name": "Nigerian Diaspora Online Market - Buy and Sell Worldwide",
+  "short_name": "Nigerian Diaspora Market",
+  "description": "Buy and Sell Worldwide. Connecting global buyers with verified merchants and authentic goods.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -12,47 +12,13 @@
   "dir": "ltr",
   "categories": ["shopping", "business", "finance"],
   "icons": [
-    {
-      "src": "assets/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icons/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ],
   "shortcuts": [
-    {
-      "name": "Explore Worldwide Market",
-      "short_name": "Market",
-      "description": "Discover authentic products worldwide by country and state",
-      "url": "./index.html#marketplace",
-      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Seller Hub",
-      "short_name": "Seller Hub",
-      "description": "Manage your store & post new goods worldwide",
-      "url": "./index.html#seller",
-      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Assisted Buying Desk",
-      "short_name": "Sourcing",
-      "description": "Request proxy shopping & worldwide delivery",
-      "url": "./index.html#sourcing",
-      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
-    }
+    { "name": "Explore Worldwide Market", "short_name": "Market", "url": "./index.html#marketplace", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Seller Hub", "short_name": "Seller Hub", "url": "./index.html#seller", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Assisted Buying Desk", "short_name": "Sourcing", "url": "./index.html#sourcing", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }
-
