@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Market at Home — Buy & Sell Worldwide</title>
+    <title>Nigerian Diaspora Online Market â€” Buy & Sell Worldwide</title>
     
     <!-- PWA & Mobile App Meta Tags -->
     <link rel="manifest" href="manifest.json">
@@ -11,7 +11,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Market at Home">
+    <meta name="apple-mobile-web-app-title" content="Nigerian Diaspora Online Market">
     <link rel="apple-touch-icon" href="assets/icons/icon.svg">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
     
@@ -29,14 +29,14 @@
     <!-- PWA Offline Status Banner -->
     <div id="pwaOfflineIndicator" class="pwa-offline-bar" style="display:none;">
         <i class="fa-solid fa-wifi-slash"></i> 
-        <span>Working Offline — Viewing cached goods & local store catalog</span>
+        <span>Working Offline â€” Viewing cached goods & local store catalog</span>
     </div>
 
     <!-- Live Site Broadcast Announcement Ticker -->
     <div id="siteAnnouncementBanner" class="site-announcement-banner" style="display:none;">
         <div class="site-announcement-content container">
             <span class="announcement-tag"><i class="fa-solid fa-bullhorn"></i> Announcement</span>
-            <span id="siteAnnouncementText" style="font-weight:600;">Welcome to Market at Home worldwide marketplace.</span>
+            <span id="siteAnnouncementText" style="font-weight:600;">Welcome to Nigerian Diaspora Online Market worldwide marketplace.</span>
             <button class="announcement-close-btn" onclick="dismissAnnouncement()" title="Close Announcement"><i class="fa-solid fa-xmark"></i></button>
         </div>
     </div>
@@ -74,7 +74,7 @@
                     <i class="fa-solid fa-house-laptop"></i>
                 </div>
                 <div class="brand-text">
-                    <span class="brand-main">MARKET AT HOME</span>
+                    <span class="brand-main">Nigerian Diaspora Online Market</span>
                     <span class="brand-sub">Buy & Sell Worldwide</span>
                 </div>
             </a>
@@ -98,16 +98,16 @@
                 <div class="currency-wrapper">
                     <select id="currencySelector" class="currency-select" title="Change Currency">
                         <option value="USD">$ USD</option>
-                        <option value="NGN" selected>₦ NGN</option>
-                        <option value="GBP">£ GBP</option>
-                        <option value="EUR">€ EUR</option>
+                        <option value="NGN" selected>â‚¦ NGN</option>
+                        <option value="GBP">Â£ GBP</option>
+                        <option value="EUR">â‚¬ EUR</option>
                         <option value="CAD">CA$ CAD</option>
                         <option value="AED">AED</option>
-                        <option value="GHS">GH₵ GHS</option>
+                        <option value="GHS">GHâ‚µ GHS</option>
                         <option value="KES">KSh KES</option>
                         <option value="ZAR">R ZAR</option>
-                        <option value="SAR">﷼ SAR</option>
-                        <option value="CNY">¥ CNY</option>
+                        <option value="SAR">ï·¼ SAR</option>
+                        <option value="CNY">Â¥ CNY</option>
                     </select>
                 </div>
 
@@ -152,7 +152,7 @@
                                 <div style="width:38px; height:38px; border-radius:50%; background:var(--brand-green-soft); color:var(--brand-green); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
                                     <i class="fa-solid fa-robot"></i>
                                 </div>
-                                <input type="text" id="aiSearchInput" class="form-input" placeholder="Search goods, e.g. 'Ankara fabric in Abuja under ₦15,000' or 'Yam wholesale'..." style="border:none; background:transparent; font-size:0.95rem; font-weight:600; padding:10px 0; box-shadow:none;">
+                                <input type="text" id="aiSearchInput" class="form-input" placeholder="Search goods, e.g. 'Ankara fabric in Abuja under â‚¦15,000' or 'Yam wholesale'..." style="border:none; background:transparent; font-size:0.95rem; font-weight:600; padding:10px 0; box-shadow:none;">
                                 <button type="submit" class="btn btn-primary" style="padding:10px 20px; font-weight:800; white-space:nowrap;">
                                     <i class="fa-solid fa-magnifying-glass"></i> AI Search
                                 </button>
@@ -162,11 +162,11 @@
                         <!-- Natural Language Quick Query Chips -->
                         <div class="ai-chips-strip">
                             <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;"><i class="fa-solid fa-bolt" style="color:var(--gold);"></i> Try:</span>
-                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Authentic Ankara in Abuja under $15')">👗 Ankara in Abuja under $15</button>
-                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Bone straight human hair wig in Kano')">💇 Bone straight wig in Kano</button>
-                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Export Benue yam in bulk')">🌾 Export Yam in bulk</button>
-                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Apple iPhone 15 Pro Max under $900')">📱 iPhone 15 Pro Max</button>
-                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Designer smartwatch under $50')">⌚ Smartwatch under $50</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Authentic Ankara in Abuja under $15')">ðŸ‘— Ankara in Abuja under $15</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Bone straight human hair wig in Kano')">ðŸ’‡ Bone straight wig in Kano</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Export Benue yam in bulk')">ðŸŒ¾ Export Yam in bulk</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Apple iPhone 15 Pro Max under $900')">ðŸ“± iPhone 15 Pro Max</button>
+                            <button type="button" class="ai-query-chip" onclick="executeAiQuery('Designer smartwatch under $50')">âŒš Smartwatch under $50</button>
                         </div>
                     </div>
 
@@ -174,20 +174,20 @@
                     <div class="hero-locations-strip">
                         <span class="strip-label"><i class="fa-solid fa-location-crosshairs"></i> Top Hubs:</span>
                         <div class="hero-locations-scroll">
-                            <button class="hero-loc-pill active" onclick="filterByWorldwideLocation('', '', this)">🌍 All Worldwide</button>
-                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('Nigeria', 'Abuja (FCT)', this)">🇳🇬 Abuja</button>
-                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('Nigeria', 'Kano', this)">🇳🇬 Kano</button>
-                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('Nigeria', 'Rivers (Port Harcourt)', this)">🇳🇬 Port Harcourt</button>
-                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('United Arab Emirates', 'Dubai', this)">🇦🇪 Dubai</button>
-                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('United Kingdom', 'London', this)">🇬🇧 London</button>
-                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('China', 'Guangdong (Guangzhou / Shenzhen)', this)">🇨🇳 Guangzhou</button>
+                            <button class="hero-loc-pill active" onclick="filterByWorldwideLocation('', '', this)">ðŸŒ All Worldwide</button>
+                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('Nigeria', 'Abuja (FCT)', this)">ðŸ‡³ðŸ‡¬ Abuja</button>
+                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('Nigeria', 'Kano', this)">ðŸ‡³ðŸ‡¬ Kano</button>
+                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('Nigeria', 'Rivers (Port Harcourt)', this)">ðŸ‡³ðŸ‡¬ Port Harcourt</button>
+                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('United Arab Emirates', 'Dubai', this)">ðŸ‡¦ðŸ‡ª Dubai</button>
+                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('United Kingdom', 'London', this)">ðŸ‡¬ðŸ‡§ London</button>
+                            <button class="hero-loc-pill" onclick="filterByWorldwideLocation('China', 'Guangdong (Guangzhou / Shenzhen)', this)">ðŸ‡¨ðŸ‡³ Guangzhou</button>
                         </div>
                     </div>
 
                 </div>
             </section>
 
-            <!-- 🌍 INTERACTIVE NIGERIA MAP EXPLORER SECTION -->
+            <!-- ðŸŒ INTERACTIVE NIGERIA MAP EXPLORER SECTION -->
             <section class="section">
                 <div class="container">
                     <div class="nigeria-map-container">
@@ -315,15 +315,15 @@
                             <label class="form-label" style="font-size:0.75rem;"><i class="fa-solid fa-globe"></i> Country</label>
                             <select id="marketCountryFilter" onchange="handleMarketCountryChange(this.value)" class="form-select">
                                 <option value="">All Countries</option>
-                                <option value="Nigeria">🇳🇬 Nigeria</option>
-                                <option value="United States">🇺🇸 United States</option>
-                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
-                                <option value="Canada">🇨🇦 Canada</option>
-                                <option value="United Arab Emirates">🇦🇪 UAE (Dubai)</option>
-                                <option value="Ghana">🇬🇭 Ghana</option>
-                                <option value="China">🇨🇳 China</option>
-                                <option value="Kenya">🇰🇪 Kenya</option>
-                                <option value="South Africa">🇿🇦 South Africa</option>
+                                <option value="Nigeria">ðŸ‡³ðŸ‡¬ Nigeria</option>
+                                <option value="United States">ðŸ‡ºðŸ‡¸ United States</option>
+                                <option value="United Kingdom">ðŸ‡¬ðŸ‡§ United Kingdom</option>
+                                <option value="Canada">ðŸ‡¨ðŸ‡¦ Canada</option>
+                                <option value="United Arab Emirates">ðŸ‡¦ðŸ‡ª UAE (Dubai)</option>
+                                <option value="Ghana">ðŸ‡¬ðŸ‡­ Ghana</option>
+                                <option value="China">ðŸ‡¨ðŸ‡³ China</option>
+                                <option value="Kenya">ðŸ‡°ðŸ‡ª Kenya</option>
+                                <option value="South Africa">ðŸ‡¿ðŸ‡¦ South Africa</option>
                             </select>
                         </div>
                         <div>
@@ -344,7 +344,7 @@
         </div>
 
         <!-- ======================================================================
-           PAGE 3: 👤 BUYER PORTAL (ALL 12 CORE MODULES)
+           PAGE 3: ðŸ‘¤ BUYER PORTAL (ALL 12 CORE MODULES)
            ====================================================================== -->
         <div id="page-buyer" class="page-view">
             <div class="container section">
@@ -387,7 +387,7 @@
                 </div>
 
                 
-                <!-- 🎯 BUYER "WHAT DO YOU WANT TO DO?" ACTION HUB -->
+                <!-- ðŸŽ¯ BUYER "WHAT DO YOU WANT TO DO?" ACTION HUB -->
                 <div class="portal-action-section">
                     <div class="portal-action-title">
                         <i class="fa-solid fa-compass" style="color:var(--brand-green);"></i> Buyer Actions & Quick Links
@@ -549,7 +549,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
                             <div>
                                 <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin:0;">
-                                    📦 My Orders & Live Route Tracking
+                                    ðŸ“¦ My Orders & Live Route Tracking
                                 </h3>
                                 <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0 0;">
                                     Track direct marketplace orders and concierge sourcing requests with milestone roadmaps.
@@ -577,7 +577,7 @@
                         <div class="card">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                                 <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin:0;">
-                                    🛒 Shopping Cart Items (<span id="buyerCartViewCount">0</span>)
+                                    ðŸ›’ Shopping Cart Items (<span id="buyerCartViewCount">0</span>)
                                 </h3>
                                 <button class="btn btn-outline btn-sm" style="color:#EF4444; border-color:#EF4444;" onclick="handleClearCart()">
                                     <i class="fa-solid fa-trash"></i> Clear Cart
@@ -588,7 +588,7 @@
 
                         <div class="card">
                             <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin-bottom:14px;">
-                                💳 Order Summary & Delivery
+                                ðŸ’³ Order Summary & Delivery
                             </h3>
                             <form id="buyerCheckoutForm" onsubmit="handleProcessCheckout(event)">
                                 <div class="form-group">
@@ -653,7 +653,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                             <div>
                                 <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin:0;">
-                                    ❤️ My Saved Favorites & Wishlist
+                                    â¤ï¸ My Saved Favorites & Wishlist
                                 </h3>
                                 <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0 0;">
                                     Items you have saved for fast checkout and price alerts.
@@ -672,7 +672,7 @@
                     <div class="card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                             <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary); margin:0;">
-                                🔔 Account Notifications & Announcements
+                                ðŸ”” Account Notifications & Announcements
                             </h3>
                             <span class="badge badge-verified"><i class="fa-solid fa-shield-check"></i> Live Stream</span>
                         </div>
@@ -726,7 +726,7 @@
         </div>
 
         <!-- ======================================================================
-           PAGE 4: 🏪 SELLER PORTAL & ANALYTICS
+           PAGE 4: ðŸª SELLER PORTAL & ANALYTICS
            ====================================================================== -->
         <div id="page-seller" class="page-view">
             <div class="container section">
@@ -768,7 +768,7 @@
                 </div>
 
                 
-                <!-- 🎯 SELLER "WHAT DO YOU WANT TO DO?" ACTION HUB -->
+                <!-- ðŸŽ¯ SELLER "WHAT DO YOU WANT TO DO?" ACTION HUB -->
                 <div class="portal-action-section">
                     <div class="portal-action-title">
                         <i class="fa-solid fa-store" style="color:var(--brand-green);"></i> Seller Operational Center
@@ -850,12 +850,12 @@
                     </div>
                 </div>
 
-                <!-- 📊 Seller Performance Metrics Grid -->
+                <!-- ðŸ“Š Seller Performance Metrics Grid -->
                 <div class="seller-stats-grid" style="margin-bottom:20px;">
                     <div class="stat-card">
                         <div class="stat-icon green"><i class="fa-solid fa-money-bill-trend-up"></i></div>
                         <div>
-                            <div class="stat-value">₦850,000</div>
+                            <div class="stat-value">â‚¦850,000</div>
                             <div class="stat-label">Total Sales Volume</div>
                         </div>
                     </div>
@@ -886,7 +886,7 @@
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                         <h3 style="font-size:1.05rem; font-weight:800; color:var(--primary); margin:0;">
-                            📦 My Listed Products & Stock Control
+                            ðŸ“¦ My Listed Products & Stock Control
                         </h3>
                         <button class="btn btn-success btn-sm" onclick="openAddProductModal()">
                             <i class="fa-solid fa-plus"></i> Add Product
@@ -937,7 +937,7 @@
 
                     <div class="package-card selected" data-package="Full Buying Assistance" onclick="selectAssistancePackage('Full Buying Assistance', 60.00, this)">
                         <div class="package-badge">Most Popular</div>
-                        <div class="package-name">Full Assistance ⭐</div>
+                        <div class="package-name">Full Assistance â­</div>
                         <div class="package-price">$60.00</div>
                         <div class="package-desc">Physical inspection, negotiation, and complete delivery coordination.</div>
                         <ul class="package-features">
@@ -973,13 +973,13 @@
                             <div class="form-group">
                                 <label class="form-label"><i class="fa-solid fa-globe"></i> Target Country *</label>
                                 <select id="mainPbaCountry" class="form-select" required>
-                                    <option value="Nigeria" selected>🇳🇬 Nigeria</option>
-                                    <option value="China">🇨🇳 China</option>
-                                    <option value="United States">🇺🇸 United States</option>
-                                    <option value="United Kingdom">🇬🇧 United Kingdom</option>
-                                    <option value="United Arab Emirates">🇦🇪 UAE (Dubai)</option>
-                                    <option value="Ghana">🇬🇭 Ghana</option>
-                                    <option value="Worldwide">🌍 Worldwide (Any Country)</option>
+                                    <option value="Nigeria" selected>ðŸ‡³ðŸ‡¬ Nigeria</option>
+                                    <option value="China">ðŸ‡¨ðŸ‡³ China</option>
+                                    <option value="United States">ðŸ‡ºðŸ‡¸ United States</option>
+                                    <option value="United Kingdom">ðŸ‡¬ðŸ‡§ United Kingdom</option>
+                                    <option value="United Arab Emirates">ðŸ‡¦ðŸ‡ª UAE (Dubai)</option>
+                                    <option value="Ghana">ðŸ‡¬ðŸ‡­ Ghana</option>
+                                    <option value="Worldwide">ðŸŒ Worldwide (Any Country)</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -1014,7 +1014,7 @@
         </div>
 
         <!-- ======================================================================
-           PAGE 6: 🛡️ ADMIN PORTAL (ALL 11 STANDARDIZED MODULES & MENU)
+           PAGE 6: ðŸ›¡ï¸ ADMIN PORTAL (ALL 11 STANDARDIZED MODULES & MENU)
            ====================================================================== -->
         <div id="page-admin" class="page-view">
             <div class="container section">
@@ -1092,57 +1092,57 @@
                     <!-- Layout: Sidebar Menu + Main Content -->
                     <div class="admin-layout-grid">
                         
-                        <!-- 🛡️ ADMIN PORTAL MENU -->
+                        <!-- ðŸ›¡ï¸ ADMIN PORTAL MENU -->
                         <aside class="admin-sidebar-nav">
                             <div style="padding:8px 12px; font-size:0.72rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">
-                                🛡️ Admin Portal Menu
+                                ðŸ›¡ï¸ Admin Portal Menu
                             </div>
                             
                             <a class="admin-sidebar-item active" id="adminMenu-dashboard" onclick="switchAdminTab('dashboard')">
-                                <span><i class="fa-solid fa-chart-pie"></i> 📊 Dashboard</span>
+                                <span><i class="fa-solid fa-chart-pie"></i> ðŸ“Š Dashboard</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-users" onclick="switchAdminTab('users')">
-                                <span><i class="fa-solid fa-users"></i> 👥 Users</span>
+                                <span><i class="fa-solid fa-users"></i> ðŸ‘¥ Users</span>
                                 <span class="badge" id="adminMenuCountUsers">0</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-verification" onclick="switchAdminTab('verification')">
-                                <span><i class="fa-solid fa-shield-halved"></i> 🏪 Seller Verification</span>
+                                <span><i class="fa-solid fa-shield-halved"></i> ðŸª Seller Verification</span>
                                 <span class="badge" id="adminMenuCountVerification">0</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-products" onclick="switchAdminTab('products')">
-                                <span><i class="fa-solid fa-boxes-stacked"></i> 🛍️ Products</span>
+                                <span><i class="fa-solid fa-boxes-stacked"></i> ðŸ›ï¸ Products</span>
                                 <span class="badge" id="adminMenuCountProducts">0</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-orders" onclick="switchAdminTab('orders')">
-                                <span><i class="fa-solid fa-box-open"></i> 📦 Orders</span>
+                                <span><i class="fa-solid fa-box-open"></i> ðŸ“¦ Orders</span>
                                 <span class="badge" id="adminMenuCountOrders">0</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-sourcing" onclick="switchAdminTab('sourcing')">
-                                <span><i class="fa-solid fa-handshake-angle"></i> 🔍 Sourcing Requests</span>
+                                <span><i class="fa-solid fa-handshake-angle"></i> ðŸ” Sourcing Requests</span>
                                 <span class="badge" id="adminMenuCountSourcing">0</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-complaints" onclick="switchAdminTab('complaints')">
-                                <span><i class="fa-solid fa-comments"></i> 💬 Reports & Complaints</span>
+                                <span><i class="fa-solid fa-comments"></i> ðŸ’¬ Reports & Complaints</span>
                                 <span class="badge" id="adminMenuCountComplaints" style="background:#EF4444; color:#fff;">0</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-notifications" onclick="switchAdminTab('notifications')">
-                                <span><i class="fa-solid fa-bullhorn"></i> 📢 Notifications</span>
+                                <span><i class="fa-solid fa-bullhorn"></i> ðŸ“¢ Notifications</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-analytics" onclick="switchAdminTab('analytics')">
-                                <span><i class="fa-solid fa-chart-line"></i> 📈 Reports & Analytics</span>
+                                <span><i class="fa-solid fa-chart-line"></i> ðŸ“ˆ Reports & Analytics</span>
                             </a>
                             <a class="admin-sidebar-item" id="adminMenu-settings" onclick="switchAdminTab('settings')">
-                                <span><i class="fa-solid fa-gears"></i> ⚙️ Settings</span>
+                                <span><i class="fa-solid fa-gears"></i> âš™ï¸ Settings</span>
                             </a>
                             <a class="admin-sidebar-item" style="color:#EF4444; border-top:1px solid var(--border); margin-top:8px; padding-top:10px;" onclick="handleAdminLogout()">
-                                <span><i class="fa-solid fa-arrow-right-from-bracket"></i> 🚪 Logout</span>
+                                <span><i class="fa-solid fa-arrow-right-from-bracket"></i> ðŸšª Logout</span>
                             </a>
                         </aside>
 
                         <!-- ADMIN TAB CONTENT VIEWS -->
                         <div class="admin-main-viewport">
                             
-                            <!-- 1. 📊 ADMIN DASHBOARD -->
+                            <!-- 1. ðŸ“Š ADMIN DASHBOARD -->
                             <div id="admin-tab-dashboard" class="admin-tab-view">
                                 <div class="seller-stats-grid" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); margin-bottom:18px;">
                                     <div class="stat-card" onclick="switchAdminTab('users')" style="cursor:pointer;">
@@ -1251,7 +1251,7 @@
                                 </div>
                             </div>
 
-                            <!-- 2. 👥 USER MANAGEMENT -->
+                            <!-- 2. ðŸ‘¥ USER MANAGEMENT -->
                             <div id="admin-tab-users" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
@@ -1292,7 +1292,7 @@
                                 </div>
                             </div>
 
-                            <!-- 3. 🏪 SELLER VERIFICATION QUEUE -->
+                            <!-- 3. ðŸª SELLER VERIFICATION QUEUE -->
                             <div id="admin-tab-verification" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin-bottom:4px;">
@@ -1319,7 +1319,7 @@
                                 </div>
                             </div>
 
-                            <!-- 4. 🛍️ PRODUCT MANAGEMENT -->
+                            <!-- 4. ðŸ›ï¸ PRODUCT MANAGEMENT -->
                             <div id="admin-tab-products" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
@@ -1348,7 +1348,7 @@
                                 </div>
                             </div>
 
-                            <!-- 5. 📦 ORDER MANAGEMENT -->
+                            <!-- 5. ðŸ“¦ ORDER MANAGEMENT -->
                             <div id="admin-tab-orders" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
@@ -1383,7 +1383,7 @@
                                 </div>
                             </div>
 
-                            <!-- 6. 🔍 SOURCING MANAGEMENT -->
+                            <!-- 6. ðŸ” SOURCING MANAGEMENT -->
                             <div id="admin-tab-sourcing" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary); margin-bottom:14px;">
@@ -1408,7 +1408,7 @@
                                 </div>
                             </div>
 
-                            <!-- 7. 💬 REPORTS & COMPLAINTS -->
+                            <!-- 7. ðŸ’¬ REPORTS & COMPLAINTS -->
                             <div id="admin-tab-complaints" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1435,7 +1435,7 @@
                                 </div>
                             </div>
 
-                            <!-- 8. 📢 NOTIFICATIONS & BROADCASTS -->
+                            <!-- 8. ðŸ“¢ NOTIFICATIONS & BROADCASTS -->
                             <div id="admin-tab-notifications" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -1461,7 +1461,7 @@
                                 </div>
                             </div>
 
-                            <!-- 9. 📈 REPORTS & ANALYTICS -->
+                            <!-- 9. ðŸ“ˆ REPORTS & ANALYTICS -->
                             <div id="admin-tab-analytics" class="admin-tab-view" style="display:none;">
                                 <div class="card">
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -1474,7 +1474,7 @@
                                 </div>
                             </div>
 
-                            <!-- 10. ⚙️ WEBSITE SETTINGS -->
+                            <!-- 10. âš™ï¸ WEBSITE SETTINGS -->
                             <div id="admin-tab-settings" class="admin-tab-view" style="display:none;">
                                 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:18px;">
                                     <div class="card">
@@ -1515,10 +1515,10 @@
 
     </main>
 
-    <!-- 🤖 AI SHOPPING ASSISTANT FLOATING BOT TRIGGER -->
+    <!-- ðŸ¤– AI SHOPPING ASSISTANT FLOATING BOT TRIGGER -->
     
 
-    <!-- 🤖 AI SHOPPING ASSISTANT DRAWER WINDOW -->
+    <!-- ðŸ¤– AI SHOPPING ASSISTANT DRAWER WINDOW -->
     <div class="ai-assistant-drawer" id="marketAssistantDrawer">
         <div class="ai-chat-header">
             <div style="display:flex; align-items:center; gap:10px;">
@@ -1535,7 +1535,7 @@
 
         <div class="ai-chat-messages" id="aiChatMessagesList">
             <div class="chat-bubble chat-bubble-ai">
-                👋 Hello! I'm your AI Shopping Assistant. Tell me what you're looking for (e.g. <em>"Gift for my sister under ₦30,000"</em> or <em>"Ankara in Abuja"</em>).
+                ðŸ‘‹ Hello! I'm your AI Shopping Assistant. Tell me what you're looking for (e.g. <em>"Gift for my sister under â‚¦30,000"</em> or <em>"Ankara in Abuja"</em>).
             </div>
         </div>
 
@@ -1545,7 +1545,7 @@
         </form>
     </div>
 
-    <!-- 💬 IN-APP DIRECT SELLER CHAT MODAL -->
+    <!-- ðŸ’¬ IN-APP DIRECT SELLER CHAT MODAL -->
     <div id="sellerChatModal" class="modal-overlay">
         <div class="modal-card" style="max-width:440px;">
             <div class="modal-header">
@@ -1568,24 +1568,24 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <h4><i class="fa-solid fa-house-laptop" style="color:var(--brand-green-light);"></i> MARKET AT HOME</h4>
+                    <h4><i class="fa-solid fa-house-laptop" style="color:var(--brand-green-light);"></i> Nigerian Diaspora Online Market</h4>
                     <p>Verified public online marketplace connecting buyers directly with authenticated sellers across Nigeria and worldwide.</p>
                 </div>
                 <div class="footer-col">
                     <h5>Portals</h5>
                     <ul class="footer-links">
-                        <li><a href="#" onclick="switchPage('buyer'); return false;">👤 Buyer Portal</a></li>
-                        <li><a href="#" onclick="switchPage('seller'); return false;">🏪 Seller Portal</a></li>
-                        <li><a href="#" onclick="switchPage('admin'); return false;">🛡️ Admin Portal</a></li>
-                        <li><a href="#" onclick="switchPage('marketplace'); return false;">🛍️ Browse Catalog</a></li>
+                        <li><a href="#" onclick="switchPage('buyer'); return false;">ðŸ‘¤ Buyer Portal</a></li>
+                        <li><a href="#" onclick="switchPage('seller'); return false;">ðŸª Seller Portal</a></li>
+                        <li><a href="#" onclick="switchPage('admin'); return false;">ðŸ›¡ï¸ Admin Portal</a></li>
+                        <li><a href="#" onclick="switchPage('marketplace'); return false;">ðŸ›ï¸ Browse Catalog</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h5>Popular Searches</h5>
                     <ul class="footer-links">
-                        <li><a href="#" onclick="executeAiQuery('Ankara fabric in Abuja'); return false;">👗 Abuja Ankara</a></li>
-                        <li><a href="#" onclick="executeAiQuery('Wigs in Kano'); return false;">💇 Kano Wigs</a></li>
-                        <li><a href="#" onclick="executeAiQuery('Export Benue Yam'); return false;">🌾 Benue Yam Hub</a></li>
+                        <li><a href="#" onclick="executeAiQuery('Ankara fabric in Abuja'); return false;">ðŸ‘— Abuja Ankara</a></li>
+                        <li><a href="#" onclick="executeAiQuery('Wigs in Kano'); return false;">ðŸ’‡ Kano Wigs</a></li>
+                        <li><a href="#" onclick="executeAiQuery('Export Benue Yam'); return false;">ðŸŒ¾ Benue Yam Hub</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -1597,7 +1597,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <div>© 2026 Market at Home — Buy & Sell Worldwide.</div>
+                <div>Â© 2026 Nigerian Diaspora Online Market â€” Buy & Sell Worldwide.</div>
                 <div>Developed by <strong>Amina Ahmed</strong> | WhatsApp: 09090809080</div>
             </div>
         </div>
@@ -1654,11 +1654,11 @@
                         <div class="form-group">
                             <label class="form-label">Country *</label>
                             <select id="sellerProdCountry" class="form-select" required onchange="handleProductModalCountryChange(this.value)">
-                                <option value="Nigeria" selected>🇳🇬 Nigeria</option>
-                                <option value="United States">🇺🇸 United States</option>
-                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
-                                <option value="China">🇨🇳 China</option>
-                                <option value="United Arab Emirates">🇦🇪 UAE</option>
+                                <option value="Nigeria" selected>ðŸ‡³ðŸ‡¬ Nigeria</option>
+                                <option value="United States">ðŸ‡ºðŸ‡¸ United States</option>
+                                <option value="United Kingdom">ðŸ‡¬ðŸ‡§ United Kingdom</option>
+                                <option value="China">ðŸ‡¨ðŸ‡³ China</option>
+                                <option value="United Arab Emirates">ðŸ‡¦ðŸ‡ª UAE</option>
                             </select>
                         </div>
                     </div>
@@ -1686,7 +1686,7 @@
                     <div id="sellerProdPhotoPreview" style="margin-bottom:10px; display:none; text-align:center;">
                         <img id="sellerProdPhotoPreviewImg" src="" style="max-height:120px; max-width:100%; border-radius:8px; border:1px solid var(--border); object-fit:cover;">
                     </div>
-                    <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="document.getElementById('sellerProdPhotoFileInput').click()">📸 Upload Product Picture</button>
+                    <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="document.getElementById('sellerProdPhotoFileInput').click()">ðŸ“¸ Upload Product Picture</button>
                     <button type="submit" id="sellerProductSubmitBtn" class="btn btn-primary" style="width:100%; padding:14px; font-weight:800; font-size:1rem; cursor:pointer;" onclick="handleProductFormSubmit(event)"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Product Now</button>
                 </form>
             </div>
@@ -1730,11 +1730,11 @@
                         <div class="form-group">
                             <label class="form-label">Country *</label>
                             <select id="editProfileCountry" class="form-select" required>
-                                <option value="Nigeria">🇳🇬 Nigeria</option>
-                                <option value="United States">🇺🇸 United States</option>
-                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
-                                <option value="China">🇨🇳 China</option>
-                                <option value="United Arab Emirates">🇦🇪 UAE</option>
+                                <option value="Nigeria">ðŸ‡³ðŸ‡¬ Nigeria</option>
+                                <option value="United States">ðŸ‡ºðŸ‡¸ United States</option>
+                                <option value="United Kingdom">ðŸ‡¬ðŸ‡§ United Kingdom</option>
+                                <option value="China">ðŸ‡¨ðŸ‡³ China</option>
+                                <option value="United Arab Emirates">ðŸ‡¦ðŸ‡ª UAE</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -1812,10 +1812,10 @@
                             <label class="form-label">Join as: *</label>
                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                                 <label id="roleBuyerLabel" style="border:2px solid var(--brand-green); background:var(--brand-green-soft); padding:8px; border-radius:var(--radius-md); cursor:pointer; text-align:center; font-size:0.82rem; font-weight:800;">
-                                    <input type="radio" name="authRole" value="buyer" checked onchange="toggleAuthRole(this.value)" style="display:none;"> 🛍️ Buyer
+                                    <input type="radio" name="authRole" value="buyer" checked onchange="toggleAuthRole(this.value)" style="display:none;"> ðŸ›ï¸ Buyer
                                 </label>
                                 <label id="roleSellerLabel" style="border:2px solid var(--border); background:var(--bg-alt); padding:8px; border-radius:var(--radius-md); cursor:pointer; text-align:center; font-size:0.82rem; font-weight:800;">
-                                    <input type="radio" name="authRole" value="seller" onchange="toggleAuthRole(this.value)" style="display:none;"> 🏪 Seller
+                                    <input type="radio" name="authRole" value="seller" onchange="toggleAuthRole(this.value)" style="display:none;"> ðŸª Seller
                                 </label>
                             </div>
                         </div>
@@ -2002,3 +2002,4 @@
     <script src="assets/js/app.js?v=7.3"></script>
 </body>
 </html>
+

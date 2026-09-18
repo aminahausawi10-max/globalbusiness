@@ -1,5 +1,5 @@
-/**
- * Market at Home — Unified Reactive Application Controller (v4.0 Next-Gen)
+﻿/**
+ * Nigerian Diaspora Online Market â€” Unified Reactive Application Controller (v4.0 Next-Gen)
  * Seamlessly drives Homepage, AI Search, Nigeria Trade Map, Market Assistant Bot,
  * Buyer Portal (12 Modules), Seller Portal, and Admin Control Center (11 Modules).
  */
@@ -21,13 +21,13 @@ const WORLD_LOCATIONS = {
 };
 
 const NIGERIA_STATE_DESCS = {
-    'Abuja (FCT)': 'Federal Capital Territory — Prime administrative & luxury lifestyle goods, designer fashion, tech hubs and verified high-grade suppliers.',
-    'Kano': 'Northern Commercial Giant — Historic Kurmi textiles, Dawanau international grain and agro-commodities market, leather & hides.',
-    'Kaduna': 'Central Industrial Axis — Barnawa textile trade, mechanized agricultural produce, and specialized bulk manufacturing.',
-    'Lagos': 'West African Mega Hub — Alaba International electronics, Balogun textile fashion, Trade Fair commercial complexes & sea freight.',
-    'Rivers (Port Harcourt)': 'South-South Gateway — Oil & marine equipment, luxury fashion, aquatic food supply & high-yield enterprise trade.',
-    'Oyo (Ibadan)': 'South-West Agro & Craft Capital — Bodija wholesale foodstuff, adire & tie-dye artisans, and educational equipment.',
-    'Enugu': 'Eastern Commercial Gateway — Ogbete main market, coal city crafts, auto spares, and agricultural produce from the east.'
+    'Abuja (FCT)': 'Federal Capital Territory â€” Prime administrative & luxury lifestyle goods, designer fashion, tech hubs and verified high-grade suppliers.',
+    'Kano': 'Northern Commercial Giant â€” Historic Kurmi textiles, Dawanau international grain and agro-commodities market, leather & hides.',
+    'Kaduna': 'Central Industrial Axis â€” Barnawa textile trade, mechanized agricultural produce, and specialized bulk manufacturing.',
+    'Lagos': 'West African Mega Hub â€” Alaba International electronics, Balogun textile fashion, Trade Fair commercial complexes & sea freight.',
+    'Rivers (Port Harcourt)': 'South-South Gateway â€” Oil & marine equipment, luxury fashion, aquatic food supply & high-yield enterprise trade.',
+    'Oyo (Ibadan)': 'South-West Agro & Craft Capital â€” Bodija wholesale foodstuff, adire & tie-dye artisans, and educational equipment.',
+    'Enugu': 'Eastern Commercial Gateway â€” Ogbete main market, coal city crafts, auto spares, and agricultural produce from the east.'
 };
 
 // ==========================================
@@ -41,14 +41,14 @@ const AppState = {
     currentCurrency: 'NGN',
     currencyRates: {
         USD: { symbol: '$', rate: 1.0 },
-        NGN: { symbol: '₦', rate: 1550.0 },
-        GBP: { symbol: '£', rate: 0.78 },
-        EUR: { symbol: '€', rate: 0.92 },
+        NGN: { symbol: 'â‚¦', rate: 1550.0 },
+        GBP: { symbol: 'Â£', rate: 0.78 },
+        EUR: { symbol: 'â‚¬', rate: 0.92 },
         CAD: { symbol: 'CA$', rate: 1.36 },
         AED: { symbol: 'AED ', rate: 3.67 },
-        SAR: { symbol: '﷼', rate: 3.75 },
-        CNY: { symbol: '¥', rate: 7.24 },
-        GHS: { symbol: 'GH₵', rate: 15.60 },
+        SAR: { symbol: 'ï·¼', rate: 3.75 },
+        CNY: { symbol: 'Â¥', rate: 7.24 },
+        GHS: { symbol: 'GHâ‚µ', rate: 15.60 },
         KES: { symbol: 'KSh ', rate: 129.50 },
         ZAR: { symbol: 'R ', rate: 18.20 }
     },
@@ -139,7 +139,7 @@ function initCloudSyncListeners() {
 }
 
 // ==========================================
-// 4. 🎨 THEME SYSTEM (PERMANENT DARK MODE)
+// 4. ðŸŽ¨ THEME SYSTEM (PERMANENT DARK MODE)
 // ==========================================
 function initTheme() {
     document.documentElement.setAttribute('data-theme', 'dark');
@@ -153,7 +153,7 @@ function toggleTheme() {
 
 
 // ==========================================
-// 5. 🌍 INTERACTIVE NIGERIA MAP EXPLORER
+// 5. ðŸŒ INTERACTIVE NIGERIA MAP EXPLORER
 // ==========================================
 async function selectNigeriaState(stateName) {
     document.querySelectorAll('.state-node-btn').forEach(btn => btn.classList.remove('active'));
@@ -213,7 +213,7 @@ function renderMapProducts(container, products, stateName) {
 }
 
 // ==========================================
-// 6. 🤖 NATURAL LANGUAGE AI SEARCH PARSER
+// 6. ðŸ¤– NATURAL LANGUAGE AI SEARCH PARSER
 // ==========================================
 async function handleAiSearchSubmit(event) {
     if (event) event.preventDefault();
@@ -226,7 +226,7 @@ async function executeAiQuery(queryText) {
     const inputEl = document.getElementById('aiSearchInput');
     if (inputEl) inputEl.value = queryText;
 
-    showToast(`🤖 AI Analyzing: "${queryText}"...`, 'info');
+    showToast(`ðŸ¤– AI Analyzing: "${queryText}"...`, 'info');
 
     const parsed = API.parseNaturalLanguageQuery ? API.parseNaturalLanguageQuery(queryText) : { query: queryText };
 
@@ -246,7 +246,7 @@ async function executeAiQuery(queryText) {
     const grid = document.getElementById('marketplaceProductsGrid');
     renderProductsGrid(products, grid);
 
-    let feedback = `✨ AI Found ${products.length} matching listings`;
+    let feedback = `âœ¨ AI Found ${products.length} matching listings`;
     if (parsed.category) feedback += ` in "${parsed.category}"`;
     if (parsed.state) feedback += ` around ${parsed.state}`;
     if (parsed.maxPriceUsd) feedback += ` under ${formatPrice(parsed.maxPriceUsd)}`;
@@ -255,7 +255,7 @@ async function executeAiQuery(queryText) {
 }
 
 // ==========================================
-// 7. 🧠 "MARKET ASSISTANT" AI CHAT DRAWER
+// 7. ðŸ§  "MARKET ASSISTANT" AI CHAT DRAWER
 // ==========================================
 function toggleMarketAssistant() {
     const drawer = document.getElementById('marketAssistantDrawer');
@@ -337,7 +337,7 @@ async function handleAiChatSubmit(event) {
 }
 
 // ==========================================
-// 8. 💬 IN-APP DIRECT MERCHANT CHAT
+// 8. ðŸ’¬ IN-APP DIRECT MERCHANT CHAT
 // ==========================================
 let currentChatSellerPhone = '';
 let currentChatSellerName = '';
@@ -406,7 +406,7 @@ async function handleSendSellerChatMessage(event) {
 }
 
 // ==========================================
-// 9. 🔮 SMART PRODUCT DETAILS PREVIEW
+// 9. ðŸ”® SMART PRODUCT DETAILS PREVIEW
 // ==========================================
 async function openProductDetails(productId) {
     const product = await API.getProductById(productId);
@@ -437,7 +437,7 @@ async function openProductDetails(productId) {
                 <div class="product-360-viewer-box" style="position:relative; background:var(--bg-page); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; text-align:center;">
                     <img id="detailMainImage" src="${prodPhoto}" alt="${prodTitle}" style="width:100%; height:260px; object-fit:contain; transition:transform 0.2s;" onerror="this.src='https://images.unsplash.com/photo-1544441893-675973e31985?w=600'">
                     <div style="position:absolute; bottom:8px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.65); color:#fff; font-size:0.72rem; padding:4px 10px; border-radius:20px; display:flex; align-items:center; gap:6px;">
-                        <i class="fa-solid fa-arrows-spin"></i> 360° Inspection Simulation
+                        <i class="fa-solid fa-arrows-spin"></i> 360Â° Inspection Simulation
                     </div>
                 </div>
 
@@ -488,7 +488,7 @@ async function openProductDetails(productId) {
                     <table style="width:100%; border-collapse:collapse;">
                         <tr><td style="padding:4px 0; color:var(--text-muted);">Origin:</td><td style="font-weight:700;">${product.country || 'Nigeria'}</td></tr>
                         <tr><td style="padding:4px 0; color:var(--text-muted);">Availability:</td><td style="font-weight:700; color:var(--brand-green);">In Stock & Ready to Ship</td></tr>
-                        <tr><td style="padding:4px 0; color:var(--text-muted);">Inspection:</td><td style="font-weight:700;">Market at Home Concierge Ready</td></tr>
+                        <tr><td style="padding:4px 0; color:var(--text-muted);">Inspection:</td><td style="font-weight:700;">Nigerian Diaspora Online Market Concierge Ready</td></tr>
                     </table>
                 </div>
 
@@ -540,7 +540,7 @@ function switchProductPreviewTab(tab) {
 }
 
 // ==========================================
-// 10. 🪄 3D CARD TILT EFFECT ENGINE
+// 10. ðŸª„ 3D CARD TILT EFFECT ENGINE
 // ==========================================
 function init3DTiltEffects() {
     const cards = document.querySelectorAll('.product-card-3d');
@@ -573,7 +573,7 @@ function resetCardTilt(e) {
 }
 
 // ==========================================
-// 11. 🗺️ LIVE ORDER ROUTE & STEP TRACKER
+// 11. ðŸ—ºï¸ LIVE ORDER ROUTE & STEP TRACKER
 // ==========================================
 function openOrderRouteTracker(orderId) {
     const order = API.getOrderById ? API.getOrderById(orderId) : null;
@@ -590,7 +590,7 @@ function openOrderRouteTracker(orderId) {
 
     const modalTitle = document.getElementById('detailModalTitle');
     const modalContent = document.getElementById('detailModalContent');
-    if (modalTitle) modalTitle.textContent = `Live Tracking — Order #${order.id}`;
+    if (modalTitle) modalTitle.textContent = `Live Tracking â€” Order #${order.id}`;
 
     modalContent.innerHTML = `
         <div style="padding:10px 0;">
@@ -977,7 +977,7 @@ function setupCurrencySwitcher() {
 
 function formatPrice(usdAmount) {
     const curr = AppState.currentCurrency;
-    const rateData = AppState.currencyRates[curr] || { symbol: '₦', rate: 1550.0 };
+    const rateData = AppState.currencyRates[curr] || { symbol: 'â‚¦', rate: 1550.0 };
     const converted = usdAmount * rateData.rate;
     
     if (curr === 'NGN') {
@@ -1299,7 +1299,7 @@ function updateCartModalDisplay() {
                 <img src="${item.photo}" style="width:50px; height:50px; object-fit:cover; border-radius:var(--radius-sm);">
                 <div style="flex:1;">
                     <h5 style="font-size:0.85rem; font-weight:700; margin-bottom:2px;">${item.name}</h5>
-                    <div style="font-size:0.75rem; color:var(--text-muted);">${formatPrice(item.price)} × ${item.quantity}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">${formatPrice(item.price)} Ã— ${item.quantity}</div>
                 </div>
                 <div style="font-weight:800; color:var(--brand-green); font-size:0.9rem;">${formatPrice(itemTotal)}</div>
                 <button class="btn btn-sm" onclick="API.removeFromCart('${item.id}'); updateCartBadge(); updateCartModalDisplay(); renderBuyerCart();" style="color:#EF4444; background:none; padding:4px;"><i class="fa-solid fa-trash-can"></i></button>
@@ -1338,7 +1338,7 @@ function updateFavBadge() {
 }
 
 // ==========================================
-// 17. 👤 BUYER PORTAL (ALL 12 CORE MODULES)
+// 17. ðŸ‘¤ BUYER PORTAL (ALL 12 CORE MODULES)
 // ==========================================
 async function loadBuyerPortalData() {
     const user = getCurrentUser() || { full_name: 'Amina Ahmed', phone: '09090809080', email: 'amina@marketathome.com', location: 'Abuja (FCT), Nigeria' };
@@ -1464,7 +1464,7 @@ function renderBuyerCart() {
                 <img src="${item.photo}" style="width:55px; height:55px; object-fit:cover; border-radius:var(--radius-sm);">
                 <div style="flex:1;">
                     <h5 style="font-size:0.9rem; font-weight:700; margin-bottom:2px;">${item.name}</h5>
-                    <div style="font-size:0.8rem; color:var(--text-muted);">${formatPrice(item.price)} × ${item.quantity}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">${formatPrice(item.price)} Ã— ${item.quantity}</div>
                 </div>
                 <div style="font-weight:800; color:var(--brand-green); font-size:0.95rem;">${formatPrice(itemTotal)}</div>
                 <button class="btn btn-sm" onclick="API.removeFromCart('${item.id}'); updateCartBadge(); renderBuyerCart();" style="color:#EF4444; background:none; padding:4px;"><i class="fa-solid fa-trash-can"></i></button>
@@ -1535,7 +1535,7 @@ async function renderBuyerDisputes() {
 }
 
 // ==========================================
-// 18. 🏪 SELLER PORTAL CONTROLLERS
+// 18. ðŸª SELLER PORTAL CONTROLLERS
 // ==========================================
 async function loadSellerPortalData() {
     const user = getCurrentUser();
@@ -1682,7 +1682,7 @@ function openAddProductModal() {
     const submitBtn = document.getElementById('sellerProductSubmitBtn');
     const prodIdInput = document.getElementById('sellerProdId');
 
-    if (titleEl) titleEl.textContent = '➕ Add New Good';
+    if (titleEl) titleEl.textContent = 'âž• Add New Good';
     if (submitBtn) {
         submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Product Now';
         submitBtn.disabled = false;
@@ -1724,9 +1724,9 @@ async function openEditProductModal(productId) {
     const submitBtn = document.getElementById('sellerProductSubmitBtn');
     const prodIdInput = document.getElementById('sellerProdId');
 
-    if (titleEl) titleEl.textContent = '✏️ Edit Product Listing';
+    if (titleEl) titleEl.textContent = 'âœï¸ Edit Product Listing';
     if (submitBtn) {
-        submitBtn.innerHTML = '💾 Update & Save Changes';
+        submitBtn.innerHTML = 'ðŸ’¾ Update & Save Changes';
         submitBtn.disabled = false;
     }
     if (prodIdInput) prodIdInput.value = product.id;
@@ -1859,7 +1859,7 @@ async function handleProductFormSubmit(event) {
                 photo: photo,
                 photo_url: photo
             });
-            showToast('✅ Product updated successfully!', 'success');
+            showToast('âœ… Product updated successfully!', 'success');
         } else {
             const sellerId = user?.id || ('seller-' + Date.now());
             await API.createProduct({
@@ -1880,7 +1880,7 @@ async function handleProductFormSubmit(event) {
                 status: 'approved',
                 business_verified: 1
             });
-            showToast('🎉 Product published live across global marketplace!', 'success');
+            showToast('ðŸŽ‰ Product published live across global marketplace!', 'success');
         }
 
         closeModal('addProductModal');
@@ -1904,7 +1904,7 @@ async function handleProductFormSubmit(event) {
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = isEdit ? '💾 Update & Save Changes' : '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Product Now';
+            submitBtn.innerHTML = isEdit ? 'ðŸ’¾ Update & Save Changes' : '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Product Now';
         }
     }
 }
@@ -1936,7 +1936,7 @@ async function handleDeleteProduct(productId) {
 }
 
 // ==========================================
-// 19. 🛡️ ADMIN PORTAL CONTROL CENTER (11 MODULES)
+// 19. ðŸ›¡ï¸ ADMIN PORTAL CONTROL CENTER (11 MODULES)
 // ==========================================
 async function loadAdminPortalData() {
     if (!isAdminAuthenticated()) return;
@@ -2181,7 +2181,7 @@ async function renderAdminVerificationTable() {
                 </td>
                 <td style="padding:12px;">
                     <button class="btn btn-sm ${isVerified ? 'btn-outline' : 'btn-primary'}" onclick="handleVerifySeller('${s.id}')" style="padding:4px 10px; font-size:0.75rem;">
-                        ${isVerified ? 'Revoke Badge' : '✓ Grant Badge'}
+                        ${isVerified ? 'Revoke Badge' : 'âœ“ Grant Badge'}
                     </button>
                 </td>
             </tr>
@@ -2359,7 +2359,7 @@ function renderLiveAnnouncementBanner() {
     const broadcast = API.getLatestBroadcast ? API.getLatestBroadcast() : null;
 
     if (broadcast && banner && textEl) {
-        textEl.textContent = broadcast.title + ' — ' + broadcast.message;
+        textEl.textContent = broadcast.title + ' â€” ' + broadcast.message;
         banner.style.display = 'block';
     }
 }
@@ -2402,10 +2402,10 @@ function renderAdminAnalyticsCharts() {
             <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px;">
                 <h4 style="font-size:0.9rem; font-weight:800; margin-bottom:12px;"><i class="fa-solid fa-pie-chart" style="color:var(--gold);"></i> Top State Distribution</h4>
                 <div style="font-size:0.82rem; line-height:1.8;">
-                    <div>🇳🇬 Abuja (FCT): <strong>35%</strong></div>
-                    <div>🇳🇬 Kano: <strong>28%</strong></div>
-                    <div>🇳🇬 Lagos: <strong>22%</strong></div>
-                    <div>🌍 International (Dubai, UK, US): <strong>15%</strong></div>
+                    <div>ðŸ‡³ðŸ‡¬ Abuja (FCT): <strong>35%</strong></div>
+                    <div>ðŸ‡³ðŸ‡¬ Kano: <strong>28%</strong></div>
+                    <div>ðŸ‡³ðŸ‡¬ Lagos: <strong>22%</strong></div>
+                    <div>ðŸŒ International (Dubai, UK, US): <strong>15%</strong></div>
                 </div>
             </div>
         </div>
@@ -2482,7 +2482,7 @@ function switchSellerTab(tab) {
 function handleRequestSellerVerification() {
     const user = getCurrentUser();
     if (user && user.verified) {
-        showToast('Your store already holds a Verified Merchant Badge 🛡️', 'success');
+        showToast('Your store already holds a Verified Merchant Badge ðŸ›¡ï¸', 'success');
     } else {
         showToast('Verification request sent to Admin! Admin will verify your phone & store credentials.', 'success');
     }
@@ -2562,7 +2562,7 @@ function renderBottomNavDock() {
 }
 
 // ==========================================
-// 17.1 👤 USER PROFILE EDITING CONTROLLERS
+// 17.1 ðŸ‘¤ USER PROFILE EDITING CONTROLLERS
 // ==========================================
 function openEditProfileModal() {
     const user = getCurrentUser() || {
@@ -2579,7 +2579,7 @@ function openEditProfileModal() {
     const titleEl = document.getElementById('editProfileModalTitle');
     const storeGroup = document.getElementById('editProfileStoreNameGroup');
 
-    if (titleEl) titleEl.textContent = isSeller ? '✏️ Edit Seller Store Profile' : '✏️ Edit Buyer Profile & Address';
+    if (titleEl) titleEl.textContent = isSeller ? 'âœï¸ Edit Seller Store Profile' : 'âœï¸ Edit Buyer Profile & Address';
     if (storeGroup) storeGroup.style.display = isSeller ? 'block' : 'none';
 
     const nameInput = document.getElementById('editProfileFullName');
@@ -2642,7 +2642,7 @@ async function handleSaveProfileModal(event) {
     }
 
     closeModal('editProfileModal');
-    showToast('✅ Profile updated successfully!', 'success');
+    showToast('âœ… Profile updated successfully!', 'success');
 
     loadBuyerPortalData();
     loadSellerPortalData();
@@ -2683,7 +2683,8 @@ async function handleSaveBuyerProfile(event) {
         await API.updateBuyer(currentUser.id, updatedUser);
     }
 
-    showToast('✅ Buyer profile & delivery address saved!', 'success');
+    showToast('âœ… Buyer profile & delivery address saved!', 'success');
     loadBuyerPortalData();
     updateNavAuthUI();
 }
+

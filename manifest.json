@@ -1,6 +1,6 @@
-{
-  "name": "Market at Home — Buy & Sell Worldwide",
-  "short_name": "Market at Home",
+﻿{
+  "name": "Nigerian Diaspora Online Market â€” Buy & Sell Worldwide",
+  "short_name": "Nigerian Diaspora Online Market",
   "description": "Buy and Sell Worldwide. Connecting global buyers with verified merchants, authentic goods, and assisted sourcing across countries & states.",
   "start_url": "./index.html",
   "scope": "./",
@@ -55,3 +55,4 @@
     }
   ]
 }
+
