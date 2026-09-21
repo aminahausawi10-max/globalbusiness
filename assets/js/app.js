@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Nigerian Diaspora Online Market â€” Unified Reactive Application Controller (v4.0 Next-Gen)
  * Seamlessly drives Homepage, AI Search, Nigeria Trade Map, Market Assistant Bot,
  * Buyer Portal (12 Modules), Seller Portal, and Admin Control Center (11 Modules).
@@ -41,14 +41,14 @@ const AppState = {
     currentCurrency: 'NGN',
     currencyRates: {
         USD: { symbol: '$', rate: 1.0 },
-        NGN: { symbol: 'â‚¦', rate: 1550.0 },
-        GBP: { symbol: 'Â£', rate: 0.78 },
-        EUR: { symbol: 'â‚¬', rate: 0.92 },
+        NGN: { symbol: '₦', rate: 1550.0 },
+        GBP: { symbol: '£', rate: 0.78 },
+        EUR: { symbol: '€', rate: 0.92 },
         CAD: { symbol: 'CA$', rate: 1.36 },
         AED: { symbol: 'AED ', rate: 3.67 },
-        SAR: { symbol: 'ï·¼', rate: 3.75 },
-        CNY: { symbol: 'Â¥', rate: 7.24 },
-        GHS: { symbol: 'GHâ‚µ', rate: 15.60 },
+        SAR: { symbol: '﷼', rate: 3.75 },
+        CNY: { symbol: '¥', rate: 7.24 },
+        GHS: { symbol: 'GH₵', rate: 15.60 },
         KES: { symbol: 'KSh ', rate: 129.50 },
         ZAR: { symbol: 'R ', rate: 18.20 }
     },
@@ -977,7 +977,7 @@ function setupCurrencySwitcher() {
 
 function formatPrice(usdAmount) {
     const curr = AppState.currentCurrency;
-    const rateData = AppState.currencyRates[curr] || { symbol: 'â‚¦', rate: 1550.0 };
+    const rateData = AppState.currencyRates[curr] || { symbol: '₦', rate: 1550.0 };
     const converted = usdAmount * rateData.rate;
     
     if (curr === 'NGN') {

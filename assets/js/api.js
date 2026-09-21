@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Nigerian Diaspora Online Market â€” API Client & Local State Engine
  * Handles asynchronous communication with backend endpoints with automated local persistence.
  */
@@ -1495,7 +1495,7 @@ const API = {
         };
 
         // 1. Detect Maximum Budget / Price (e.g. "under 50000", "under â‚¦50,000", "below 30k", "under $50")
-        const priceMatch = q.match(/(?:under|below|less than|max|budget(?: of)?|within)\s*(?:â‚¦|\$|usd|ngn)?\s*([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?k?)/i);
+        const priceMatch = q.match(/(?:under|below|less than|max|budget(?: of)?|within)\s*(?:₦|\$|usd|ngn)?\s*([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?k?)/i);
         if (priceMatch && priceMatch[1]) {
             let numStr = priceMatch[1].replace(/,/g, '');
             let val = 0;
